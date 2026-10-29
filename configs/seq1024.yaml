@@ -1,0 +1,64 @@
+name: llama3-100m-adamw-seq1024
+torchtitan_config: llama3_100m_llama2_adamw
+paths:
+  dump_root: ${OUTPUT_ROOT}/runs
+  slurm_log_root: ${OUTPUT_ROOT}/slurm_logs
+  manifest_root: ${OUTPUT_ROOT}/experiments
+  hf_home: ${OUTPUT_ROOT}/cache/huggingface
+  torch_home: ${OUTPUT_ROOT}/cache/torch
+  validation_dir: ${ASSETS_DIR}/data/fineweb100_validation_llama2_1024
+wandb:
+  enabled: false
+  project: sequence-length
+  entity: ''
+  mode: offline
+fixed:
+  hf_assets_path: ${ASSETS_DIR}/hf/llama-tokenizer
+  dataloader.dataset: fineweb_100bt
+  dataloader.dataset_path: HuggingFaceFW/fineweb
+  dataloader.infinite: true
+  dataloader.num_workers: 4
+  dataloader.pin_memory: true
+  dataloader.prefetch_factor: 4
+  dataloader.persistent_workers: true
+  training.steps: 3819
+  training.seq_len: 1024
+  training.global_batch_size: 512
+  grad_var_monitor.enable: true
+  training.max_norm: 1.0
+  training.dtype: float32
+  training.mixed_precision_param: bfloat16
+  training.mixed_precision_reduce: float32
+  lr_scheduler.warmup_steps: 381
+  lr_scheduler.decay_type: cosine
+  lr_scheduler.min_lr_factor: 0.02
+  loss.num_chunks: 8
+  compile.enable: true
+  debug.seed: 1
+  debug.print_config: true
+  comm.train_timeout_seconds: 600
+  checkpoint.enable: true
+  checkpoint.folder: checkpoint
+  checkpoint.interval: 200
+  checkpoint.keep_latest_k: 2
+  checkpoint.last_save_model_only: false
+  validator.enable: true
+  validator.freq: 200
+  validator.token_budget: 20971520
+  validator.eval_local_batch_size: 32
+  validator.artifact_path: ''
+  validator.dataloader.dataset: fineweb_100bt_validation
+  validator.dataloader.dataset_path: null
+  validator.dataloader.num_workers: 0
+  validator.dataloader.pin_memory: false
+  validator.dataloader.persistent_workers: false
+  metrics.log_freq: 1
+  metrics.disable_color_printing: true
+  optimizer.weight_decay: 0.1
+  optimizer.vector_weight_decay: 0.0
+  optimizer.beta1: 0.9
+  optimizer.beta2: 0.95
+  optimizer.learning_rate: 0.004
+  training.local_batch_size: 16
+  optimizer.method: adamw
+sweep: {}

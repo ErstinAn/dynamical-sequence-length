@@ -1,0 +1,12 @@
+{
+  "repo_id": "hf-internal-testing/llama-tokenizer",
+  "revision": "d02ad6cb9dd2c2296a6332199fa2fdca5938fef0",
+  "vocab_size": 32000,
+  "bos_id": 1,
+  "eos_id": 2,
+  "files_sha256": {
+    "tokenizer.json": "8eea70c4866c4f1320ba096fc986ac82038a8374dbe135212ba7628835b4a6f1",
+    "tokenizer_config.json": "c43a787e4eb83e0167f36aff633ebe8523f073e98d684e05f189a2a4e784293d",
+    "special_tokens_map.json": "ff3b4a612c4e447acb02d40071bddd989fe0da87eb5b7fe0dbadfc4f74de7531"
+  }
+}

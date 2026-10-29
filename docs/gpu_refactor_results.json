@@ -1,0 +1,230 @@
+{
+  "exact_match": true,
+  "equal_tensors": 40,
+  "traces": {
+    "adamw": [
+      {
+        "step": 1,
+        "loss": 3.327122688293457,
+        "grad_norm": 2.9585330486297607,
+        "global_grad_var": 5.256930988124607,
+        "grad_var_monitor/grad_var_monitor_tok_embeddings.weight_var": 0.49685458258097326,
+        "grad_var_monitor/grad_var_monitor_body.weight_var": 3.568749340927648,
+        "grad_var_monitor/grad_var_monitor_body.bias_var": 0.7353652933859436,
+        "grad_var_monitor/grad_var_monitor_norm.weight_var": 0.2062990762775166,
+        "grad_var_monitor/grad_var_monitor_norm.bias_var": 0.24966269495252508
+      },
+      {
+        "step": 2,
+        "loss": 3.4035328030586243,
+        "grad_norm": 3.036590576171875,
+        "global_grad_var": 5.231987559512115,
+        "grad_var_monitor/grad_var_monitor_tok_embeddings.weight_var": 0.39513214943391445,
+        "grad_var_monitor/grad_var_monitor_body.weight_var": 4.003045491189022,
+        "grad_var_monitor/grad_var_monitor_body.bias_var": 0.3326437872899315,
+        "grad_var_monitor/grad_var_monitor_norm.weight_var": 0.28924690568605294,
+        "grad_var_monitor/grad_var_monitor_norm.bias_var": 0.21191922591319395
+      },
+      {
+        "step": 3,
+        "loss": 3.070500373840332,
+        "grad_norm": 2.8922500610351562,
+        "global_grad_var": 4.903095214876251,
+        "grad_var_monitor/grad_var_monitor_tok_embeddings.weight_var": 0.4508584794498752,
+        "grad_var_monitor/grad_var_monitor_body.weight_var": 3.5666518961035703,
+        "grad_var_monitor/grad_var_monitor_body.bias_var": 0.4339021667130871,
+        "grad_var_monitor/grad_var_monitor_norm.weight_var": 0.20066681376619244,
+        "grad_var_monitor/grad_var_monitor_norm.bias_var": 0.25101585884352623
+      },
+      {
+        "step": 4,
+        "loss": 2.9240816831588745,
+        "grad_norm": 2.592956304550171,
+        "global_grad_var": 4.770784235417546,
+        "grad_var_monitor/grad_var_monitor_tok_embeddings.weight_var": 0.38997326164641694,
+        "grad_var_monitor/grad_var_monitor_body.weight_var": 3.6916446317463807,
+        "grad_var_monitor/grad_var_monitor_body.bias_var": 0.3741292606731855,
+        "grad_var_monitor/grad_var_monitor_norm.weight_var": 0.1597148383457958,
+        "grad_var_monitor/grad_var_monitor_norm.bias_var": 0.15532224300576683
+      },
+      {
+        "step": 5,
+        "loss": 3.1379165649414062,
+        "grad_norm": 2.7097580432891846,
+        "global_grad_var": 5.536414650392222,
+        "grad_var_monitor/grad_var_monitor_tok_embeddings.weight_var": 0.4451052231399648,
+        "grad_var_monitor/grad_var_monitor_body.weight_var": 4.492390359015236,
+        "grad_var_monitor/grad_var_monitor_body.bias_var": 0.3146918865420334,
+        "grad_var_monitor/grad_var_monitor_norm.weight_var": 0.17151946320471367,
+        "grad_var_monitor/grad_var_monitor_norm.bias_var": 0.11270771849027372
+      },
+      {
+        "step": 6,
+        "loss": 3.1726675033569336,
+        "grad_norm": 2.5711612701416016,
+        "global_grad_var": 4.586581218156495,
+        "grad_var_monitor/grad_var_monitor_tok_embeddings.weight_var": 0.36222671553299335,
+        "grad_var_monitor/grad_var_monitor_body.weight_var": 3.518264953765258,
+        "grad_var_monitor/grad_var_monitor_body.bias_var": 0.34491796777463,
+        "grad_var_monitor/grad_var_monitor_norm.weight_var": 0.15888813781816996,
+        "grad_var_monitor/grad_var_monitor_norm.bias_var": 0.20228344326544404
+      },
+      {
+        "step": 7,
+        "loss": 3.2382975816726685,
+        "grad_norm": 2.6718862056732178,
+        "global_grad_var": 4.076704686951804,
+        "grad_var_monitor/grad_var_monitor_tok_embeddings.weight_var": 0.31384126370586946,
+        "grad_var_monitor/grad_var_monitor_body.weight_var": 2.993452510885997,
+        "grad_var_monitor/grad_var_monitor_body.bias_var": 0.34256928283712745,
+        "grad_var_monitor/grad_var_monitor_norm.weight_var": 0.2025096419648628,
+        "grad_var_monitor/grad_var_monitor_norm.bias_var": 0.2243319875579477
+      },
+      {
+        "step": 8,
+        "loss": 3.2637776136398315,
+        "grad_norm": 2.820439577102661,
+        "global_grad_var": 3.584428067438028,
+        "grad_var_monitor/grad_var_monitor_tok_embeddings.weight_var": 0.28935910839140877,
+        "grad_var_monitor/grad_var_monitor_body.weight_var": 2.7120939144467853,
+        "grad_var_monitor/grad_var_monitor_body.bias_var": 0.28989669375184535,
+        "grad_var_monitor/grad_var_monitor_norm.weight_var": 0.12517308569096428,
+        "grad_var_monitor/grad_var_monitor_norm.bias_var": 0.16790526515702422
+      },
+      {
+        "step": 9,
+        "loss": 3.3571569323539734,
+        "grad_norm": 2.6415224075317383,
+        "global_grad_var": 4.515147549927147,
+        "grad_var_monitor/grad_var_monitor_tok_embeddings.weight_var": 0.31717922874660903,
+        "grad_var_monitor/grad_var_monitor_body.weight_var": 3.4343505405735044,
+        "grad_var_monitor/grad_var_monitor_body.bias_var": 0.3300009216795228,
+        "grad_var_monitor/grad_var_monitor_norm.weight_var": 0.2391932912093977,
+        "grad_var_monitor/grad_var_monitor_norm.bias_var": 0.19442356771811287
+      },
+      {
+        "step": 10,
+        "loss": 2.9990316033363342,
+        "grad_norm": 2.5087661743164062,
+        "global_grad_var": 3.982033630023291,
+        "grad_var_monitor/grad_var_monitor_tok_embeddings.weight_var": 0.26944419134665176,
+        "grad_var_monitor/grad_var_monitor_body.weight_var": 3.057530887711497,
+        "grad_var_monitor/grad_var_monitor_body.bias_var": 0.3374238238832097,
+        "grad_var_monitor/grad_var_monitor_norm.weight_var": 0.1617243884286357,
+        "grad_var_monitor/grad_var_monitor_norm.bias_var": 0.1559103386532964
+      }
+    ],
+    "muon": [
+      {
+        "step": 1,
+        "loss": 3.327122688293457,
+        "grad_norm": 2.9585330486297607,
+        "global_grad_var": 5.256930988124607,
+        "grad_var_monitor/grad_var_monitor_tok_embeddings.weight_var": 0.49685458258097326,
+        "grad_var_monitor/grad_var_monitor_body.weight_var": 3.568749340927648,
+        "grad_var_monitor/grad_var_monitor_body.bias_var": 0.7353652933859436,
+        "grad_var_monitor/grad_var_monitor_norm.weight_var": 0.2062990762775166,
+        "grad_var_monitor/grad_var_monitor_norm.bias_var": 0.24966269495252508
+      },
+      {
+        "step": 2,
+        "loss": 3.4081919193267822,
+        "grad_norm": 3.046600580215454,
+        "global_grad_var": 5.245066268147223,
+        "grad_var_monitor/grad_var_monitor_tok_embeddings.weight_var": 0.39778842687121424,
+        "grad_var_monitor/grad_var_monitor_body.weight_var": 4.023304174389049,
+        "grad_var_monitor/grad_var_monitor_body.bias_var": 0.3207153897746052,
+        "grad_var_monitor/grad_var_monitor_norm.weight_var": 0.2916790725341357,
+        "grad_var_monitor/grad_var_monitor_norm.bias_var": 0.2115792045782187
+      },
+      {
+        "step": 3,
+        "loss": 3.0863813757896423,
+        "grad_norm": 2.9216530323028564,
+        "global_grad_var": 4.9136489152776335,
+        "grad_var_monitor/grad_var_monitor_tok_embeddings.weight_var": 0.4562919001961452,
+        "grad_var_monitor/grad_var_monitor_body.weight_var": 3.554623021162954,
+        "grad_var_monitor/grad_var_monitor_body.bias_var": 0.4448280090874346,
+        "grad_var_monitor/grad_var_monitor_norm.weight_var": 0.20295192914013088,
+        "grad_var_monitor/grad_var_monitor_norm.bias_var": 0.25495405569096924
+      },
+      {
+        "step": 4,
+        "loss": 2.9529616236686707,
+        "grad_norm": 2.6616370677948,
+        "global_grad_var": 4.9732702091416785,
+        "grad_var_monitor/grad_var_monitor_tok_embeddings.weight_var": 0.3992368584800502,
+        "grad_var_monitor/grad_var_monitor_body.weight_var": 3.888371572091423,
+        "grad_var_monitor/grad_var_monitor_body.bias_var": 0.37535207805675963,
+        "grad_var_monitor/grad_var_monitor_norm.weight_var": 0.15551874848160618,
+        "grad_var_monitor/grad_var_monitor_norm.bias_var": 0.15479095203183935
+      },
+      {
+        "step": 5,
+        "loss": 3.159866750240326,
+        "grad_norm": 2.77528977394104,
+        "global_grad_var": 5.535090942973349,
+        "grad_var_monitor/grad_var_monitor_tok_embeddings.weight_var": 0.4297106675414444,
+        "grad_var_monitor/grad_var_monitor_body.weight_var": 4.467892745124576,
+        "grad_var_monitor/grad_var_monitor_body.bias_var": 0.34539956058750143,
+        "grad_var_monitor/grad_var_monitor_norm.weight_var": 0.16962217557057163,
+        "grad_var_monitor/grad_var_monitor_norm.bias_var": 0.12246579414925457
+      },
+      {
+        "step": 6,
+        "loss": 3.208212196826935,
+        "grad_norm": 2.622464895248413,
+        "global_grad_var": 4.433797692914881,
+        "grad_var_monitor/grad_var_monitor_tok_embeddings.weight_var": 0.3596109444738306,
+        "grad_var_monitor/grad_var_monitor_body.weight_var": 3.4469326980531823,
+        "grad_var_monitor/grad_var_monitor_body.bias_var": 0.30576055099227906,
+        "grad_var_monitor/grad_var_monitor_norm.weight_var": 0.1357462107500872,
+        "grad_var_monitor/grad_var_monitor_norm.bias_var": 0.1857472886455024
+      },
+      {
+        "step": 7,
+        "loss": 3.2826792001724243,
+        "grad_norm": 2.711540699005127,
+        "global_grad_var": 4.036840118514907,
+        "grad_var_monitor/grad_var_monitor_tok_embeddings.weight_var": 0.31223990053865913,
+        "grad_var_monitor/grad_var_monitor_body.weight_var": 2.935507034255405,
+        "grad_var_monitor/grad_var_monitor_body.bias_var": 0.3515818367163504,
+        "grad_var_monitor/grad_var_monitor_norm.weight_var": 0.2062653082686179,
+        "grad_var_monitor/grad_var_monitor_norm.bias_var": 0.23124603873587474
+      },
+      {
+        "step": 8,
+        "loss": 3.325807809829712,
+        "grad_norm": 2.887918710708618,
+        "global_grad_var": 3.465724973241728,
+        "grad_var_monitor/grad_var_monitor_tok_embeddings.weight_var": 0.28609156280312553,
+        "grad_var_monitor/grad_var_monitor_body.weight_var": 2.6159560996786615,
+        "grad_var_monitor/grad_var_monitor_body.bias_var": 0.2793952636455561,
+        "grad_var_monitor/grad_var_monitor_norm.weight_var": 0.1223264786718441,
+        "grad_var_monitor/grad_var_monitor_norm.bias_var": 0.1619555684425406
+      },
+      {
+        "step": 9,
+        "loss": 3.426413893699646,
+        "grad_norm": 2.653559684753418,
+        "global_grad_var": 4.575900281268997,
+        "grad_var_monitor/grad_var_monitor_tok_embeddings.weight_var": 0.3183309810816714,
+        "grad_var_monitor/grad_var_monitor_body.weight_var": 3.4302487081436377,
+        "grad_var_monitor/grad_var_monitor_body.bias_var": 0.347496609440543,
+        "grad_var_monitor/grad_var_monitor_norm.weight_var": 0.2694338100209187,
+        "grad_var_monitor/grad_var_monitor_norm.bias_var": 0.21039017258222636
+      },
+      {
+        "step": 10,
+        "loss": 3.074628174304962,
+        "grad_norm": 2.657447099685669,
+        "global_grad_var": 3.8599189377269387,
+        "grad_var_monitor/grad_var_monitor_tok_embeddings.weight_var": 0.27521534504363776,
+        "grad_var_monitor/grad_var_monitor_body.weight_var": 2.950763588101908,
+        "grad_var_monitor/grad_var_monitor_body.bias_var": 0.3045735534542642,
+        "grad_var_monitor/grad_var_monitor_norm.weight_var": 0.17163232295007114,
+        "grad_var_monitor/grad_var_monitor_norm.bias_var": 0.15773412817705776
+      }
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+.venv/
+outputs/
+local/
+archive/
+wandb/
+*.log
+*.distcp
+/assets/data
+/assets/hf

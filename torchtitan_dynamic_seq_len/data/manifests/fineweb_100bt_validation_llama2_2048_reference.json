@@ -1,0 +1,49 @@
+{
+  "artifact_identity": {
+    "arrays": {
+      "input": {
+        "file": "input.npy",
+        "sha256": "aea4c060792e12a7b6197c5f620efa170059ed060a6438069761a7ad65133ea3"
+      },
+      "labels": {
+        "file": "labels.npy",
+        "sha256": "9201ec91f4f9ccf99b12d8da13055748614c6a7772c4f6fd198008786707a477"
+      },
+      "positions": {
+        "file": "positions.npy",
+        "sha256": "25b3c26308693aeedf338edeb8472057d4f1ab310d41069044e6f00ac4f9b106"
+      }
+    },
+    "dtype": "int64",
+    "evaluation_documents": {
+      "count": 27065,
+      "file": "evaluation_documents.jsonl",
+      "sha256": "04cf98e068c5b27f1e802da27b060ee6b986e80d2a3d084195900aa3f752a7bf",
+      "text_normalization": "Unicode NFC, then collapse Unicode whitespace with str.split/join"
+    },
+    "num_sequences": 10240,
+    "packing": "TorchTitan document-local label shift; BOS/EOS; reset and chunk-normalize positions; source parquet row order; global packing before DP split",
+    "schema_version": 1,
+    "sequence_length": 2048,
+    "source": {
+      "config": "sample-100BT",
+      "official_gpt2_tokens": 730197294,
+      "path": "sample/100BT/000_00000.parquet",
+      "repo_id": "HuggingFaceFW/fineweb",
+      "revision": "9bb295ddab0e05d785b879661af7260fed5140fc",
+      "rows": 1058640,
+      "sha256": "fc1d6b589a7a5d9941ae0508e0f101d9ec015ba67a04b3969fde373adc8a54b4",
+      "size": 2147509487
+    },
+    "source_manifest_sha256": "a501e82b9fc8e45d0808556f3bd18345a9aac841f6edf8f50d87627a98ec7aae",
+    "token_budget": 20971520,
+    "tokenizer_files": {
+      "special_tokens_map.json": "ff3b4a612c4e447acb02d40071bddd989fe0da87eb5b7fe0dbadfc4f74de7531",
+      "tokenizer.json": "8eea70c4866c4f1320ba096fc986ac82038a8374dbe135212ba7628835b4a6f1",
+      "tokenizer_config.json": "c43a787e4eb83e0167f36aff633ebe8523f073e98d684e05f189a2a4e784293d",
+      "tokenizer_source.json": "7cbba29c511c2f28e89f6ac769b647856eb8d314b0068fc336e8e3b6bd2a6695"
+    }
+  },
+  "build_manifest_sha256": "4f4d91c578139fc01e60bae3563a5474b9ee4b7c78525d120a3c0c4a3ecc47ba",
+  "protocol": "fineweb100-heldout-000-llama2-2048-v1"
+}

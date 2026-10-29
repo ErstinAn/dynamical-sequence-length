@@ -1,0 +1,51 @@
+{
+  "artifact_identity": {
+    "arrays": {
+      "input": {
+        "file": "input.npy",
+        "sha256": "aa7d129c8e7bc8a2a7f2ce37eca7fc3e9055b033d4a865e514840751957677a3"
+      },
+      "labels": {
+        "file": "labels.npy",
+        "sha256": "c416233a2358518a8cfbd772a0c5eb35efd974f902adaec98e3a404947193bbc"
+      },
+      "positions": {
+        "file": "positions.npy",
+        "sha256": "212e0b7a5da1d250b513e99f0614f63a99d4d9c4c7516d90f7b6dfe54da34a0f"
+      }
+    },
+    "dtype": "int64",
+    "evaluation_documents": {
+      "count": 31349,
+      "file": "evaluation_documents.jsonl",
+      "sha256": "d77228bc125bc0d8e35526bc9d9f611358507f53efd4e5b97f7c5883c01b5326",
+      "text_normalization": "Unicode NFC, then collapse Unicode whitespace with str.split/join"
+    },
+    "num_sequences": 10240,
+    "packing": "TorchTitan document-local label shift; BOS/EOS; reset and chunk-normalize positions; source parquet row order; global packing before DP split",
+    "schema_version": 1,
+    "sequence_length": 2048,
+    "source": {
+      "config": "sample-100BT",
+      "official_gpt2_tokens": 730197294,
+      "path": "sample/100BT/000_00000.parquet",
+      "repo_id": "HuggingFaceFW/fineweb",
+      "revision": "9bb295ddab0e05d785b879661af7260fed5140fc",
+      "rows": 1058640,
+      "sha256": "fc1d6b589a7a5d9941ae0508e0f101d9ec015ba67a04b3969fde373adc8a54b4",
+      "size": 2147509487
+    },
+    "source_manifest_sha256": "a501e82b9fc8e45d0808556f3bd18345a9aac841f6edf8f50d87627a98ec7aae",
+    "token_budget": 20971520,
+    "tokenizer_files": {
+      "config.json": "660db3b73d788119c04535e48cf9be5f55bc3100841a718637ae695b442f27dd",
+      "generation_config.json": "2325da0f15bb848e018c5ae071b7943332e9f871d6b60e2ed22ca97d4cb993d2",
+      "merges.txt": "8831e4f1a044471340f7c0a83d7bd71306a5b867e95fd870f74d0c5308a904d5",
+      "tokenizer.json": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+      "tokenizer_config.json": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101",
+      "vocab.json": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+    }
+  },
+  "build_manifest_sha256": "cb42ec90a74889969277557bd08aef2754ab59695955e5a5b8541978fbfde0f1",
+  "protocol": "fineweb100-heldout-000-v1"
+}
