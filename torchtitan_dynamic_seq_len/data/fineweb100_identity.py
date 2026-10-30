@@ -9,7 +9,7 @@ LLAMA2_REFERENCE_PATH = (
 )
 LLAMA2_LENGTH_REFERENCE_PATHS = tuple(
     Path(__file__).parent / f"manifests/fineweb_100bt_validation_llama2_{length}_reference.json"
-    for length in (512, 2048, 4096)
+    for length in (256, 512, 2048, 4096)
 )
 IDENTITY_FIELDS = (
     "schema_version",

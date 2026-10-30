@@ -13,7 +13,7 @@ It does not identify all documents with similar meanings.
 The manifest records the file list, source sizes, and source hashes.
 
 Each validation uses 20,971,520 label tokens.
-The four Llama2 artifacts contain the same ordered input and label tokens.
+The five Llama2 artifacts contain the same ordered input and label tokens.
 The sequence length changes their grouping and position arrays.
 The code checks the source, tokenizer, document list, and array hashes.
 
@@ -48,7 +48,7 @@ For another asset directory, pass its tokenizer path with `--output`.
 3. Create the artifact for each sequence length.
 
    ```bash
-   for length in 512 1024 2048 4096; do
+   for length in 256 512 1024 2048 4096; do
      python scripts/prepare_fineweb100_validation.py \
        --source-parquet "$SOURCE_PARQUET" \
        --tokenizer assets/hf/llama-tokenizer \

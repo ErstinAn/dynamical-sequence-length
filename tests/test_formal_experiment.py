@@ -121,7 +121,7 @@ class FormalExperimentTest(unittest.TestCase):
             sequence_length=1024,
             tokenizer_path=self.config.hf_assets_path,
         )
-        for length in (512, 1024, 2048, 4096):
+        for length in (256, 512, 1024, 2048, 4096):
             artifact = FrozenValidationArtifact(
                 ROOT / f"assets/data/fineweb100_validation_llama2_{length}",
                 token_budget=20_971_520,
