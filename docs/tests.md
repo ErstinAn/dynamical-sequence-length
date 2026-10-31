@@ -40,7 +40,7 @@ It checks FP32 and BF16 with MSE and chunked cross entropy.
 Each case runs for ten steps.
 The test checks the variance against separately computed group gradients.
 
-Run the local training smoke test from the main README.
+Run the local training smoke test from the project README.
 This test also checks the complete model and data launch path.
 
 ## Comparison with the previous source
@@ -73,3 +73,26 @@ It runs ten steps for AdamW and Muon on a small language model.
 It restores optimizer state after step 5.
 The JSON result record contains all loss, gradient norm, and variance values.
 This comparison does not measure convergence on FineWeb.
+
+## Dynamic sequence length
+
+The CPU tests include checks of token budgets, token packing, length changes, token counts, and checkpoint recovery.
+The tests also read each dynamic configuration.
+They examine submission commands without job submission.
+Run the distributed test of token counts with two CPU processes:
+
+```bash
+OMP_NUM_THREADS=1 python -m torch.distributed.run --standalone --nproc_per_node=2 \
+  -m tests.dynamic_seq_distributed
+```
+
+Within an allocation with two visible GPUs, run the integration comparisons:
+
+```bash
+OMP_NUM_THREADS=1 python tests/run_dynamic_seq_gpu.py --nproc 2 --output outputs/dynamic-gpu-check
+```
+
+The output directory must be new.
+The tests compare the TorchTitan Trainer with constant dynamic training.
+They also restore checkpoints across changes in sequence length.
+They also run compiled training.

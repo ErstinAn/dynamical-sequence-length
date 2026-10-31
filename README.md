@@ -1,12 +1,18 @@
 # Sequence length experiments
 
-This project measures gradient variance during language model training.
+This project measures the effects of sequence length and gradient variance during language model training.
 The experiments use a 100M Llama3 model and the Llama2 tokenizer.
 TorchTitan controls the training loop.
 
-Each training run uses one sequence length and one batch size.
-The code does not change these values during a run.
+The fixed-length configurations use one sequence length and batch size per training run.
+The dynamic configurations use a different Trainer.
+It changes the sequence length between optimizer steps.
+It keeps the batch size fixed.
 The optimizer can be AdamW or Muon.
+
+Update 2026-10-31: dynamic training uses the primary repository.
+The repository includes six experiment configurations and a sweep that compares two cyclic periods.
+See the [dynamic training guide](docs/dynamic_seq_len.md) for configuration and submission.
 
 ## Requirements
 
@@ -109,6 +115,79 @@ To use Muon, set `optimizer.method` in the experiment file to `muon`.
 The other parameter group continues to use AdamW.
 The [method description](docs/method.md) defines the parameter groups and variance measurement.
 
+## Constant learning rate sweep
+
+Use [configs/lr_sweep_constant.yaml](configs/lr_sweep_constant.yaml) to compare five learning rates with fixed batch size and sequence length.
+The `llama3_100m_llama2_adamw_constant_lr` entry selects the TorchTitan `Trainer` and `MetricsProcessor`.
+It uses the same 100M model and Llama2 tokenizer as the reference experiments.
+The AdamW parameter groups and validation procedure are also the same.
+It does not calculate gradient variance.
+
+| Setting | Value |
+| --- | --- |
+| Sequence length | 1024 |
+| Global batch, in sequences | 512 |
+| Local batch, in sequences | 16 |
+| Training steps | 3819 |
+| DataLoader workers | 0 |
+| Learning rate candidates | 0.0005, 0.001, 0.002, 0.004, 0.008 |
+| Warmup steps | 0 |
+| Seed | 1 |
+
+Each sweep point uses its selected learning rate from the first optimizer update to the last.
+The TorchTitan scheduler gives this constant rate with `warmup_steps=0` and `min_lr_factor=1.0`.
+The linear decay calculation gives a multiplier of one during the full training run.
+The sweep changes only `optimizer.learning_rate`.
+Batch size and sequence length stay fixed.
+With two GPUs, each optimizer step accumulates 16 local batches per rank.
+
+Examine the first sweep command without a training run:
+
+```bash
+python scripts/train.py configs/lr_sweep_constant.yaml --nproc 2 --index 0 --dry-run
+```
+
+Run all five points sequentially inside a two-GPU allocation:
+
+```bash
+for index in 0 1 2 3 4; do
+  python scripts/train.py configs/lr_sweep_constant.yaml --nproc 2 --index "$index" || break
+done
+```
+
+Each point creates a independent run directory.
+The default configuration does not send data to W&B.
+Prepare the 1024-token validation artifact before training.
+Compare validation loss at the same step across runs.
+For Slurm arrays, follow the [ARC procedure](cluster/vt_arc/README.md) with a local copy of this configuration.
+
+## Dynamic sequence length
+
+`DynamicSeqLenTrainer` uses the existing `scripts/train.py` and `cluster/vt_arc/submit.py` scripts.
+The scheduler is a separate component in `torchtitan_dynamic_seq_len/seq_len_scheduler.py`.
+
+The configurations in `configs/dynamic_seq/` include constant, increasing, decreasing, triangular, and two cyclic settings.
+All six full configurations use 3840 optimizer steps and constant LR `0.0005`.
+The global batch size is 512 sequences, and the local batch size is 16 sequences.
+Their training budget is 2,013,265,920 label tokens.
+Validation stays at sequence length 1024 while training length changes.
+
+```bash
+python scripts/train.py configs/dynamic_seq/smoke.yaml --nproc 1 --dry-run
+python scripts/train.py configs/dynamic_seq/cyclic.yaml --nproc 2
+python scripts/train.py configs/dynamic_seq/cyclic_sweep.yaml --nproc 2 --index 1
+```
+
+The cyclic sweep compares periods of 256 and 64 steps.
+These periods give 15 and 60 cycles, respectively.
+
+Full configurations include Slurm resource settings.
+Before submission, replace `resources.account` with your allocation account.
+For online W&B records, use the setup procedure in the dynamic training guide.
+
+The [dynamic training guide](docs/dynamic_seq_len.md) gives information about configurations, submission files, metrics, and checkpoint rules.
+The [ARC procedure](cluster/vt_arc/README.md) gives instructions for job submission and recovery.
+
 ## Paths and configuration
 
 The experiment YAML contains the training settings.
@@ -131,6 +210,9 @@ Direct registry launches use `DYNAMIC_SEQ_LEN_VALIDATION_DIR` to select validati
 | Path | Contents |
 | --- | --- |
 | `torchtitan_dynamic_seq_len/config_registry.py` | Model definitions and default settings. |
+| `torchtitan_dynamic_seq_len/dynamic_seq_*.py` | Dynamic training and token counts. |
+| `torchtitan_dynamic_seq_len/seq_len_scheduler.py` | Sequence lengths for each optimizer step. |
+| `configs/dynamic_seq/` | Dynamic configurations and the sweep for cyclic periods. |
 | `torchtitan_dynamic_seq_len/grad_var_*.py` | Variance calculation and training integration. |
 | `torchtitan_dynamic_seq_len/optimizer.py` | AdamW and Muon parameter groups. |
 | `torchtitan_dynamic_seq_len/data/` | Data preparation, exclusion checks, and validation. |

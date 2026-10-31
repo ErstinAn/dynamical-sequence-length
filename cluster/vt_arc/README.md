@@ -9,14 +9,15 @@ Torchrun creates one process for each requested GPU.
 
 1. Read the current [ARC job options](https://www.docs.arc.vt.edu/usage/job_scheduling/02_slurm_options.html).
 2. Check your account, partition, and QoS with the ARC tools.
-3. Copy an experiment file to the ignored `local/` directory.
+3. Copy an experiment file to the ignored `outputs/launch/` directory.
 
    ```bash
-   mkdir -p local
-   cp configs/seq512.yaml local/experiment.yaml
+   mkdir -p outputs/launch
+   cp configs/dynamic_seq/cyclic_sweep.yaml outputs/launch/experiment.yaml
    ```
 
-4. Add the block from `resources.example.yaml` to the copied file.
+4. Examine the `resources` block in the copied file.
+   If this block is absent, add the block from `resources.example.yaml`.
 5. Replace `YOUR_ACCOUNT` with your ARC account.
 6. Set the cluster, partition, and QoS for your allocation.
 7. Set the paths to storage that the compute nodes can access.
@@ -30,19 +31,37 @@ Torchrun creates one process for each requested GPU.
 10. Check the submission command.
 
     ```bash
-    python cluster/vt_arc/submit.py local/experiment.yaml --dry-run
+    python cluster/vt_arc/submit.py outputs/launch/experiment.yaml --dry-run
     ```
 
 11. Submit the job.
 
     ```bash
-    python cluster/vt_arc/submit.py local/experiment.yaml
+    python cluster/vt_arc/submit.py outputs/launch/experiment.yaml
     ```
 
 The resource example does not reserve GPUs or prove current account access.
 The scheduler checks the requested account and resources.
 The [ARC compute page](https://www.docs.arc.vt.edu/resources/compute.html) identifies the clusters.
 The [ARC GPU page](https://www.docs.arc.vt.edu/resources/gpu.html) describes their GPU resources.
+
+## Included experiments
+
+`configs/dynamic_seq/` contains six experiment configurations and a sweep for two cyclic periods.
+`configs/lr_sweep_constant.yaml` contains the sweep for five learning rates with the TorchTitan Trainer.
+Both use this same submission tool and shell script.
+See the [dynamic training guide](../../docs/dynamic_seq_len.md) for the schedule definitions.
+
+The default configurations do not send data to W&B.
+Their allocation account field contains `YOUR_ACCOUNT`.
+
+The completed experiments used `jason_optai-paid`.
+Before submission, select an account that gives you access.
+For online W&B records, use the setup procedure in the dynamic training guide.
+
+Before submission, set `DYNAMIC_SEQ_LEN_ASSETS` to an asset directory that the compute nodes can read.
+Set `DYNAMIC_SEQ_LEN_OUTPUT` to an output directory that the compute nodes can write to.
+While Slurm has tasks in the queue or in operation, do not change the source files for those tasks.
 
 ## Submission records
 

@@ -11,6 +11,7 @@ import hashlib
 import json
 import math
 import os
+from contextlib import nullcontext
 from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Iterator
@@ -183,6 +184,9 @@ class FrozenValidationArtifact:
 class FixedBudgetValidator(Validator):
     @dataclass(kw_only=True, slots=True)
     class Config(Validator.Config):
+        eval_seq_len: int = 0
+        """This is the evaluation length. Zero selects the training capacity for compatibility."""
+
         token_budget: int = 0
         """Zero preserves legacy validation; positive ignores ``steps`` entirely."""
 
@@ -195,12 +199,18 @@ class FixedBudgetValidator(Validator):
         def __post_init__(self):
             if self.token_budget == 0:
                 Validator.Config.__post_init__(self)
+            if self.eval_seq_len < 0:
+                raise ValueError("eval_seq_len must be nonnegative")
             if self.token_budget < 0:
                 raise ValueError("Validation token_budget must be nonnegative")
             if self.eval_local_batch_size <= 0:
                 raise ValueError("Validation eval_local_batch_size must be positive")
 
     def __init__(self, config: Config, **kwargs):
+        if config.eval_seq_len:
+            if config.eval_seq_len > kwargs["seq_len"]:
+                raise ValueError("eval_seq_len exceeds model/RoPE capacity")
+            kwargs["seq_len"] = config.eval_seq_len
         # The legacy constructor interprets steps=-1 as an unbounded stream and
         # warns about uneven ranks. Neither applies to this finite artifact.
         super().__init__(replace(config, steps=1) if config.token_budget else config, **kwargs)
@@ -267,6 +277,12 @@ class FixedBudgetValidator(Validator):
 
     @torch.no_grad()
     def validate(self, model_parts: list[torch.nn.Module], step: int) -> None:
+        metrics = getattr(self, "metrics_processor", None)
+        scope = getattr(type(metrics), "validation_scope", None)
+        with scope(metrics) if scope else nullcontext():
+            return self._validate(model_parts, step)
+
+    def _validate(self, model_parts: list[torch.nn.Module], step: int) -> None:
         if self.config.token_budget == 0:
             return super().validate(model_parts, step)
         if len(model_parts) != 1:

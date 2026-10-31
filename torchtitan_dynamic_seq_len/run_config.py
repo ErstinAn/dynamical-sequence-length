@@ -80,7 +80,7 @@ def tyro_args(key: str, value: Any) -> list[str]:
         parent, _, leaf = key.rpartition(".")
         return [f"--{parent}.no-{leaf}" if parent else f"--no-{leaf}"]
     if isinstance(value, list):
-        return [f"--{key}", ",".join(map(str, value))]
+        return [f"--{key}", *map(str, value)]
     if value is None:
         return []
     return [f"--{key}", str(value)]

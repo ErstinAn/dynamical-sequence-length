@@ -10,6 +10,7 @@ from datasets import load_dataset
 from torchtitan.components.checkpoint import CheckpointManager
 from torchtitan.components.loss import ChunkedLossWrapper, CrossEntropyLoss
 from torchtitan.components.lr_scheduler import LRSchedulersContainer
+from torchtitan.components.metrics import MetricsProcessor
 from torchtitan.config import DebugConfig, TrainingConfig
 from torchtitan.distributed.activation_checkpoint import SelectiveAC
 from torchtitan.hf_datasets import DatasetConfig
@@ -26,11 +27,15 @@ from torchtitan.models.llama3 import (
 from torchtitan.models.llama3.model import Llama3Model
 from torchtitan.trainer import Trainer
 
+from torchtitan_dynamic_seq_len.data.dynamic_seq_loader import DynamicSeqDataLoader
 from torchtitan_dynamic_seq_len.data.fineweb100 import register_fineweb100
 from torchtitan_dynamic_seq_len.data.fixed_validation import FixedBudgetValidator
+from torchtitan_dynamic_seq_len.dynamic_seq_metrics import DynamicSeqMetricsProcessor
+from torchtitan_dynamic_seq_len.dynamic_seq_trainer import DynamicSeqLenTrainer
 from torchtitan_dynamic_seq_len.grad_var_metrics import GradVarMetricsProcessor
 from torchtitan_dynamic_seq_len.grad_var_trainer import GradVarTrainer
 from torchtitan_dynamic_seq_len.optimizer import ExperimentOptimizers
+from torchtitan_dynamic_seq_len.training_config import ExperimentTrainerConfig
 
 ASSETS = Path(
     os.environ.get("DYNAMIC_SEQ_LEN_ASSETS", Path(__file__).resolve().parents[1] / "assets")
@@ -83,8 +88,14 @@ llama3_configs.setdefault(
 )
 
 
-def _trainer(*, flavor="llama3_100m_llama2_split", method="adamw"):
-    config = GradVarTrainer.Config(
+def _trainer(
+    *,
+    flavor="llama3_100m_llama2_split",
+    method="adamw",
+    config_type=GradVarTrainer.Config,
+    metrics_type=GradVarMetricsProcessor.Config,
+):
+    config = config_type(
         model_spec=model_registry(flavor),
         hf_assets_path=TOKENIZER,
         loss=ChunkedLossWrapper.Config(loss_fn=CrossEntropyLoss.Config(global_vocab_size=32000)),
@@ -109,7 +120,7 @@ def _trainer(*, flavor="llama3_100m_llama2_split", method="adamw"):
             decay_type="cosine",
             min_lr_factor=0.02,
         ),
-        metrics=GradVarMetricsProcessor.Config(log_freq=1),
+        metrics=metrics_type(log_freq=1),
         validator=FixedBudgetValidator.Config(enable=False, freq=50, steps=20),
         checkpoint=CheckpointManager.Config(
             enable=False,
@@ -129,6 +140,20 @@ def llama3_100m_llama2_adamw() -> Trainer.Config:
     return _trainer()
 
 
+def llama3_100m_llama2_adamw_constant_lr() -> Trainer.Config:
+    """Use the TorchTitan Trainer with constant learning rates from the first update."""
+    config = _trainer(config_type=ExperimentTrainerConfig, metrics_type=MetricsProcessor.Config)
+    # The TorchTitan factor is min_lr_factor + (1 - min_lr_factor) * decay.
+    # No warmup and min_lr_factor=1 keep each learning rate constant.
+    config.lr_scheduler = LRSchedulersContainer.Config(
+        warmup_steps=0, decay_type="linear", min_lr_factor=1.0
+    )
+    config.dataloader.num_workers = 0
+    config.dataloader.prefetch_factor = None
+    config.dataloader.persistent_workers = False
+    return config
+
+
 def llama3_100m_llama2_muon() -> Trainer.Config:
     return _trainer(method="muon")
 
@@ -136,4 +161,31 @@ def llama3_100m_llama2_muon() -> Trainer.Config:
 def llama3_debug() -> Trainer.Config:
     config = _trainer(flavor="sequence_length_debug")
     config.dataloader.prefetch_factor = None
+    return config
+
+
+def llama3_100m_llama2_adamw_dynamic_seq() -> Trainer.Config:
+    config = _trainer(
+        config_type=DynamicSeqLenTrainer.Config,
+        metrics_type=DynamicSeqMetricsProcessor.Config,
+    )
+    config.dataloader = DynamicSeqDataLoader.Config(dataset="c4", pin_memory=True)
+    config.lr_scheduler = LRSchedulersContainer.Config(
+        warmup_steps=0, decay_type="linear", min_lr_factor=1.0
+    )
+    config.training.seq_len = 2048
+    config.validator.eval_seq_len = 1024
+    return config
+
+
+def llama3_debug_dynamic_seq() -> Trainer.Config:
+    config = llama3_100m_llama2_adamw_dynamic_seq()
+    config.model_spec = model_registry("sequence_length_debug")
+    config.dataloader.dataset = "sequence_length_smoke"
+    config.training.local_batch_size = 2
+    config.training.seq_len = 64
+    config.training.steps = 8
+    config.seq_len_scheduler.kind = "triangular"
+    config.seq_len_scheduler.lengths = [16, 32, 64]
+    config.seq_len_scheduler.period_steps = 4
     return config
