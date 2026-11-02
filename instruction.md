@@ -77,7 +77,7 @@ mkdir -p "$DYNAMIC_SEQ_LEN_ASSETS" "$DYNAMIC_SEQ_LEN_OUTPUT"
 Use storage visible to the allocated compute node.
 Reserve space for caches and checkpoints in addition to datasets.
 The 1B smoke saves two full checkpoints, each containing model and optimizer state.
-Allow at least 40 GiB of free output space for the smoke and its recovery check.
+Allow at least 60 GiB of free output space for the smoke and its recovery check.
 
 ## 5. Prepare the tokenizer
 
@@ -140,6 +140,9 @@ Compilation and W&B are disabled. Full checkpoints are saved at steps five and t
 The run prints its output directory under `$DYNAMIC_SEQ_LEN_OUTPUT/runs/llama3-1b-first-run/`.
 Require finite loss and gradient norms, both completed checkpoints, and exit code zero.
 Record peak GPU memory and step time. Do not infer full-length memory requirements from this short example.
+
+The verified device was one 48 GB L40S. Training used 21.81 GiB and recovery peaked at 24.68 GiB.
+A 24 GB GPU is not sufficient for the measured recovery peak.
 
 Each YAML launch creates a new run directory.
 `experiment.yaml` records YAML settings. `command.txt` also records command-line overrides.

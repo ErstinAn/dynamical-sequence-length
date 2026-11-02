@@ -55,4 +55,35 @@ The delivery checks must record fresh-checkout tests separately from installatio
 GPU smoke results apply only to the recorded hardware, precision, batch size, and sequence length.
 The complete FineWeb training budget is not part of the handoff smoke.
 
-The final delivery record below is updated after verification.
+## Verification on 2026-11-02
+
+The [machine-readable record](delivery_results.json) identifies the tested source commit and measurements.
+The source-tree CPU suite ran 113 tests: 110 passed and three optional tests skipped.
+The artifact check and both optional distributed checks then passed separately.
+Two-rank dynamic sequence, dynamic batch, and sequence-gradient checks also passed.
+Ruff, formatting, text checks, and all pre-commit hooks passed.
+
+A clean clone passed the same 113-test suite with assets outside the checkout.
+A separate virtual environment installed the built wheel using the existing runtime dependencies.
+An isolated import outside the checkout loaded the installed registry and bundled data manifests.
+A complete installation from external package servers remains untested.
+
+Falcon job `742362` completed with exit code `0:0` on one NVIDIA L40S.
+The requested walltime was 20 minutes. Actual queue waiting time was 63 seconds.
+Execution elapsed time was 4 minutes and 54 seconds.
+
+It ran the tiny smoke, ten 1B updates, and recovery from step five through step ten.
+The original 1B run peaked at 21.81 GiB. Recovery peaked at 24.68 GiB.
+
+The restored run matched the original logged losses and gradient norms at steps six through ten.
+This comparison uses log precision and does not establish tensor-by-tensor checkpoint equality.
+
+The GPU test used FP32 model storage, BF16 forward parameters, FP32 gradient reductions, length 128, and microbatch one.
+Both original checkpoints and the recovered step-ten checkpoint contain complete DCP metadata.
+The checkpoint directories occupied approximately 48 GiB across the original and recovery runs.
+The training implementation and tested configurations match the committed delivery source.
+
+The 1B FineWeb example was parsed but not run against the full validation token budget.
+Multi-GPU 1B execution, long sequences, and full training convergence remain untested.
+TorchTitan uses A100 peak FLOPs for L40S MFU reporting in this dependency version.
+Do not use that fallback MFU value for L40S performance comparisons.
