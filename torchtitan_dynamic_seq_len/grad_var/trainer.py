@@ -8,8 +8,8 @@ from torch.distributed.fsdp import FSDPModule
 from torchtitan.components.loss import IGNORE_INDEX
 from torchtitan.trainer import Trainer
 
-from torchtitan_dynamic_seq_len.grad_var_metrics import GradVarMetricsProcessor
-from torchtitan_dynamic_seq_len.grad_var_monitor import GradVarMonitor, GradVarMonitorConfig
+from torchtitan_dynamic_seq_len.grad_var.metrics import GradVarMetricsProcessor
+from torchtitan_dynamic_seq_len.grad_var.monitor import GradVarMonitor, GradVarMonitorConfig
 from torchtitan_dynamic_seq_len.training_config import ExperimentTrainerConfig
 
 

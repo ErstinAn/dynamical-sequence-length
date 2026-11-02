@@ -48,7 +48,8 @@ for name, expected_optimizer in (
     ("llama3_100m_llama2_adamw", torch.optim.AdamW),
 ):
     config = getattr(config_registry, name)()
-    assert Path(config.hf_assets_path).is_relative_to(project)
+    assets = Path(os.environ.get("DYNAMIC_SEQ_LEN_ASSETS", project / "assets"))
+    assert Path(config.hf_assets_path) == assets / "hf/llama-tokenizer"
     model = torch.nn.Sequential(torch.nn.Linear(4, 4), torch.nn.LayerNorm(4))
     container = ExperimentOptimizers(config.optimizer, model_parts=[model])
     assert type(container.optimizers[0]) is expected_optimizer

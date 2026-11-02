@@ -96,3 +96,63 @@ The output directory must be new.
 The tests compare the TorchTitan Trainer with constant dynamic training.
 They also restore checkpoints across changes in sequence length.
 They also run compiled training.
+
+## Sequence gradient distances
+
+Run `python -m unittest tests.test_seq_grad -v` for direct-gradient and training-state comparisons.
+Run `python -m torch.distributed.run --standalone --nproc_per_node=2 -m tests.seq_grad_distributed` for replicated CPU checks.
+See the [experiment procedure](seq_grad_distance.md) for W&B records and GPU smoke commands.
+
+## Dynamic sequence length and batch sizes
+
+Run `python -m unittest tests.test_dynamic_seq_bs -v` for schedule, data, gradient, metric, and recovery checks.
+Run the two-process CPU test with local sockets enabled:
+
+```bash
+OMP_NUM_THREADS=1 python -m torch.distributed.run --standalone --nproc_per_node=2 \
+  -m tests.dynamic_seq_bs_distributed
+```
+
+For a complete GPU launch, use `configs/dynamic_seq_bs/smoke.yaml` with the existing training script.
+The [dynamic batch guide](dynamic_seq_bs.md) describes the test scope and configuration.
+
+Checks on 2026-11-02: the unit suite ran 100 tests.
+The suite passed 97 tests and skipped three tests.
+The two-process test passed the gradient, token count, recovery, and exhaustion checks.
+Training and submission commands passed dry runs.
+The CPU environment had no visible CUDA devices.
+The separate A30 test below supplies GPU results.
+
+## GPU test of increasing batch and cyclic length
+
+On 2026-11-02, Falcon job `742069_0` completed on one NVIDIA A30 with exit code zero.
+The requested time limit was 15 minutes.
+The job waited one second and ran for two minutes and seven seconds.
+It used the 100M model with a local text fixture, FP32, and compilation disabled.
+Validation was disabled for this training test.
+
+| Setting | Values |
+| --- | --- |
+| Optimizer steps | 24 |
+| Global batch size | 8, 16, 32, increasing |
+| Sequence length | 128 to 512, cyclic, period 8 |
+| Microbatch size | 4, 2, 1, decreasing |
+| Accumulation groups | 2, 8, 32 |
+| Learning rate | 0.0005, constant |
+| Total training tokens | 143,360 |
+| Peak active GPU memory | 2.659 GiB |
+
+The [W&B run](https://wandb.ai/dynamic_seq_length/dynamic-seq-bs-debug/runs/f21b613d90184b75a406c7810efa9394) contains all 24 training records.
+Each record passed checks against the three schedules and the expected token counts.
+Loss, gradient norm, throughput, and FLOPs were finite.
+No OOM occurred, and the complete checkpoint exists at step 24.
+The configuration is `configs/dynamic_seq_bs/gpu_increasing_cyclic.yaml`.
+
+The first test saved correct TensorBoard records but could not initialize W&B.
+The submission environment now removes `WANDB_SERVICE` to prevent reuse of a service socket from the login node.
+The repeated GPU test confirmed online W&B records after this correction.
+All 16 submission tests passed, including the new environment check.
+
+This TorchTitan version uses A100 peak FLOPs for A30 MFU values.
+Do not use the recorded MFU for performance comparisons.
+This short test does not establish convergence or memory limits at longer sequence lengths.

@@ -1,0 +1,50 @@
+# Integration check only. This is not a full 1B pretraining budget.
+name: llama3-1b-fineweb-check
+torchtitan_config: llama3_1b_llama2_adamw_constant_lr
+paths:
+  dump_root: ${OUTPUT_ROOT}/runs
+  hf_home: ${OUTPUT_ROOT}/cache/huggingface
+  torch_home: ${OUTPUT_ROOT}/cache/torch
+  validation_dir: ${ASSETS_DIR}/data/fineweb100_validation_llama2_1024
+wandb:
+  enabled: false
+fixed:
+  hf_assets_path: ${ASSETS_DIR}/hf/llama-tokenizer
+  dataloader.dataset: fineweb_100bt
+  dataloader.dataset_path: HuggingFaceFW/fineweb
+  dataloader.num_workers: 0
+  dataloader.pin_memory: true
+  dataloader.prefetch_factor: null
+  dataloader.persistent_workers: false
+  dataloader.infinite: true
+  training.steps: 10
+  training.seq_len: 1024
+  training.local_batch_size: 1
+  training.global_batch_size: 4
+  training.dtype: float32
+  training.mixed_precision_param: bfloat16
+  training.mixed_precision_reduce: float32
+  optimizer.method: adamw
+  optimizer.learning_rate: 0.0005
+  lr_scheduler.warmup_steps: 0
+  lr_scheduler.min_lr_factor: 1.0
+  compile.enable: false
+  loss.num_chunks: 8
+  debug.seed: 42
+  debug.print_config: true
+  checkpoint.enable: true
+  checkpoint.folder: checkpoint
+  checkpoint.interval: 5
+  checkpoint.keep_latest_k: 2
+  checkpoint.last_save_model_only: false
+  validator.enable: true
+  validator.freq: 10
+  validator.eval_seq_len: 1024
+  validator.eval_local_batch_size: 1
+  validator.token_budget: 20971520
+  validator.dataloader.num_workers: 0
+  validator.dataloader.pin_memory: false
+  validator.dataloader.persistent_workers: false
+  metrics.log_freq: 1
+  metrics.disable_color_printing: true
+sweep: {}

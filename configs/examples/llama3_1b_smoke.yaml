@@ -1,0 +1,41 @@
+name: llama3-1b-first-run
+torchtitan_config: llama3_1b_llama2_adamw_constant_lr
+paths:
+  dump_root: ${OUTPUT_ROOT}/runs
+  hf_home: ${OUTPUT_ROOT}/cache/huggingface
+  torch_home: ${OUTPUT_ROOT}/cache/torch
+wandb:
+  enabled: false
+fixed:
+  hf_assets_path: ${ASSETS_DIR}/hf/llama-tokenizer
+  dataloader.dataset: sequence_length_smoke
+  dataloader.dataset_path: ${PROJECT_ROOT}/tests/fixtures/text.jsonl
+  dataloader.num_workers: 0
+  dataloader.pin_memory: false
+  dataloader.prefetch_factor: null
+  dataloader.persistent_workers: false
+  dataloader.infinite: true
+  training.steps: 10
+  training.seq_len: 128
+  training.local_batch_size: 1
+  training.global_batch_size: 4
+  training.dtype: float32
+  training.mixed_precision_param: bfloat16
+  training.mixed_precision_reduce: float32
+  optimizer.method: adamw
+  optimizer.learning_rate: 0.0005
+  lr_scheduler.warmup_steps: 0
+  lr_scheduler.min_lr_factor: 1.0
+  compile.enable: false
+  loss.num_chunks: 8
+  debug.seed: 42
+  debug.print_config: true
+  checkpoint.enable: true
+  checkpoint.folder: checkpoint
+  checkpoint.interval: 5
+  checkpoint.keep_latest_k: 2
+  checkpoint.last_save_model_only: false
+  validator.enable: false
+  metrics.log_freq: 1
+  metrics.disable_color_printing: true
+sweep: {}

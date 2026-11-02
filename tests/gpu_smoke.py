@@ -21,7 +21,7 @@ from torchtitan.distributed.parallel_dims import ParallelDims
 
 from tests.test_grad_var_chunked_loss import TinyLanguageModel
 from tests.test_grad_var_trainer import cpu_metrics, tiny_trainer
-from torchtitan_dynamic_seq_len.grad_var_monitor import full_local_tensor
+from torchtitan_dynamic_seq_len.grad_var.monitor import full_local_tensor
 
 
 def run_case(param_dtype, *, chunked_ce=False):

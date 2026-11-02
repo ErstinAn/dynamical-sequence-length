@@ -1,0 +1,71 @@
+name: llama3-100m-dynamic-seq-bs-gpu-increasing-cyclic
+torchtitan_config: llama3_100m_llama2_adamw_dynamic_seq_bs
+paths:
+  dump_root: ${OUTPUT_ROOT}/runs
+  hf_home: ${OUTPUT_ROOT}/cache/huggingface
+  torch_home: ${OUTPUT_ROOT}/cache/torch
+  manifest_root: ${OUTPUT_ROOT}/experiments
+  slurm_log_root: ${OUTPUT_ROOT}/slurm_logs
+wandb:
+  enabled: false
+  project: dynamic-seq-bs-debug
+  entity: ''
+  mode: offline
+fixed:
+  dataloader.dataset: sequence_length_smoke
+  dataloader.dataset_path: ${PROJECT_ROOT}/tests/fixtures/text.jsonl
+  dataloader.num_workers: 0
+  dataloader.pin_memory: false
+  dataloader.persistent_workers: false
+  dataloader.infinite: true
+  training.steps: 24
+  training.seq_len: 512
+  training.local_batch_size: 4
+  training.global_batch_size: 8
+  training.dtype: float32
+  training.mixed_precision_param: float32
+  training.mixed_precision_reduce: float32
+  compile.enable: false
+  loss.num_chunks: 4
+  debug.seed: 42
+  debug.deterministic: true
+  checkpoint.enable: true
+  validator.enable: false
+  metrics.log_freq: 1
+  optimizer.learning_rate: 0.0005
+  metrics.enable_tensorboard: true
+  seq_len_scheduler.kind: cyclic
+  seq_len_scheduler.min_length: 128
+  seq_len_scheduler.max_length: 512
+  seq_len_scheduler.period_steps: 8
+  batch_size_scheduler.kind: increasing
+  batch_size_scheduler.batch_sizes:
+  - 8
+  - 16
+  - 32
+  batch_size_scheduler.boundaries:
+  - 8
+  - 16
+  microbatch_scheduler.kind: decreasing
+  microbatch_scheduler.batch_sizes:
+  - 1
+  - 2
+  - 4
+  microbatch_scheduler.boundaries:
+  - 8
+  - 16
+  checkpoint.folder: checkpoint
+  checkpoint.interval: 24
+  checkpoint.keep_latest_k: 2
+  checkpoint.last_save_model_only: false
+sweep: {}
+resources:
+  account: YOUR_ACCOUNT
+  cluster: falcon
+  partition: a30_normal_q
+  qos: fal_a30_normal_short
+  nodes: 1
+  gpus_per_node: 1
+  cpus_per_task: 4
+  time: 00:15:00
+  max_concurrent: 1

@@ -16,9 +16,9 @@ from torchtitan.components.loss import IGNORE_INDEX
 from torchtitan.components.metrics import MetricsProcessor
 from torchtitan.distributed.parallel_dims import ParallelDims
 
-from torchtitan_dynamic_seq_len.grad_var_metrics import GradVarMetricsProcessor
-from torchtitan_dynamic_seq_len.grad_var_monitor import GradVarMonitorConfig
-from torchtitan_dynamic_seq_len.grad_var_trainer import GradVarTrainer
+from torchtitan_dynamic_seq_len.grad_var.metrics import GradVarMetricsProcessor
+from torchtitan_dynamic_seq_len.grad_var.monitor import GradVarMonitorConfig
+from torchtitan_dynamic_seq_len.grad_var.trainer import GradVarTrainer
 
 
 def cpu_metrics(dims, log_freq=1):

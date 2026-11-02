@@ -29,7 +29,7 @@ from torchtitan_dynamic_seq_len.data.fixed_validation import (
     FrozenValidationArtifact,
     resolve_artifact_path,
 )
-from torchtitan_dynamic_seq_len.grad_var_trainer import GradVarTrainer
+from torchtitan_dynamic_seq_len.grad_var.trainer import GradVarTrainer
 from torchtitan_dynamic_seq_len.run_config import load_config
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -60,7 +60,8 @@ class FormalExperimentTest(unittest.TestCase):
         tokens = tokenizer.encode("Hello world. 中文 tokenizer check.", add_bos=True, add_eos=True)
         self.assertEqual((tokens[0], tokens[-1]), (1, 2))
         self.assertTrue(all(0 <= token < 32000 for token in tokens))
-        self.assertTrue(Path(tokenizer.tokenizer_path).is_relative_to(ROOT))
+        assets = Path(os.environ.get("DYNAMIC_SEQ_LEN_ASSETS", ROOT / "assets"))
+        self.assertEqual(Path(tokenizer.tokenizer_path), assets / "hf/llama-tokenizer")
         for path in YAML_PATHS:
             fixed = load_config(path)["fixed"]
             per_step = fixed["training.global_batch_size"] * fixed["training.seq_len"]
@@ -115,15 +116,16 @@ class FormalExperimentTest(unittest.TestCase):
     def test_built_artifact_checksums_vocabulary_and_training_exclusions(self):
         import numpy as np
 
+        assets = Path(os.environ.get("DYNAMIC_SEQ_LEN_ASSETS", ROOT / "assets"))
         reference = FrozenValidationArtifact(
-            ROOT / "assets/data/fineweb100_validation_llama2_1024",
+            assets / "data/fineweb100_validation_llama2_1024",
             token_budget=20_971_520,
             sequence_length=1024,
             tokenizer_path=self.config.hf_assets_path,
         )
         for length in (256, 512, 1024, 2048, 4096):
             artifact = FrozenValidationArtifact(
-                ROOT / f"assets/data/fineweb100_validation_llama2_{length}",
+                assets / f"data/fineweb100_validation_llama2_{length}",
                 token_budget=20_971_520,
                 sequence_length=length,
                 tokenizer_path=self.config.hf_assets_path,

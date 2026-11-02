@@ -22,10 +22,10 @@ from torchtitan.trainer import Trainer
 
 from tests.test_grad_var_trainer import cpu_metrics, tiny_trainer
 from torchtitan_dynamic_seq_len.data.dynamic_seq_loader import DynamicSeqDataLoader
-from torchtitan_dynamic_seq_len.dynamic_seq_metrics import DynamicSeqMetricsProcessor
-from torchtitan_dynamic_seq_len.dynamic_seq_trainer import DynamicSeqLenTrainer
+from torchtitan_dynamic_seq_len.dynamic_seq.metrics import DynamicSeqMetricsProcessor
+from torchtitan_dynamic_seq_len.dynamic_seq.trainer import DynamicSeqLenTrainer
 from torchtitan_dynamic_seq_len.run_config import grid, load_config, resolve_point
-from torchtitan_dynamic_seq_len.seq_len_scheduler import SeqLenSchedulerConfig
+from torchtitan_dynamic_seq_len.schedulers.sequence_length import SeqLenSchedulerConfig
 
 
 class IntegerTokenizer:
@@ -92,11 +92,17 @@ class SchedulesTest(unittest.TestCase):
             if path.stem == "smoke":
                 continue
             raw = load_config(path)
+            local_batch, total_tokens = {
+                "cyclic_8_2040": (64, 2013265920),
+                "cyclic_512_8192": (64, 8556380160),
+            }.get(path.stem, (16, 2013265920))
             _, points = grid(raw)
             for index in range(len(points)):
                 with self.subTest(profile=path.name, index=index):
                     _, _, _, args = resolve_point(path, index)
-                    with patch.dict(os.environ, {"WORLD_SIZE": "2"}):
+                    with patch.dict(
+                        os.environ, {"WORLD_SIZE": str(raw["resources"]["gpus_per_node"])}
+                    ):
                         cfg = ConfigManager().parse_args(
                             [
                                 "--module",
@@ -110,14 +116,14 @@ class SchedulesTest(unittest.TestCase):
                     scheduler = cfg.validate_dynamic()
                     self.assertEqual(cfg.training.steps, 3840)
                     self.assertEqual(cfg.training.global_batch_size, 512)
-                    self.assertEqual(cfg.training.local_batch_size, 16)
+                    self.assertEqual(cfg.training.local_batch_size, local_batch)
                     self.assertEqual(cfg.optimizer.learning_rate, 0.0005)
                     self.assertEqual(cfg.lr_scheduler.warmup_steps, 0)
                     self.assertEqual(cfg.lr_scheduler.min_lr_factor, 1.0)
                     self.assertEqual(cfg.validator.eval_seq_len, 1024)
                     self.assertEqual(
                         sum(scheduler.length_for_step(s) for s in range(1, 3841)) * 512,
-                        2013265920,
+                        total_tokens,
                     )
                     self.assertEqual(raw["resources"]["account"], "YOUR_ACCOUNT")
                     self.assertFalse(raw["wandb"]["enabled"])
@@ -174,7 +180,7 @@ sys.path.insert(0, str(root))
 os.environ['WORLD_SIZE'] = '2'
 from torchtitan.config import ConfigManager
 from torchtitan_dynamic_seq_len.run_config import resolve_point
-from torchtitan_dynamic_seq_len.dynamic_seq_trainer import DynamicSeqLenTrainer
+from torchtitan_dynamic_seq_len.dynamic_seq.trainer import DynamicSeqLenTrainer
 raw, _, _, args = resolve_point(root / 'configs/dynamic_seq/cyclic_period64.yaml', 0)
 cfg = ConfigManager().parse_args(['--module', 'torchtitan_dynamic_seq_len.config_registry',
                                 '--config', raw['torchtitan_config'], *args])
@@ -224,6 +230,30 @@ for name, module in tuple(sys.modules.items()):
         with self.assertRaises(ValueError):
             scheduler.length_for_step(0)
 
+    def test_rounded_cyclic_symmetry_and_exact_budget(self):
+        schedule = SeqLenSchedulerConfig(
+            kind="cyclic",
+            min_length=8,
+            max_length=2040,
+            period_steps=256,
+            round_to_multiple=8,
+        ).build(3840)
+        values = [schedule.length_for_step(s) for s in range(1, 3841)]
+        self.assertEqual(values, values[:256] * 15)
+        self.assertEqual((min(values), max(values)), (8, 2040))
+        self.assertEqual(values[64], 1024)
+        self.assertEqual(sum(values) * 512, 2013265920)
+        self.assertEqual(set(values), set(schedule.lengths))
+        for phase, actual in enumerate(values[:256]):
+            rise = min(phase, 256 - phase)
+            ideal = 8 + 2032 * rise / 128
+            self.assertLessEqual(abs(actual - ideal), 4)
+            self.assertEqual(actual % 8, 0)
+            self.assertEqual(actual + values[(phase + 128) % 256], 2048)
+            self.assertEqual(actual, values[(-phase) % 256])
+        self.assertTrue(all(a < b for a, b in zip(values[:128], values[1:129])))
+        self.assertEqual(set(abs(a - b) for a, b in zip(values, values[1:])), {8, 16})
+
     def test_shapes_and_exact_time_reversal(self):
         config = SeqLenSchedulerConfig(lengths=[2, 4, 8], boundaries=[2, 5])
         expected = [2, 2, 4, 4, 4, 8, 8]
@@ -253,6 +283,10 @@ for name, module in tuple(sys.modules.items()):
             dict(kind="cyclic", period_steps=255),
             dict(kind="cyclic", period_steps=768),
             dict(kind="cyclic", period_steps=256, boundaries=[2]),
+            dict(kind="cyclic", round_to_multiple=0),
+            dict(kind="cyclic", round_to_multiple=8, period_steps=254),
+            dict(kind="cyclic", round_to_multiple=8, min_length=7),
+            dict(kind="cyclic", round_to_multiple=8, min_length=8, max_length=2048),
         ):
             with self.subTest(kwargs=kwargs), self.assertRaises(ValueError):
                 SeqLenSchedulerConfig(**kwargs).build(8)
@@ -298,25 +332,45 @@ for name, module in tuple(sys.modules.items()):
 
 class PackingTest(unittest.TestCase):
     def test_cyclic_full_period_packing_and_resume(self):
-        schedule = SeqLenSchedulerConfig(kind="cyclic", period_steps=256).build(3840)
-        documents = [" ".join(map(str, range(263000)))]
-        dl = loader(streaming=True, b=1, documents=documents, capacity=1536)
-        iterator = iter(dl)
-        offset = 0
-        for step in range(1, 258):
-            if step == 130:  # Resume after the first step with the maximum length.
-                state = copy.deepcopy(dl.state_dict())
-                dl = loader(streaming=True, b=1, documents=documents, capacity=1536)
-                dl.load_state_dict(state)
+        for minimum, maximum, multiple in ((512, 1536, None), (8, 2040, 8), (512, 8192, None)):
+            with self.subTest(minimum=minimum, maximum=maximum):
+                schedule = SeqLenSchedulerConfig(
+                    kind="cyclic",
+                    min_length=minimum,
+                    max_length=maximum,
+                    period_steps=256,
+                    round_to_multiple=multiple,
+                ).build(3840)
+                documents = [
+                    " ".join(
+                        map(str, range(sum(schedule.length_for_step(s) for s in range(1, 258)) + 1))
+                    )
+                ]
+                dl = loader(
+                    streaming=True, b=1, documents=documents, capacity=max(schedule.lengths)
+                )
                 iterator = iter(dl)
-            length = schedule.length_for_step(step)
-            dl.set_seq_len(length)
-            inputs, labels = next(iterator)
-            self.assertEqual(tuple(labels.shape), (1, length))
-            torch.testing.assert_close(inputs["input"][0], torch.arange(offset, offset + length))
-            torch.testing.assert_close(labels[0], torch.arange(offset + 1, offset + length + 1))
-            offset += length
-        self.assertEqual(offset, 256 * 1024 + 512)
+                offset = 0
+                for step in range(1, 258):
+                    if step == 130:  # Resume after the first step with the maximum length.
+                        state = copy.deepcopy(dl.state_dict())
+                        dl = loader(
+                            streaming=True, b=1, documents=documents, capacity=max(schedule.lengths)
+                        )
+                        dl.load_state_dict(state)
+                        iterator = iter(dl)
+                    length = schedule.length_for_step(step)
+                    dl.set_seq_len(length)
+                    inputs, labels = next(iterator)
+                    self.assertEqual(tuple(labels.shape), (1, length))
+                    torch.testing.assert_close(
+                        inputs["input"][0], torch.arange(offset, offset + length)
+                    )
+                    torch.testing.assert_close(
+                        labels[0], torch.arange(offset + 1, offset + length + 1)
+                    )
+                    offset += length
+                self.assertEqual(offset, sum(schedule.length_for_step(s) for s in range(1, 258)))
 
     def test_infinite_resume_after_exact_document_end(self):
         for streaming in (False, True):

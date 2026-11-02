@@ -4,7 +4,7 @@ import unittest
 
 import torch
 
-from torchtitan_dynamic_seq_len.grad_var_monitor import GradVarMonitor
+from torchtitan_dynamic_seq_len.grad_var.monitor import GradVarMonitor
 
 
 class GradVarMonitorTest(unittest.TestCase):

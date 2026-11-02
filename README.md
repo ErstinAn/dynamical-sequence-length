@@ -1,18 +1,24 @@
 # Sequence length experiments
 
 This project measures the effects of sequence length and gradient variance during language model training.
-The experiments use a 100M Llama3 model and the Llama2 tokenizer.
+The experiments support 100M and approximately 1B Llama3 models with the Llama2 tokenizer.
 TorchTitan controls the training loop.
 
+For a new server, follow [instruction.md](instruction.md).
+It includes environment setup, data preparation, a 1B example, and checkpoint recovery.
+See the [1B model description](docs/llama3_1b.md) and [delivery inventory](docs/delivery.md).
+
 The fixed-length configurations use one sequence length and batch size per training run.
-The dynamic configurations use a different Trainer.
-It changes the sequence length between optimizer steps.
-It keeps the batch size fixed.
+`DynamicSeqLenTrainer` changes sequence length between optimizer steps and keeps batch sizes fixed.
+`DynamicSeqBSTrainer` uses independent schedules for sequence length, global batch size, and microbatch size.
 The optimizer can be AdamW or Muon.
 
 Update 2026-10-31: dynamic training uses the primary repository.
 The repository includes six experiment configurations and a sweep that compares two cyclic periods.
 See the [dynamic training guide](docs/dynamic_seq_len.md) for configuration and submission.
+
+Update 2026-11-02: three independent schedules can change sequence length and both batch sizes.
+See the [dynamic batch guide](docs/dynamic_seq_bs.md) for configuration, metrics, and recovery.
 
 ## Requirements
 
@@ -164,7 +170,7 @@ For Slurm arrays, follow the [ARC procedure](cluster/vt_arc/README.md) with a lo
 ## Dynamic sequence length
 
 `DynamicSeqLenTrainer` uses the existing `scripts/train.py` and `cluster/vt_arc/submit.py` scripts.
-The scheduler is a separate component in `torchtitan_dynamic_seq_len/seq_len_scheduler.py`.
+The scheduler is a separate component in `torchtitan_dynamic_seq_len/schedulers/sequence_length.py`.
 
 The configurations in `configs/dynamic_seq/` include constant, increasing, decreasing, triangular, and two cyclic settings.
 All six full configurations use 3840 optimizer steps and constant LR `0.0005`.
@@ -190,6 +196,10 @@ The [ARC procedure](cluster/vt_arc/README.md) gives instructions for job submiss
 
 ## Paths and configuration
 
+For per-step gradient comparisons across sequence lengths, use the [sequence gradient distance experiment](docs/seq_grad_distance.md).
+It reads a shared 16384-token parent batch and updates with random 2048-token windows at global batch size 128.
+W&B records all candidate distances every step and sequence-length profiles at configured intervals.
+
 The experiment YAML contains the training settings.
 The Python registry defines the models and default values.
 Command-line options after the launcher options override the YAML settings.
@@ -207,13 +217,50 @@ Direct registry launches use `DYNAMIC_SEQ_LEN_VALIDATION_DIR` to select validati
 
 ## Source files
 
+The package groups each Trainer with its metrics and monitor.
+Shared schedules are in `schedulers/`, and data components are in `data/`.
+
+```text
+torchtitan_dynamic_seq_len/
+  config_registry.py
+  training_config.py
+  optimizer.py
+  run_config.py
+  dynamic_seq/
+    trainer.py
+    metrics.py
+  dynamic_seq_bs/
+    trainer.py
+    metrics.py
+  grad_var/
+    trainer.py
+    metrics.py
+    monitor.py
+  seq_grad/
+    trainer.py
+    metrics.py
+    monitor.py
+  schedulers/
+    sequence_length.py
+    batch_size.py
+  data/
+```
+
+Both global batch and microbatch schedulers use `schedulers/batch_size.py` with separate configuration objects.
+The YAML configuration names and training commands stay the same.
+Python imports use the module paths shown below.
+
 | Path | Contents |
 | --- | --- |
 | `torchtitan_dynamic_seq_len/config_registry.py` | Model definitions and default settings. |
-| `torchtitan_dynamic_seq_len/dynamic_seq_*.py` | Dynamic training and token counts. |
-| `torchtitan_dynamic_seq_len/seq_len_scheduler.py` | Sequence lengths for each optimizer step. |
+| `torchtitan_dynamic_seq_len/dynamic_seq/` | Sequence length Trainer and metrics. |
+| `torchtitan_dynamic_seq_len/dynamic_seq_bs/` | Sequence and batch Trainer and metrics. |
+| `torchtitan_dynamic_seq_len/schedulers/sequence_length.py` | Sequence lengths for each optimizer step. |
+| `torchtitan_dynamic_seq_len/schedulers/batch_size.py` | Global batch and microbatch schedules with shared calculation rules. |
+| `configs/dynamic_seq_bs/` | Independent schedules for sequence length and both batch sizes. |
 | `configs/dynamic_seq/` | Dynamic configurations and the sweep for cyclic periods. |
-| `torchtitan_dynamic_seq_len/grad_var_*.py` | Variance calculation and training integration. |
+| `torchtitan_dynamic_seq_len/grad_var/` | Gradient variance Trainer, metrics, and monitor. |
+| `torchtitan_dynamic_seq_len/seq_grad/` | Sequence gradient Trainer, metrics, and monitor. |
 | `torchtitan_dynamic_seq_len/optimizer.py` | AdamW and Muon parameter groups. |
 | `torchtitan_dynamic_seq_len/data/` | Data preparation, exclusion checks, and validation. |
 | `configs/` | Experiment settings. |

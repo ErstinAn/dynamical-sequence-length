@@ -49,14 +49,16 @@ class DynamicSeqMetricsProcessor(MetricsProcessor):
         ):
             self._saved_memory[key] = max(self._saved_memory.get(key, 0), getattr(stats, attr))
 
+    def _step_metrics(self):
+        return dict(seq_len=self.current_seq_len)
+
     def log(self, step, global_avg_loss, global_max_loss, grad_norm, extra_metrics=None):
         elapsed = self.window_seconds + time.perf_counter() - self.step_started
-        valid_step, valid_total = self.global_valid_tokens, self.global_valid_tokens_seen
         merged = dict(extra_metrics or {})  # TorchTitan adds n_tokens_seen before LR.
+        merged.update(self._step_metrics())
         merged.update(
-            seq_len=self.current_seq_len,
-            valid_tokens_per_step=valid_step,
-            n_valid_tokens_seen=valid_total,
+            valid_tokens_per_step=self.global_valid_tokens,
+            n_valid_tokens_seen=self.global_valid_tokens_seen,
         )
         merged["time_metrics/end_to_end(s)"] = elapsed / self.window_steps
         self._capture_memory()

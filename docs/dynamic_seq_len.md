@@ -37,6 +37,26 @@ The configurations for gradient variance use a different Trainer.
 
 ## Training procedure
 
+### Cyclic experiments with larger length ranges
+
+Two additional configurations keep the period at 256 optimizer steps for 15 periods.
+They use two B200 GPUs with a local batch size of 64 sequences.
+The global batch size stays at 512 sequences, with four accumulation groups for each optimizer step.
+The learning rate stays at `0.0005`, and validation uses sequence length 1024.
+
+| Configuration | Length range | Total training tokens | Slurm time limit |
+| --- | --- | --- | --- |
+| `cyclic_8_2040.yaml` | 8 to 2040 | 2,013,265,920 | 8 hours |
+| `cyclic_512_8192.yaml` | 512 to 8192 | 8,556,380,160 | 24 hours |
+
+The first configuration rounds lengths to multiples of eight and preserves the original token budget.
+The second changes length by 60 tokens per step and uses 4.25 times the original token budget.
+Their model capacities are 2040 and 8192, respectively.
+They use `loss.num_chunks=4` because some lengths in the second configuration are not divisible by eight.
+The loss calculation uses the same normalization by valid tokens.
+
+### Prepare and run training
+
 1. Install the dependencies as specified in the project README.
 2. Prepare the tokenizer as specified in the project README.
 3. For full training, prepare the validation artifact with sequence length 1024 as specified in [data preparation](data.md).
@@ -143,10 +163,10 @@ The first optimizer step has the number 1.
 | `constant` | `length` |
 | `increasing`, `decreasing` | `lengths` from minimum to maximum. optional `boundaries` give the last step at each level. |
 | `triangular` | `lengths` from minimum to maximum and `period_steps`. |
-| `cyclic` | `min_length`, `max_length`, and `period_steps`. |
+| `cyclic` | `min_length`, `max_length`, `period_steps`, and optional `round_to_multiple`. |
 
 For a cyclic schedule, the period must be an even number.
-The difference between the maximum and minimum lengths must be divisible by half the period.
+Without rounding, the difference between the maximum and minimum lengths must be divisible by half the period.
 This gives an integer change in length at each step.
 The schedule with a period of 64 steps uses this formula:
 
@@ -154,6 +174,12 @@ The schedule with a period of 64 steps uses this formula:
 phase = (step - 1) % 64
 seq_len = 512 + 32 * min(phase, 64 - phase)
 ```
+
+Set `seq_len_scheduler.round_to_multiple: 8` to round lengths to multiples of eight.
+With rounding, the period must be divisible by four.
+The endpoints and their midpoint must be divisible by the specified multiple.
+The scheduler rounds the lower half of the length range and reflects it about the midpoint.
+This keeps the mean length equal to the midpoint over each complete period.
 
 ## Data and validation
 
@@ -195,8 +221,9 @@ The FLOP calculation uses the sequence lengths and token counts in that interval
 
 ## Code and tests
 
-The scheduler is in `torchtitan_dynamic_seq_len/seq_len_scheduler.py`.
-The dynamic Trainer, metrics processor, and data loader each have a different module.
+The scheduler is in `torchtitan_dynamic_seq_len/schedulers/sequence_length.py`.
+The Trainer and metrics modules are in `torchtitan_dynamic_seq_len/dynamic_seq/`.
+Data loader modules are in `torchtitan_dynamic_seq_len/data/`.
 The other training configurations use their existing Trainer and metrics classes.
 The [test procedure](tests.md) gives the CPU, distributed, and GPU checks.
 

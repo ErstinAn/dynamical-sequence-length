@@ -68,6 +68,8 @@ def submission_environment(run_config_path: Path, manifest_path: Path) -> dict[s
     The command uses --export=ALL.
     An explicit variable list caused login environment retrieval failures in earlier ARC tests."""
     environment = os.environ.copy()
+    # The login-node service socket is not available on a compute node.
+    environment.pop("WANDB_SERVICE", None)
     environment.update(
         {
             "SLURM_LAUNCHER_DIR": str(HERE),

@@ -32,6 +32,15 @@ SOURCE_CONFIG = HERE.parents[1] / "configs/seq512.yaml"
 
 
 class LauncherTest(unittest.TestCase):
+    def test_submission_does_not_export_login_node_wandb_service(self):
+        with patch.dict(
+            os.environ, {"WANDB_SERVICE": "login-node-socket", "WANDB_PROJECT": "debug"}
+        ):
+            environment = submission_environment(Path("config.yaml"), Path("manifest.yaml"))
+            self.assertNotIn("WANDB_SERVICE", environment)
+            self.assertEqual(environment["WANDB_PROJECT"], "debug")
+            self.assertEqual(os.environ["WANDB_SERVICE"], "login-node-socket")
+
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
         self.root = Path(self.temporary.name)

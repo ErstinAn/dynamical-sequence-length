@@ -12,8 +12,8 @@ from torchtitan.trainer import Trainer
 
 from torchtitan_dynamic_seq_len.data.dynamic_seq_loader import DynamicSeqDataLoader
 from torchtitan_dynamic_seq_len.data.fixed_validation import FixedBudgetValidator
-from torchtitan_dynamic_seq_len.dynamic_seq_metrics import DynamicSeqMetricsProcessor
-from torchtitan_dynamic_seq_len.seq_len_scheduler import SeqLenSchedulerConfig
+from torchtitan_dynamic_seq_len.dynamic_seq.metrics import DynamicSeqMetricsProcessor
+from torchtitan_dynamic_seq_len.schedulers.sequence_length import SeqLenSchedulerConfig
 from torchtitan_dynamic_seq_len.training_config import ExperimentTrainerConfig
 
 
@@ -78,10 +78,14 @@ class DynamicSeqLenTrainer(Trainer):
             for length in self.seq_len_scheduler.lengths
         }
 
-    def train_step(self, data_iterator):
+    def _prepare_step(self):
         length = self.seq_len_scheduler.length_for_step(self.step)
         self.current_seq_len = length
         self.dataloader.set_seq_len(length)
+        return length
+
+    def train_step(self, data_iterator):
+        length = self._prepare_step()
         metrics = self.metrics_processor
         metrics.begin_step()
         previous_tokens, previous_valid = self.ntokens_seen, self.n_valid_tokens_seen
@@ -104,7 +108,7 @@ class DynamicSeqLenTrainer(Trainer):
             metrics.reset_window()
             raise
 
-    def _stage_batches(self, data_iterator, length):
+    def _stage_batches(self, data_iterator, length, *, microbatch_size=None):
         batches = []
         status = 0
         try:
@@ -112,7 +116,9 @@ class DynamicSeqLenTrainer(Trainer):
         except (StopIteration, DataloaderExhaustedError):
             status = 1
         if not status:
-            expected = (self.config.training.local_batch_size, length)
+            if microbatch_size is None:
+                microbatch_size = self.config.training.local_batch_size
+            expected = (microbatch_size, length)
             if any(
                 labels.ndim == 2 and 0 < labels.shape[0] < expected[0] and labels.shape[1] == length
                 for _, labels in batches
@@ -150,8 +156,17 @@ class DynamicSeqLenTrainer(Trainer):
         )
 
     def _schedule_signature(self):
+        schedule = asdict(self.config.seq_len_scheduler)
+        if schedule.get("phase_offset_steps") == 0:
+            schedule.pop("phase_offset_steps", None)
+        if schedule.get("anchor_steps") == []:
+            schedule.pop("anchor_steps", None)
+        if schedule.get("repeat") is False:
+            schedule.pop("repeat", None)
+        if schedule.get("round_to_multiple") is None:
+            schedule.pop("round_to_multiple", None)
         protocol = dict(
-            schedule=asdict(self.config.seq_len_scheduler),
+            schedule=schedule,
             steps=self.config.training.steps,
             capacity=self.config.training.seq_len,
             local_batch=self.config.training.local_batch_size,

@@ -13,7 +13,7 @@ from torch.distributed.device_mesh import init_device_mesh
 from torch.distributed.tensor import Replicate, Shard, distribute_tensor
 
 from tests.test_grad_var_trainer import tiny_trainer
-from torchtitan_dynamic_seq_len.grad_var_monitor import GradVarMonitor, full_local_tensor
+from torchtitan_dynamic_seq_len.grad_var.monitor import GradVarMonitor, full_local_tensor
 
 
 def _worker(rank, world, rendezvous):

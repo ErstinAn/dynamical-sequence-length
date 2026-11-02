@@ -55,7 +55,7 @@ def check_file(path):
 
 
 def main():
-    files = [ROOT / "README.md", ROOT / "NOTICE.md"]
+    files = [ROOT / "README.md", ROOT / "NOTICE.md", ROOT / "instruction.md"]
     files += list((ROOT / "docs").glob("*.md"))
     files += list((ROOT / "cluster").rglob("*.md"))
     failures = []

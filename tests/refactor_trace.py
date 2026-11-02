@@ -16,7 +16,10 @@ def main():
     import torch
     from torchtitan.components.loss import ChunkedLossWrapper, CrossEntropyLoss
 
-    from torchtitan_dynamic_seq_len.grad_var_monitor import GradVarMonitor
+    if args.legacy:
+        from torchtitan_dynamic_seq_len.grad_var_monitor import GradVarMonitor
+    else:
+        from torchtitan_dynamic_seq_len.grad_var.monitor import GradVarMonitor
 
     torch.set_num_threads(1)
     torch.use_deterministic_algorithms(True)
