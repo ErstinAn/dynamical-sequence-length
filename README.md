@@ -22,14 +22,17 @@ The run guide links to the environment instructions and required check scripts.
 Keep those supporting files in the cloned repository.
 
 The new environment and complete data reconstruction passed their checks.
-The real-data smoke passed on two H200 GPUs.
+The previous real-data smoke passed on one node with two H200 GPUs.
 Recovered training matched every final checkpoint value from uninterrupted training.
 The uploaded W&B losses use cumulative nominal tokens as their horizontal axes.
+
+The default for smoke and each formal run is two nodes with eight H200 GPUs each (16 GPUs total).
+The current launcher and fixed validator block this layout. See the [target-server checks](docs/codebase_kick_off/getting_started.md#check-the-launch-support-and-the-slurm-cluster).
 
 `configs/smoke.yaml` defines the agreed eight-step smoke with global batch size 512.
 Measure microbatches on the allocated GPU before execution.
 
-Formal schedules and learning rate sweeps still await the experiment document.
+Use the [experiment launch prompt](docs/sl_schedule_docs/experiment_launch_prompt.md) with the agreed formal specification.
 
 Training counts `global_batch_size * sequence_length` nominal tokens at each optimizer step.
 Keep the existing `global_avg_loss`, `global_max_loss`, and validation loss metrics.

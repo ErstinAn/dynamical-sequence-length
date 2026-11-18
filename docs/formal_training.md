@@ -1,11 +1,11 @@
 # Prepare and resume a formal run
 
-Use this procedure after the [target-server smoke test](codebase_kick_off/getting_started.md) passes.
+Use this procedure after the [target-server smoke test](codebase_kick_off/getting_started.md) passes on the requested layout.
+Smoke and each formal run use two nodes with eight H200 GPUs each by default (16 GPUs total).
 Work from the repository root with the same Python environment.
 Keep the tracked code and configuration files unchanged.
 
-The formal sequence schedule and learning rate sweep remain pending.
-Obtain the experiment document and its version before generating configurations.
+Use the [experiment launch prompt](sl_schedule_docs/experiment_launch_prompt.md) with the agreed experiment document.
 Do not submit a formal run from the smoke settings.
 
 Store generated configurations in `local/generated_configs/`.
@@ -54,13 +54,14 @@ It rejects schedules that cross multiple thresholds in one step.
 Keep all ten complete states.
 Do not implement this rule as retention of the ten most recent checkpoints.
 
-Discuss runtime, storage, GPU count, and sweep scope with the user after smoke acceptance.
+Check runtime, storage, and sweep scope against the agreed budget. Reuse the verified smoke allocation by default.
 Estimate training time separately for each sequence length and batch setting.
 Multiply measured seconds per step by the planned steps for that setting.
 Add all phase times, complete validation events, checkpoint saves, and process initialization.
 Treat estimates from two steps per length as preliminary.
 
-After agreement, execute the same command without `--dry-run` inside the GPU allocation.
+After agreement, use the distributed launch command verified during smoke.
+The dry run checks configuration settings only. The current launcher starts its workers on a single host.
 Append `--index <INDEX>` to select a point from an agreed YAML sweep.
 
 The run directory is `<DUMP_ROOT>/<NAME>/<EXPERIMENT_ID>`.
@@ -68,15 +69,9 @@ It contains the configuration, command, source hash, token plan, and W&B segment
 Checkpoint directories are `checkpoint/step-<STEP>/` within that run directory.
 Each checkpoint contains model, optimizer, learning rate scheduler, counters, and data reader state.
 
-To resume an interrupted run, use the same code and environment.
-Allocate the same DP degree.
-Run this command from the repository root:
+To resume an interrupted run, use the same code, environment, node layout, and DP degree.
+Use the recovery command verified during smoke. Pass the original run directory to `--resume-dir`.
 
-```bash
-python scripts/train.py --resume-dir <RUN_DIRECTORY>
-```
-
-Replace `<RUN_DIRECTORY>` with the original run directory.
 Do not supply replacement schedules or microbatches.
 The launcher checks recorded source and configuration hashes.
 To resume a run created before this cleanup, use the original checkout for that run.

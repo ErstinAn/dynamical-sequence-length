@@ -21,9 +21,14 @@ Obtain explicit permission before changing shared code.
 ## 1. Read the specification and the smoke record
 
 Use the checkout, environment, data, and tokenizer from the successful smoke on this server.
-Recover the working job example and shared storage path from that smoke.
+Use 2 nodes with 8 NVIDIA H200 GPUs per node (16 total) for each run by default.
+Use a different layout only when the user requests it. Check the smoke record for the requested layout.
+For the default, verify two hostnames and 16 ranks in one training group.
+If the matching smoke record is missing, follow the [target-server smoke guide](../codebase_kick_off/getting_started.md) before submission.
+
+Recover the working job file, submission command, Slurm settings, and shared storage path from that smoke.
 Read the reference config and the experiment overrides.
-Collect the GPU count, LR candidates, formal W&B destination, and run naming pattern.
+Read the LR candidates, formal W&B destination, and run naming pattern from the specification.
 Ask for all missing inputs in one message. Keep pending values open during preparation.
 
 ## 2. Translate the schedule into launch settings
@@ -47,7 +52,7 @@ Set `wandb.entity` and `wandb.project` from the formal destination. Set `name` t
 Check access to the formal project with the account from smoke. Keep W&B online.
 
 From the repository root, run this command for each generated YAML.
-Set `CONFIG` to the YAML path. Set `GPU_COUNT` to the agreed GPU count per run.
+Set `CONFIG` to the YAML path. Set `GPU_COUNT` to the total GPU count per run (default 16).
 
 ```bash
 python scripts/train.py "$CONFIG" --nproc "$GPU_COUNT" --dry-run
@@ -59,10 +64,19 @@ Estimate run time and storage from the measured settings and the number of runs.
 
 ## 4. Submit the agreed runs
 
-Use the job example from this server to prepare the local submission file.
-Inside the GPU allocation, run the checked command without `--dry-run`.
-Use shared run storage for logs and checkpoints.
-Submit only the requested combinations within the agreed resource budget.
+Use the two-node launch command verified during smoke for the default layout.
+The dry run above checks the plan. Use the matching smoke job file for distributed execution.
+Check the site's current submission limits. Use shared storage for logs and checkpoints.
+
+Read the optional `max_concurrent_runs` from the specification or the user's launch request.
+Omit it or set it to `null` for no user limit. A positive integer limits runs with active GPU allocations.
+Count all schedules, LRs, seeds, and retries in this batch together. Exclude pending jobs from this count.
+
+Apply the limit in Slurm. For example, ten runs with a limit of two fit one array with `--array=0-9%2`.
+If the batch needs separate submissions, enforce one limit across them. Account for active jobs before submitting retries.
+Site limits on running and submitted jobs apply in both cases. [Slurm job arrays](https://slurm.schedmd.com/job_array.html)
+
+Submit the requested combinations within the agreed resource budget.
 If the request covers preparation only, report the dry run and the exact submission command.
 
 ## 5. Verify launch and recovery
@@ -72,12 +86,8 @@ Check the first training loss and the first scheduled validation against the act
 For a token-based baseline, check validation at zero tokens before the first update.
 
 If a run stops, check its job state and latest complete checkpoint.
-For recovery, allocate the same replica count. Use the same environment.
-Set `RUN_DIRECTORY` to the original run directory.
-
-```bash
-python scripts/train.py --resume-dir "$RUN_DIRECTORY"
-```
+For recovery, reuse the node layout, replica count, and environment from the original run.
+Use the recovery command verified during smoke with the original run directory.
 
 At completion, check the final token count, validation records, checkpoint count, and scheduler exit status.
 Report which runs finished and which still need attention. See the [formal run guide](../formal_training.md) for launch and recovery details.

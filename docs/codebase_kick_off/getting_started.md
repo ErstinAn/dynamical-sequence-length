@@ -1,6 +1,8 @@
 # Run the smoke test on the target server
 
 The collaborator fills in two paths in the [meeting prompt](collaborator_prompt.md). The agent performs the steps below.
+The default for smoke and each formal run is **2 Slurm nodes with 8 NVIDIA H200 GPUs each (16 GPUs total)**.
+Use another layout only when the user requests it.
 
 | Input | Use |
 |---|---|
@@ -10,6 +12,32 @@ The collaborator fills in two paths in the [meeting prompt](collaborator_prompt.
 Keep the existing code, tests, and `configs/smoke.yaml` read-only.
 Create a new site job file and any new launch settings.
 If the existing implementation fails, report the error and its log.
+
+## Check the launch support and the Slurm cluster
+
+Check the target revision before reserving GPUs. This revision has two limits.
+
+- The [training launcher](../../scripts/train.py) starts workers on one host. The [smoke driver](../../scripts/gpu_smoke.py) uses that launcher for training and recovery.
+- The [fixed validator](../../torchtitan_dynamic_seq_len/data/fixed_validation.py) requires equal window counts on all data-parallel ranks. Dividing 936 windows among 16 ranks leaves eight windows.
+
+These limits block the default smoke on this revision. Report them before GPU submission.
+Resume the GPU procedure when the checkout supports both nodes and all 936 windows with 16 ranks.
+Get permission before changing shared code or using another allocation.
+
+Use the login node for Slurm discovery. Read the target site's current submission instructions and the supplied job example.
+For a standard Slurm installation, these read-only commands show partitions and account associations.
+
+```bash
+sinfo -o '%P %a %l %D %G'
+sacctmgr -nP show assoc where user="$USER" format=Cluster,Account,Partition,QOS,DefaultQOS,MaxWall
+```
+
+Check the permitted account, partition, quality of service (QoS), H200 request syntax, and walltime.
+Check limits on running jobs, submitted jobs, and GPUs.
+Check whether the site requires `sbatch` or a site submission tool.
+
+If accounting queries are restricted, use the site's portal or documented user commands.
+Ask the collaborator only when a required choice or permission remains unresolved. [Slurm accounting commands](https://slurm.schedmd.com/sacctmgr.html)
 
 ## Prepare the checkout and environment
 
@@ -23,7 +51,7 @@ git rev-parse HEAD
 
 Run the remaining commands from the repository root.
 Export the two paths from the meeting prompt in your shell.
-Read the job example. Check network access, storage quota, and the GPU request.
+Check network access and the shared storage quota.
 
 ```bash
 test -r "$JOB_EXAMPLE"
@@ -37,7 +65,7 @@ The measured dataset used about 173 GB. The two sets of checkpoints used about 1
 
 Use the [environment guide](../environment_bootstrap.md) to install Python and the locked dependencies.
 Use `RUN_ROOT="$RUN_STORAGE"` in that guide. Require the import checks to pass.
-Run the CUDA check inside the GPU allocation. The verified hardware was a single node with two H200 GPUs.
+Run the CUDA check inside the GPU allocation. The earlier smoke record covers one node with two H200 GPUs.
 
 ```bash
 export PATH="$RUN_STORAGE/environment/conda/bin:$PATH"
@@ -94,59 +122,67 @@ Require `passed: true`, 236 checked indexes, 936 fixed windows, and 15,335,424 v
 Require zero test failures or errors. Run the two distributed checks on a node that permits local sockets.
 They check validation across ranks and recovery from full checkpoints.
 
-## Submit on the target server
+## Submit and verify the allocation
 
-Copy `JOB_EXAMPLE` to a **new** file under `cluster/<site>/`. Use the target site's name for `<site>`.
-Keep the account, queue, module setup, and submission tool from the working example.
+Use this procedure after the support checks above pass.
+Adapt `JOB_EXAMPLE` in a new file under `cluster/<site>/`. Set `<site>` to the target site's name.
+Request two H200 nodes with eight GPUs per node. Use the account, QoS, walltime, and submission command verified on this cluster.
 
-Request one node. Run one driver with access to all allocated GPUs.
-Set `REPO` to the absolute checkout path in the job environment.
-Set `RUN_STORAGE` there to the path from the prompt.
+Use the same shared checkout, environment, assets, and attempt directory on both nodes.
+Choose a new attempt directory under `RUN_STORAGE` for each smoke submission.
 
-Put the following commands in the new job file, after the site's setup.
-Run them from the repository root inside the allocation.
-For a site resource YAML, put the same commands in its command field or a new job script.
+Use the two-node launch command supported by the checked revision.
+Launch one distributed training run with one worker per GPU.
+Check the eight-step plan for 31,457,280 nominal tokens.
+Measure microbatches on the target hardware. Use the same layout for uninterrupted training and recovery.
+
+For a Slurm Bash job, set `JOB_FILE` to the new job file. Use the site's request check when available.
 
 ```bash
-set -eu
-cd "$REPO"
-export PATH="$RUN_STORAGE/environment/conda/bin:$PATH"
-export DYNAMIC_SEQ_LEN_ASSETS="$RUN_STORAGE/assets"
+bash -n "$JOB_FILE"
+sbatch --test-only "$JOB_FILE"
+```
+
+Resolve any errors before submission. Use the site's submission command. For standard Slurm, run this command.
+
+```bash
+sbatch --output="$RUN_STORAGE/logs/smoke-%j.log" "$JOB_FILE"
+```
+
+Record the returned job ID as `JOB_ID`. Monitor it with `squeue -j "$JOB_ID"`.
+For a pending job, inspect the pending reason. For a rejected request, correct the reported setting before retrying.
+Use `sacct -j "$JOB_ID" --format=JobID,State,ExitCode,Elapsed` to check the outcome.
+If the site requires a submission tool, use its equivalent commands.
+
+Record the worker hostname, global rank, local rank, GPU model, and world size in the job log.
+Require two distinct hosts, eight H200 workers per host, and global ranks 0 through 15 in one `WORLD_SIZE=16` group.
+
+### Single-node override
+
+Use this command only if the user explicitly requests a single node.
+The GPU count on that node must divide 936 validation windows and the global batch of 512.
+Run from the checkout inside that allocation with the environment and asset paths set above.
+Set `ATTEMPT` to a new directory under `RUN_STORAGE`.
+
+```bash
 GPU_COUNT=$(python -c 'import torch; print(torch.cuda.device_count())')
-test "$GPU_COUNT" -gt 0
-ATTEMPT="$RUN_STORAGE/smoke-attempt-1"
-python scripts/train.py configs/smoke.yaml --nproc "$GPU_COUNT" --dry-run
 python scripts/gpu_smoke.py --probe --nproc "$GPU_COUNT" \
   --assets "$DYNAMIC_SEQ_LEN_ASSETS" --output "$ATTEMPT" \
   --profile "$ATTEMPT/microbatches.json"
 ```
 
-Use a new attempt directory for each submission. The driver creates it.
-The dry run must report eight steps and 31,457,280 nominal tokens.
-The driver measures microbatches for the allocated GPUs. It runs one training process per GPU.
-If the site requires a command such as `srun`, use it to run the driver once.
-
-Submit **only the new file** using the target site's command.
-For a Slurm Bash job, set `JOB_FILE` to the path of that file and run:
-
-```bash
-bash -n "$JOB_FILE"
-sbatch --output="$RUN_STORAGE/logs/smoke-%j.log" "$JOB_FILE"
-```
-
-Record the returned job ID. For Slurm, monitor it with `squeue -j "$JOB_ID"`.
-Use `sacct -j "$JOB_ID" --format=JobID,State,ExitCode,Elapsed` to check the outcome.
-If the site uses a YAML submission tool, use its own submit and status commands.
+Record the approved layout in the smoke results.
 
 ## Accept the result
 
 | Setting | Smoke value |
 |---|---|
+| Allocation | Two nodes, eight H200 GPUs per node, 16 training workers by default |
 | Model | Native dense Llama 3 1B, random initialization |
 | Training | Lengths 2048, 4096, 8192, 16384 for two steps each. Global batch size 512. |
 | W&B smoke destination | Entity `dynamic_seq_length`, project `debug`, online mode |
 | Checkpoints | Full saves at steps 2, 4, 6, 8. Resume from the step 4 checkpoint. |
-| Validation | Steps 1 and 8. Each pass uses the same 936 single-document windows of length 16,384. |
+| Validation | Steps 1 and 8. Each pass uses all 936 fixed windows exactly once and counts 15,335,424 prediction targets. |
 
 After the job finishes, check W&B from the repository root.
 Set `ATTEMPT` to the directory used by the job.
@@ -160,6 +196,7 @@ Require `exact_match: true` in `checkpoint_comparison.json` and `status: passed`
 Check `global_avg_loss`, `global_max_loss`, and validation loss against `n_tokens_seen` in W&B.
 Count nominal tokens as global batch size times actual training length at each completed step.
 
+Save the working job file path, submission command, Slurm resource settings, allocation log, and shared storage path for formal runs.
 Report the job ID, Git commit, run paths from `acceptance.json`, checkpoint paths, and three W&B links.
 Each run stores its checkpoints in `checkpoint/step-<STEP>/`. Record any reused caches or environments.
 

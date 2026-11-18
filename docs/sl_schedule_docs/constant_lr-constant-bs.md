@@ -14,16 +14,30 @@ Use `constant_lr-constant-bs` as the experiment group name. Include this name in
 
 Prepare training configurations for five sequence length schedules. Use the same supplied 1B model for all runs. Use the exact stage tables below. Do not include the real-length solution as a training run.
 
-## Required inputs
+## Default hardware
 
-Fill the four pending values before launch. The team will select them after discussion.
+Use the same allocation for smoke and each formal run. Change it only at the user's request.
 
-| Required input | Agreed value | Meaning |
+```yaml
+num_nodes: 2
+gpus_per_node: 8
+num_gpus: 16
+gpu_type: H200
+```
+
+Get all other training settings from the reference config. Select the micro-batch size on this hardware with the tests below.
+
+## Submission settings
+
+| Field | Value | Use |
 |---|---|---|
-| `num_gpus` | **Pending** | GPUs per run on one node. The replica count must divide both 256 sequences and 936 validation windows. |
+| `max_concurrent_runs` | `null` | Optional limit across this batch. Omitted or null means no user limit. |
 | `lr_sweep` | **Pending** | Positive learning rates, or a minimum, maximum, count, and spacing (linear or logarithmic). |
-| `wandb_project` | **Pending** | Formal destination in `entity/project` format. Specify it independently of the smoke project. |
-| `wandb_run_name` | **Pending** | Display name or naming pattern. Include the group, schedule ID, learning rate, and seed for this sweep. |
+| `wandb_project` | **Pending** | Required formal W&B destination in `entity/project` format. |
+| `wandb_run_name` | **Pending** | Required display name or pattern. Distinguish the schedule, LR, and seed. |
+
+To limit the batch, replace `null` with a positive integer. For example, `2` allows two runs to train at once.
+Pending jobs do not count toward this limit. Slurm site limits still apply.
 
 Split `wandb_project` into the YAML fields `wandb.entity` and `wandb.project`.
 Set the top-level YAML field `name` to the resolved W&B run name for each combination.
