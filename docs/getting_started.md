@@ -237,7 +237,8 @@ The current test uses a separate `dynamic_seq_len_handoff_20261118` directory th
 Another server must supply its own path.
 
 Use your own credentials.
-Your Hugging Face account needs access to the private dataset and the gated Meta Llama 3 tokenizer repository.
+Your Hugging Face account needs read access to the private dataset.
+The Git checkout supplies the tokenizer under its [Meta license](../assets/tokenizer/LICENSE).
 Your W&B account needs write access to `rotation_optimizer/debug`, or another explicitly agreed destination.
 Keep credentials out of commands, YAML, logs, and Git.
 The validation record must identify any reused authentication files.
@@ -246,10 +247,12 @@ The validation record must identify any reused authentication files.
 
 The dataset repository is `long-sequence-length-dataset/fineweb-edu-long-30b`.
 Use revision `b6ea2fde77bab36dff963aba5e6f482477959933`.
+
 The tokenizer repository is `meta-llama/Meta-Llama-3-8B`.
 Its pinned revision is `8cde5ca8380496c9a6cc7ef3a8b46a0372a1d920`.
-The downloader reads this tokenizer revision from the verified dataset provenance.
-It downloads tokenizer files only.
+The downloader copies the tokenizer from `assets/tokenizer/` to `$TOKENIZER_DIR`.
+It checks all three JSON files against the hashes in the pinned dataset manifest.
+It also copies the license, attribution, use policy, and source record.
 
 Run this command from the repository root:
 
@@ -750,9 +753,10 @@ Use `segment-*.json` to identify W&B run IDs and recovery steps.
 |---|---|
 | Missing nightly wheel | Use `requirements-portable.txt` and its exact wheel URLs |
 | CUDA initialization failure | Check allocation, driver, wheel CUDA version, and the environment guide |
-| Hugging Face 401 or 403 | Check the authenticated account and both repository permissions |
+| Hugging Face 401 or 403 | Check the account's read access to the private dataset |
 | Download interruption | Repeat the pinned download command with the same destination |
-| Data or tokenizer hash mismatch | Preserve the error and redownload into a new directory |
+| Data hash mismatch | Preserve the error and download the pinned data into a new directory |
+| Tokenizer hash mismatch | Restore the tracked assets from the recorded Git commit. Retry with a clean tokenizer directory. |
 | Tokenization time limit | Resume the builder with `--resume` inside a new CPU allocation |
 | GPU out of memory | Measure a smaller microbatch and execute a new smoke attempt with the same global batch |
 | Validation length mismatch | Restore the pinned arrays and keep context capacity at least 16,384 |

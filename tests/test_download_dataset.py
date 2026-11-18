@@ -25,10 +25,13 @@ class DownloadDatasetTest(unittest.TestCase):
         return download.sha256(path)
 
     def fixture(self):
+        token_sha = self.write(self.tokenizer / "tokenizer.json", {"test": True})
+        source = {"revision": "pinned", "files_sha256": {"tokenizer.json": token_sha}}
+        self.write(self.dataset / "tokenizer_provenance.json", source)
         order = self.dataset / "orders/train.npy"
         order.parent.mkdir()
         order.write_bytes(b"ordered document ids")
-        shared = {"files": [], "document_orders": {
+        shared = {"tokenizer": source, "files": [], "document_orders": {
             "train": {"path": "orders/train.npy", "sha256": download.sha256(order)}}}
         shared_sha = self.write(self.dataset / "dataset_manifest.json", shared)
         manifest_sha = self.write(self.dataset / "manifest.json", {"complete": True})
@@ -47,9 +50,6 @@ class DownloadDatasetTest(unittest.TestCase):
         self.write(self.dataset / "verification.json", {
             "passed": True, "dataset_manifest_sha256": shared_sha,
             "manifest_sha256": manifest_sha})
-        token_sha = self.write(self.tokenizer / "tokenizer.json", {"test": True})
-        self.write(self.dataset / "tokenizer_provenance.json", {
-            "revision": "pinned", "files_sha256": {"tokenizer.json": token_sha}})
         return {"DATASET_MANIFEST_SHA256": shared_sha,
                 "TRAINING_MANIFEST_SHA256": manifest_sha,
                 "VALIDATION_MANIFEST_SHA256": validation_sha}
@@ -68,6 +68,21 @@ class DownloadDatasetTest(unittest.TestCase):
                 with self.subTest(path=path), self.assertRaisesRegex(ValueError, "Checksum mismatch"):
                     download.check_metadata(self.dataset, self.tokenizer)
                 path.write_bytes(original)
+
+    def test_bundled_tokenizer_installs_offline_and_rejects_modified_files(self):
+        reference = json.loads((download.BUNDLED_TOKENIZER / "tokenizer_source.json").read_text())
+        download.install_bundled_tokenizer(self.tokenizer, reference)
+        for name, expected in reference["files_sha256"].items():
+            self.assertEqual(download.sha256(self.tokenizer / name), expected)
+        for name in ("LICENSE", "Notice", "USE_POLICY.md"):
+            self.assertEqual((self.tokenizer / name).read_bytes(),
+                             (download.BUNDLED_TOKENIZER / name).read_bytes())
+        download.install_bundled_tokenizer(self.tokenizer, reference)
+        (self.tokenizer / "tokenizer.json").write_text("modified")
+        with self.assertRaisesRegex(ValueError, "Checksum mismatch"):
+            download.install_bundled_tokenizer(self.tokenizer, reference)
+        with self.assertRaisesRegex(ValueError, "provenance"):
+            download.install_bundled_tokenizer(self.tokenizer, {**reference, "revision": "other"})
 
     def test_refuses_original_data_and_token_links(self):
         for name in ("data", "tokens"):

@@ -26,6 +26,15 @@ The cleanup did not repeat GPU training.
 It removed files from the launcher's source hash.
 Use the checkout recorded by the original run when resuming its checkpoints.
 
+## Tokenizer delivery check
+
+The dataset downloader ran with `--metadata-only` in a new directory with an empty download cache.
+It used the existing Python environment and private dataset credentials.
+It downloaded the pinned dataset metadata and installed the tokenizer from the checkout.
+All three tokenizer file hashes matched the dataset manifest.
+The tokenizer reported 128,256 entries and passed an English and Chinese encoding round trip.
+This check covered tokenizer delivery. The GPU results below come from the earlier smoke run.
+
 ## Authorized smoke
 
 Use the native TorchTitan Llama3 1B model with random initialization.

@@ -33,7 +33,9 @@ Record reused environments, package caches, and dataset caches.
 Do not describe reused dependencies as an installation from zero.
 Check imports, pip check, and GPU availability inside the allocation.
 
-Obtain authorized access to the private dataset and pinned tokenizer.
+Obtain read access to the private dataset.
+Use the tokenizer in assets/tokenizer/ from this checkout.
+Run scripts/download_dataset.py to install it and check its hashes against the pinned dataset.
 Download dataset revision b6ea2fde77bab36dff963aba5e6f482477959933.
 Check all reference checksums.
 Restore standalone data and token directories.

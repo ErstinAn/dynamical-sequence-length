@@ -1,5 +1,7 @@
 # Llama3 1B sequence length experiments
 
+**Built with Meta Llama 3.** The [tokenizer](assets/tokenizer/) ships with its [Meta license](assets/tokenizer/LICENSE).
+
 This repository compares sequence length schedules on a custom FineWeb-Edu dataset of long documents.
 The dense 1B model uses the native Llama3 vocabulary and random initialization.
 The planned budget is approximately 20 billion nominal tokens.
@@ -58,7 +60,8 @@ See the [dataset description](docs/final_dataset.md) for identities and evaluati
 | `tests/` | Data, gradient, dynamic schedule, and recovery checks |
 | `cluster/vt_arc/smoke_handoff.sbatch` | VT ARC submission example |
 | `cluster/<site>/run.sbatch` | Create this file from the target server’s working Slurm example |
-| `assets/`, `outputs/` | Local assets and run outputs, excluded from Git |
+| `assets/tokenizer/` | Original tokenizer, provenance, license, and attribution |
+| `assets/data/`, `assets/hf/`, `outputs/` | Local data, installed assets, and run outputs |
 
 The [environment record](docs/reports/fresh_environment_20261118.md) and [data record](docs/reports/fresh_data_20261118.md) identify verified steps and reuse.
 The [repository map](docs/repository.md) explains retained dependencies and entry points.

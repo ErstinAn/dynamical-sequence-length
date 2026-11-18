@@ -10,7 +10,12 @@ The dependency source is the public PyTorch TorchTitan repository.
 The environment record identifies its source revision.
 The repository does not include the full TorchTitan source.
 
-FineWeb data and the Llama2 tokenizer are separate external assets.
+The three tokenizer JSON files in `assets/tokenizer/` come from Meta Llama 3.
+The [source record](assets/tokenizer/tokenizer_source.json) identifies their revision and SHA256 hashes.
+The [Meta license](assets/tokenizer/LICENSE) and [use policy](assets/tokenizer/USE_POLICY.md) apply to these files.
+Retain the [attribution notice](assets/tokenizer/Notice) and license when sharing the tokenizer.
+
+FineWeb data and the historical Llama2 tokenizer are separate external assets.
 Their source records identify the repositories, revisions, and hashes.
 The project license does not grant new rights to those assets.
 The preparation scripts download the assets from their source repositories.

@@ -1,4 +1,4 @@
-"""Download the pinned dataset and tokenizer into standalone directories.
+"""Download the pinned dataset and install its tokenizer from this checkout.
 
 This command does not rebuild the training token cache. Run the repository's
 rebuild_long_token_cache.py on a CPU compute allocation after this command.
@@ -8,10 +8,13 @@ import argparse
 import hashlib
 import json
 import os
+import shutil
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 
 REPO_ID = "long-sequence-length-dataset/fineweb-edu-long-30b"
+BUNDLED_TOKENIZER = Path(__file__).resolve().parents[1] / "assets/tokenizer"
 DATASET_MANIFEST_SHA256 = "7e284ce4fc90a93e5bdcee160a60051dc29ed17775b8ecb261feafd93f047d80"
 TRAINING_MANIFEST_SHA256 = "4bf6946f7b7f7cbad0799746519baaa9ef2518f974d2239a8df2f184db004806"
 VALIDATION_MANIFEST_SHA256 = "eb2faf62a36e324d07e08da73170e1268182cdfea1f38352362b86232f47155b"
@@ -41,6 +44,34 @@ def standalone_paths(dataset_dir, tokenizer_dir):
     return dataset, tokenizer
 
 
+def install_bundled_tokenizer(destination, reference):
+    """Install the tokenizer identified by the hash-checked dataset manifest."""
+    source_record = BUNDLED_TOKENIZER / "tokenizer_source.json"
+    if json.loads(source_record.read_text()) != reference:
+        raise ValueError("The bundled tokenizer differs from the pinned dataset provenance.")
+    destination.mkdir(parents=True, exist_ok=True)
+    hashes = dict(reference["files_sha256"])
+    for name in ("LICENSE", "Notice", "USE_POLICY.md", "tokenizer_source.json"):
+        hashes[name] = sha256(BUNDLED_TOKENIZER / name)
+    for name, expected in hashes.items():
+        source = BUNDLED_TOKENIZER / name
+        require_hash(source, expected)
+        target = destination / name
+        if target.is_symlink():
+            raise ValueError(f"Use a standalone tokenizer file instead of a link: {target}")
+        if target.exists():
+            require_hash(target, expected)
+            continue
+        with tempfile.NamedTemporaryFile(dir=destination, delete=False) as handle:
+            temporary = Path(handle.name)
+        try:
+            shutil.copy(source, temporary)
+            require_hash(temporary, expected)
+            temporary.replace(target)
+        finally:
+            temporary.unlink(missing_ok=True)
+
+
 def check_metadata(dataset, tokenizer):
     require_hash(dataset / "dataset_manifest.json", DATASET_MANIFEST_SHA256)
     require_hash(dataset / "manifest.json", TRAINING_MANIFEST_SHA256)
@@ -59,6 +90,8 @@ def check_metadata(dataset, tokenizer):
     for entry in (*validation["arrays"].values(), validation["evaluation_documents"]):
         require_hash(dataset / "validation" / entry["file"], entry["sha256"])
     provenance = json.loads((dataset / "tokenizer_provenance.json").read_text())
+    if provenance != shared["tokenizer"]:
+        raise ValueError("Tokenizer provenance differs from the pinned dataset manifest.")
     for name, expected in provenance["files_sha256"].items():
         require_hash(tokenizer / name, expected)
     return shared, provenance
@@ -87,10 +120,7 @@ def download(dataset_dir, tokenizer_dir, *, revision, cache_dir, metadata_only=F
     snapshot_download(repo_id=REPO_ID, repo_type="dataset", revision=resolved,
                       local_dir=dataset, cache_dir=cache, ignore_patterns=excluded,
                       max_workers=max_workers)
-    provenance = json.loads((dataset / "tokenizer_provenance.json").read_text())
-    snapshot_download(repo_id=provenance["repo_id"], revision=provenance["revision"],
-                      local_dir=tokenizer, cache_dir=cache,
-                      allow_patterns=list(provenance["files_sha256"]), max_workers=max_workers)
+    install_bundled_tokenizer(tokenizer, json.loads(Path(remote).read_text())["tokenizer"])
     shared, provenance = check_metadata(dataset, tokenizer)
     text_files = []
     if not metadata_only:
@@ -110,7 +140,8 @@ def download(dataset_dir, tokenizer_dir, *, revision, cache_dir, metadata_only=F
         "dataset_manifest_sha256": DATASET_MANIFEST_SHA256,
         "manifest_sha256": TRAINING_MANIFEST_SHA256,
         "validation_manifest_sha256": VALIDATION_MANIFEST_SHA256,
-        "tokenizer_revision": provenance["revision"], "metadata_checks_passed": True,
+        "tokenizer_revision": provenance["revision"], "tokenizer_source": "repository:assets/tokenizer",
+        "metadata_checks_passed": True,
         "text_files_checked": text_files, "text_download_complete": not metadata_only,
         "token_cache_rebuilt_by_this_command": False,
     }

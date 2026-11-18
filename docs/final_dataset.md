@@ -114,7 +114,8 @@ The main guide includes additional space for checkpoints, environments, and down
 Clone the default GitHub branch and record its commit.
 Install the runtime with `requirements-portable.txt`.
 The original lock alone cannot resolve every historical nightly wheel.
-Each collaborator needs authorized Hugging Face access to the private dataset and Meta tokenizer.
+Each collaborator needs Hugging Face access to the private dataset.
+The Git checkout supplies the tokenizer in `assets/tokenizer/`.
 
 Use `scripts/download_dataset.py` from the delivered repository to download the pinned revision.
 Use `scripts/rebuild_long_token_cache.py` to reconstruct the token cache.
