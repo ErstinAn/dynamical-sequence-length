@@ -22,7 +22,10 @@ Use English for documents. Follow ASD-STE100 writing principles.
 Check the machine and supplied launch example.
 Record GPUs, driver, memory, storage quotas, and permitted paths.
 Identify persistent checkpoint storage.
-Use ARC instructions only if this server is VT ARC.
+For a new Slurm site, create cluster/<site>/run.sbatch from its working launch example.
+If the site requires resource YAML, create cluster/<site>/submit.yaml and use its submission tool.
+Use the same site launcher for smoke and formal runs.
+Use cluster/vt_arc/smoke_handoff.sbatch on VT ARC.
 
 Install Python if the server lacks it.
 Create an isolated environment with requirements-portable.txt.
@@ -39,7 +42,7 @@ Use the repository's token cache builder.
 
 Use the main llama3_1b entry with random initialization.
 Keep the native model definition, masks, loss, and gradient normalization.
-Generate formal schedules from the experiment document only after user agreement.
+Write each formal YAML from the agreed experiment document.
 Keep configs/smoke.yaml as the only configuration under configs/.
 Store generated configurations under local/generated_configs/.
 Do not invent missing learning rates or schedules.

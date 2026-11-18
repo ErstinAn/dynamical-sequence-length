@@ -1,6 +1,5 @@
 """CPU verification of frozen population, identity checks, and DP reductions."""
 
-from __future__ import annotations
 
 import hashlib
 import json
@@ -18,7 +17,6 @@ import torch.distributed as dist
 import torch.multiprocessing as mp
 from torch.distributed.device_mesh import init_device_mesh
 from torchtitan.components.loss import ChunkedLossWrapper
-from torchtitan.components.validate import Validator
 from torchtitan.config import ParallelismConfig
 
 from torchtitan_dynamic_seq_len.data.fixed_validation import (
@@ -152,7 +150,7 @@ class FixedBudgetValidationTest(unittest.TestCase):
     def test_production_budget_population_identical_dp_and_batch_matrix(self):
         # Hash sequence IDs: membership/order determines exactly which frozen
         # input/label/position rows are consumed, without allocating 500 MB.
-        reference = np.arange(10240, dtype=np.int64)
+        reference = np.arange(936, dtype=np.int64)
         expected_hash = hashlib.sha256(reference.tobytes()).hexdigest()
         for dp in (1, 2, 4, 8):
             for batch in (32, 64, 128):
@@ -161,11 +159,11 @@ class FixedBudgetValidationTest(unittest.TestCase):
                         [
                             reference[indices]
                             for rank in range(dp)
-                            for indices in sequence_batches(10240, dp, rank, batch)
+                            for indices in sequence_batches(936, dp, rank, batch)
                         ]
                     )
                     self.assertEqual(hashlib.sha256(actual.tobytes()).hexdigest(), expected_hash)
-                    self.assertEqual(actual.size * 2048, 20_971_520)
+                    self.assertEqual(actual.size * 16384, 15_335_424)
 
     def test_frozen_arrays_identical_and_partial_forward_not_padded(self):
         artifact = self.artifact()
@@ -330,25 +328,6 @@ class FixedBudgetValidationTest(unittest.TestCase):
             self.artifact()
         with self.assertRaisesRegex(ValueError, "divisible"):
             list(sequence_batches(10, 4, 0, 2))
-
-    def test_legacy_mode_delegates_and_never_requires_artifact(self):
-        kwargs = dict(
-            parallelism=ParallelismConfig(),
-            dp_world_size=1,
-            dp_rank=0,
-            tokenizer=SimpleNamespace(),
-            parallel_dims=_dims(),
-            loss_fn=_loss,
-            validation_context=nullcontext,
-            metrics_processor=Mock(),
-            seq_len=4,
-            local_batch_size=2,
-        )
-        validator = FixedBudgetValidator.Config(steps=20).build(**kwargs)
-        self.assertIsNone(validator.artifact)
-        with patch.object(Validator, "validate") as legacy:
-            validator.validate([], 17)
-        legacy.assert_called_once_with([], 17)
 
     @unittest.skipUnless(
         os.environ.get("FIXED_VALIDATION_GLOO_TEST") == "1", "opt in to local Gloo sockets"

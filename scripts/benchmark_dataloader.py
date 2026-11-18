@@ -142,7 +142,7 @@ def run_case(args):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--config", type=Path, default=ROOT / "legacy/configs/benchmark_dataloader.yaml")
+    parser.add_argument("--config", type=Path, required=True)
     parser.add_argument("--nproc", type=int, default=1)
     parser.add_argument("--output", type=Path, default=ROOT / "outputs/dataloader-benchmark")
     parser.add_argument("--dry-run", action="store_true")

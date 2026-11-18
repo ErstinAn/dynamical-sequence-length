@@ -1,6 +1,7 @@
 # Data procedure
 
-This page describes historical FineWeb 100BT experiments in `legacy/configs/`.
+This page describes the [earlier FineWeb 100BT workflow](https://github.com/ErstinAn/dynamical-sequence-length/blob/427d321c40e8b82444d2f5c07082e6155c0f914e/docs/data.md).
+Run the historical commands from that revision.
 For the current native-vocabulary 1B handoff, read [getting_started.md](getting_started.md).
 
 ## Data identity

@@ -11,9 +11,7 @@ import numpy as np
 import torch
 from torchtitan.components.loss import IGNORE_INDEX
 
-from scripts.prepare_packed_validation import prepare_packed
 from tests.test_document_packing import fixture
-from torchtitan_dynamic_seq_len.data.fixed_validation import FrozenValidationArtifact
 from torchtitan_dynamic_seq_len.data.packed_documents import PackedDocumentDataset
 
 
@@ -92,24 +90,6 @@ class FixedDocumentOrderTests(unittest.TestCase):
         self.write_manifest()
         with self.assertRaisesRegex(ValueError, "exactly once"):
             self.dataset()
-
-    def test_frozen_sample_is_reproducible_and_counts_only_selected_windows(self):
-        results = []
-        for name in ("validation_a", "validation_b"):
-            path = self.root / name
-            manifest = prepare_packed(self.root, path, self.tokenizer, 16, 2, sample_seed=7)
-            frozen = FrozenValidationArtifact(path, token_budget=manifest["token_budget"],
-                                              sequence_length=16, tokenizer_path=self.tokenizer)
-            self.assertEqual(len(set(manifest["sampling"]["selected_sequence_ids"])), 2)
-            self.assertEqual(manifest["sampling"]["candidate_sequences"], 4)
-            self.assertEqual(manifest["token_budget"], int((frozen.arrays["labels"] != IGNORE_INDEX).sum()))
-            pool = list(PackedDocumentDataset(self.root, split="validation", seq_len=16))
-            for row, source_id in enumerate(manifest["sampling"]["selected_sequence_ids"]):
-                np.testing.assert_array_equal(frozen.arrays["input"][row], pool[source_id][0]["input"])
-                np.testing.assert_array_equal(frozen.arrays["labels"][row], pool[source_id][1])
-            results.append((path / "manifest.json").read_bytes())
-        self.assertEqual(*results)
-
 
 if __name__ == "__main__":
     unittest.main()

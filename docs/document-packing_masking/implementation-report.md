@@ -56,8 +56,8 @@ The reader does not implement best-fit packing.
 | Validation prefixes | `ValidationPrefixView` in the same file | Count valid labels in the selected prefix. |
 | Metrics | [metrics.py](../../torchtitan_dynamic_seq_len/loss_grad_seq/metrics.py), `LongLossLogger` | Rename native long loss keys at the logger boundary. |
 | Configuration | [config_registry.py](../../torchtitan_dynamic_seq_len/config_registry.py) | Add `llama3_100m_packed_documents_loss_grad_seq`. |
-| Schedule generation | [prepare_packed_configs.py](../../scripts/prepare_packed_configs.py) | Create separate packed experiment and test configurations. |
-| Shared schedule helper | [prepare_longseq_loss_grad_configs.py](../../scripts/prepare_longseq_loss_grad_configs.py), `make_schedule` | Accept minimum and maximum lengths while preserving historical defaults. |
+| Schedule generation | [prepare_packed_configs.py](https://github.com/ErstinAn/dynamical-sequence-length/blob/427d321c40e8b82444d2f5c07082e6155c0f914e/scripts/prepare_packed_configs.py) | Create separate packed experiment and test configurations. |
+| Shared schedule helper | [prepare_longseq_loss_grad_configs.py](https://github.com/ErstinAn/dynamical-sequence-length/blob/427d321c40e8b82444d2f5c07082e6155c0f914e/scripts/prepare_longseq_loss_grad_configs.py), `make_schedule` | Accept minimum and maximum lengths while preserving historical defaults. |
 
 No upstream TorchTitan source file changed for this implementation.
 The existing FlexAttention backend supplies the document mask.

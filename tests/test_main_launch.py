@@ -73,6 +73,18 @@ class MainLaunchTest(unittest.TestCase):
             self.assertEqual(error.exception.code, 2)
         self.assertFalse((self.root / "runs").exists())
 
+    def test_rejects_microbatch_that_only_fits_the_first_phase(self):
+        self.config["fixed"].update({
+            "microbatch_scheduler.kind": "increasing",
+            "microbatch_scheduler.batch_sizes": [1, 2],
+            "microbatch_scheduler.boundaries": [2],
+        })
+        self.write_config()
+        with contextlib.redirect_stderr(io.StringIO()) as errors, self.assertRaises(SystemExit):
+            self.invoke([self.path, "--nproc", "2", "--dry-run"])
+        self.assertIn("Invalid schedules at step 3", errors.getvalue())
+        self.assertFalse((self.root / "runs").exists())
+
     def test_agreed_smoke_and_controlled_stop_parse_without_launch(self):
         path = train.ROOT / "configs/smoke.yaml"
         output = self.invoke([path, "--nproc", "4", "--stop-after-checkpoint", "4", "--dry-run"])

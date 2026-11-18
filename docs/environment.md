@@ -36,8 +36,8 @@ Use this procedure with an environment that contains the recorded runtime packag
    python -m pip install --no-deps -e .
    ```
 
-3. Run the CPU tests in the main README.
-4. Run the GPU tests in `docs/tests.md`.
+3. Run the CPU tests in section 6 of the [run guide](getting_started.md).
+4. Run the GPU smoke in section 7 of the run guide.
 
 ## Version changes
 

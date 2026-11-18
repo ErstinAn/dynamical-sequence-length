@@ -1,30 +1,21 @@
 """Do CPU checks of schedules, token packing, checkpoint recovery, and training."""
 
 import copy
-import os
-import shutil
-import subprocess
-import sys
 import tempfile
 import unittest
 from contextlib import nullcontext
 from pathlib import Path
 from types import SimpleNamespace
-from unittest.mock import patch
 
 import torch
-import yaml
 from datasets import Dataset
-from torchtitan.config import ConfigManager
 from torchtitan.hf_datasets import DatasetConfig
 from torchtitan.hf_datasets.text_datasets import DATASETS
-from torchtitan.trainer import Trainer
 
-from tests.test_grad_var_trainer import cpu_metrics, tiny_trainer
+from tests.trainer_fixture import cpu_metrics, tiny_trainer
 from torchtitan_dynamic_seq_len.data.dynamic_seq_loader import DynamicSeqDataLoader
 from torchtitan_dynamic_seq_len.dynamic_seq.metrics import DynamicSeqMetricsProcessor
 from torchtitan_dynamic_seq_len.dynamic_seq.trainer import DynamicSeqLenTrainer
-from torchtitan_dynamic_seq_len.run_config import grid, load_config, resolve_point
 from torchtitan_dynamic_seq_len.schedulers.sequence_length import SeqLenSchedulerConfig
 
 
@@ -61,7 +52,7 @@ class ScalarModel(torch.nn.Module):
 
 
 def dynamic_trainer(kind="increasing", log_freq=1):
-    fixture = tiny_trainer(False, k=2, b=2, seq=8, model=ScalarModel(), log_freq=log_freq)
+    fixture = tiny_trainer(k=2, b=2, seq=8, model=ScalarModel(), log_freq=log_freq)
     trainer = object.__new__(DynamicSeqLenTrainer)
     trainer.__dict__.update(fixture.__dict__)
     trainer.config.training.steps = 6
@@ -86,134 +77,6 @@ def dynamic_trainer(kind="increasing", log_freq=1):
 
 
 class SchedulesTest(unittest.TestCase):
-    def test_public_profiles_preserve_training_budgets(self):
-        root = Path(__file__).resolve().parents[1]
-        for path in sorted((root / "legacy/configs/dynamic_seq").glob("*.yaml")):
-            if path.stem == "smoke":
-                continue
-            raw = load_config(path)
-            local_batch, total_tokens = {
-                "cyclic_8_2040": (64, 2013265920),
-                "cyclic_512_8192": (64, 8556380160),
-            }.get(path.stem, (16, 2013265920))
-            _, points = grid(raw)
-            for index in range(len(points)):
-                with self.subTest(profile=path.name, index=index):
-                    _, _, _, args = resolve_point(path, index)
-                    with patch.dict(
-                        os.environ, {"WORLD_SIZE": str(raw["resources"]["gpus_per_node"])}
-                    ):
-                        cfg = ConfigManager().parse_args(
-                            [
-                                "--module",
-                                "torchtitan_dynamic_seq_len.config_registry",
-                                "--config",
-                                raw["torchtitan_config"],
-                                *args,
-                            ]
-                        )
-                    self.assertIs(cfg._owner, DynamicSeqLenTrainer)
-                    scheduler = cfg.validate_dynamic()
-                    self.assertEqual(cfg.training.steps, 3840)
-                    self.assertEqual(cfg.training.global_batch_size, 512)
-                    self.assertEqual(cfg.training.local_batch_size, local_batch)
-                    self.assertEqual(cfg.optimizer.learning_rate, 0.0005)
-                    self.assertEqual(cfg.lr_scheduler.warmup_steps, 0)
-                    self.assertEqual(cfg.lr_scheduler.min_lr_factor, 1.0)
-                    self.assertEqual(cfg.validator.eval_seq_len, 1024)
-                    self.assertEqual(
-                        sum(scheduler.length_for_step(s) for s in range(1, 3841)) * 512,
-                        total_tokens,
-                    )
-                    self.assertEqual(raw["resources"]["account"], "YOUR_ACCOUNT")
-                    self.assertFalse(raw["wandb"]["enabled"])
-                    self.assertNotIn("/home/kangan", path.read_text())
-                    self.assertNotIn("local/", path.read_text())
-
-    def test_public_submission_sweeps_dry_run(self):
-        root = Path(__file__).resolve().parents[1]
-        for profile, count in (("dynamic_seq/cyclic_sweep.yaml", 2), ("lr_sweep_constant.yaml", 5)):
-            with self.subTest(profile=profile), tempfile.TemporaryDirectory() as folder:
-                raw = yaml.safe_load((root / "legacy/configs" / profile).read_text())
-                raw["resources"]["account"] = "test-account"
-                path = Path(folder) / "experiment.yaml"
-                path.write_text(yaml.safe_dump(raw))
-                env = {**os.environ, "DYNAMIC_SEQ_LEN_OUTPUT": str(Path(folder) / "output")}
-                for key in list(env):
-                    if key.startswith("SBATCH_") or key == "WANDB_RUN_ID":
-                        env.pop(key)
-                result = subprocess.run(
-                    [
-                        sys.executable,
-                        str(root / "cluster/vt_arc/submit.py"),
-                        str(path),
-                        "--dry-run",
-                    ],
-                    env=env,
-                    capture_output=True,
-                    text=True,
-                    check=True,
-                )
-                self.assertIn(f"Would submit {count} run(s)", result.stdout)
-                self.assertIn(f"--array=0-{count - 1}%", result.stdout)
-                self.assertFalse((Path(folder) / "output").exists())
-
-    def test_dynamic_launch_from_checkout_without_local_directory(self):
-        root = Path(__file__).resolve().parents[1]
-        with tempfile.TemporaryDirectory() as folder:
-            checkout = Path(folder)
-            for name in (
-                "torchtitan_dynamic_seq_len",
-                "scripts",
-                "legacy/configs",
-                "cluster",
-                "tests/fixtures",
-            ):
-                shutil.copytree(
-                    root / name, checkout / name, ignore=shutil.ignore_patterns("__pycache__")
-                )
-            code = """
-import os, sys
-from pathlib import Path
-root = Path(sys.argv[1])
-sys.path.insert(0, str(root))
-os.environ['WORLD_SIZE'] = '2'
-from torchtitan.config import ConfigManager
-from torchtitan_dynamic_seq_len.run_config import resolve_point
-from torchtitan_dynamic_seq_len.dynamic_seq.trainer import DynamicSeqLenTrainer
-raw, _, _, args = resolve_point(root / 'legacy/configs/dynamic_seq/cyclic_period64.yaml', 0)
-cfg = ConfigManager().parse_args(['--module', 'torchtitan_dynamic_seq_len.config_registry',
-                                '--config', raw['torchtitan_config'], *args])
-assert cfg._owner is DynamicSeqLenTrainer
-assert cfg.validate_dynamic().length_for_step(2) == 544
-for name, module in tuple(sys.modules.items()):
-    if name.startswith('torchtitan_dynamic_seq_len') and getattr(module, '__file__', None):
-        assert Path(module.__file__).resolve().is_relative_to(root), name
-"""
-            subprocess.run(
-                [sys.executable, "-I", "-c", code, str(checkout)],
-                cwd=checkout,
-                capture_output=True,
-                text=True,
-                check=True,
-            )
-            result = subprocess.run(
-                [
-                    sys.executable,
-                    str(checkout / "scripts/train.py"),
-                    str(checkout / "legacy/configs/dynamic_seq/cyclic_period64.yaml"),
-                    "--nproc",
-                    "2",
-                    "--dry-run",
-                ],
-                cwd=checkout,
-                capture_output=True,
-                text=True,
-                check=True,
-            )
-            self.assertIn("--seq_len_scheduler.period_steps 64", result.stdout)
-            self.assertFalse((checkout / "local").exists())
-
     def test_cyclic_linear_steps_and_exact_budget(self):
         scheduler = SeqLenSchedulerConfig(
             kind="cyclic", min_length=512, max_length=1536, period_steps=256
@@ -290,45 +153,6 @@ for name, module in tuple(sys.modules.items()):
         ):
             with self.subTest(kwargs=kwargs), self.assertRaises(ValueError):
                 SeqLenSchedulerConfig(**kwargs).build(8)
-
-    def test_yaml_cli_dispatch_and_capacity(self):
-        root = Path(__file__).resolve().parents[1]
-        for filename, points in (
-            ("dynamic_seq/cyclic_sweep.yaml", 2),
-            ("dynamic_seq/smoke.yaml", 1),
-            ("dynamic_seq/cyclic.yaml", 1),
-        ):
-            for index in range(points):
-                raw, _, _, args = resolve_point(root / "legacy/configs" / filename, index)
-                with patch.dict(
-                    os.environ,
-                    {
-                        "WORLD_SIZE": "1",
-                        "DYNAMIC_SEQ_LEN_VALIDATION_DIR": raw["paths"].get("validation_dir", ""),
-                    },
-                ):
-                    config = ConfigManager().parse_args(
-                        [
-                            "--module",
-                            "torchtitan_dynamic_seq_len.config_registry",
-                            "--config",
-                            raw["torchtitan_config"],
-                            *args,
-                        ]
-                    )
-                self.assertIs(config._owner, DynamicSeqLenTrainer)
-                config.validate_dynamic()
-                self.assertIs(config.dataloader._owner, DynamicSeqDataLoader)
-                self.assertIs(config.metrics._owner, DynamicSeqMetricsProcessor)
-                config.dataloader.num_workers = 2
-                with self.assertRaisesRegex(ValueError, "num_workers=0"):
-                    config.validate_dynamic()
-                config.dataloader.num_workers = 0
-                config.seq_len_scheduler.kind = "constant"
-                config.seq_len_scheduler.length = 3
-                with self.assertRaisesRegex(ValueError, "loss.num_chunks"):
-                    config.validate_dynamic()
-
 
 class PackingTest(unittest.TestCase):
     def test_cyclic_full_period_packing_and_resume(self):
@@ -468,8 +292,7 @@ class TrainerTest(unittest.TestCase):
 
     def test_constant_is_native_update(self):
         dynamic = dynamic_trainer("constant")
-        native = tiny_trainer(False, k=2, b=2, seq=4, model=ScalarModel())
-        native.__class__ = Trainer
+        native = tiny_trainer(k=2, b=2, seq=4, model=ScalarModel())
         original_loss = native.loss_fn
         native.loss_fn = lambda pred, labels, total, **kwargs: original_loss(pred, labels, total)
         native.dataloader = loader(infinite=True)

@@ -1,26 +1,20 @@
 """Check independent schedules, variable batches, gradients, and recovery."""
 
 import copy
-import os
 import unittest
-from collections import Counter
 from dataclasses import asdict
-from pathlib import Path
 from unittest.mock import patch
 
 import torch
 from datasets import Dataset
-from torchtitan.config import ConfigManager
 from torchtitan.hf_datasets import DatasetConfig
 from torchtitan.hf_datasets.text_datasets import DATASETS
-from torchtitan.trainer import Trainer
 
 from tests.test_dynamic_seq import IntegerTokenizer, ScalarModel, dynamic_trainer
-from tests.test_grad_var_trainer import tiny_trainer
+from tests.trainer_fixture import tiny_trainer
 from torchtitan_dynamic_seq_len.data.dynamic_seq_bs_loader import DynamicSeqBSDataLoader
 from torchtitan_dynamic_seq_len.dynamic_seq_bs.metrics import DynamicSeqBSMetricsProcessor
 from torchtitan_dynamic_seq_len.dynamic_seq_bs.trainer import DynamicSeqBSTrainer
-from torchtitan_dynamic_seq_len.run_config import resolve_point
 from torchtitan_dynamic_seq_len.schedulers.batch_size import BatchSizeSchedulerConfig
 from torchtitan_dynamic_seq_len.schedulers.sequence_length import SeqLenSchedulerConfig
 
@@ -97,104 +91,6 @@ class SchedulerTest(unittest.TestCase):
             round_to_multiple=8,
         ).build(256)
         self.assertEqual(sum(rounded.value_for_step(s) for s in range(1, 257)), 256 * 1024)
-
-    def config(self, filename="smoke.yaml", world=2):
-        path = Path(__file__).resolve().parents[1] / "legacy/configs/dynamic_seq_bs" / filename
-        raw, _, _, args = resolve_point(path, 0)
-        with patch.dict(os.environ, {"WORLD_SIZE": str(world)}):
-            return ConfigManager().parse_args(
-                [
-                    "--module",
-                    "torchtitan_dynamic_seq_len.config_registry",
-                    "--config",
-                    raw["torchtitan_config"],
-                    *args,
-                ]
-            )
-
-    def test_public_profiles_and_owners(self):
-        for filename, expected in [("smoke.yaml", 6400), ("increasing.yaml", 1761607680)]:
-            for world in (1, 2, 4):
-                with self.subTest(filename=filename, world=world):
-                    cfg = self.config(filename, world)
-                    seq = cfg.validate_dynamic()
-                    bs = cfg.batch_size_scheduler.build(cfg.training.steps)
-                    self.assertIs(cfg._owner, DynamicSeqBSTrainer)
-                    self.assertIs(cfg.dataloader._owner, DynamicSeqBSDataLoader)
-                    self.assertIs(cfg.metrics._owner, DynamicSeqBSMetricsProcessor)
-                    self.assertEqual(
-                        sum(
-                            seq.length_for_step(s) * bs.value_for_step(s)
-                            for s in range(1, cfg.training.steps + 1)
-                        ),
-                        expected,
-                    )
-
-    def test_rejects_invalid_intermediate_step_and_initial_values(self):
-        cfg = self.config()
-        cfg.batch_size_scheduler = BatchSizeSchedulerConfig(
-            kind="cyclic",
-            min_batch_size=8,
-            max_batch_size=12,
-            period_steps=8,
-        )
-        cfg.microbatch_scheduler = BatchSizeSchedulerConfig(batch_size=2)
-        with self.assertRaisesRegex(ValueError, "step 2:.*global_batch=9"):
-            cfg.validate_dynamic()
-        for attr, value in [("global_batch_size", 16), ("local_batch_size", 4)]:
-            cfg = self.config()
-            setattr(cfg.training, attr, value)
-            with self.assertRaisesRegex(ValueError, "step 1"):
-                cfg.validate_dynamic()
-        cfg = self.config()
-        cfg.dataloader.num_workers = 1
-        with self.assertRaisesRegex(ValueError, "num_workers=0"):
-            cfg.validate_dynamic()
-
-    def test_fixed_token_profiles(self):
-        schedules = {}
-        for kind in ("increasing", "decreasing", "cyclic"):
-            for world in (2, 4):
-                with self.subTest(kind=kind, world=world):
-                    cfg = self.config(f"fixed_tokens_bs_{kind}.yaml", world)
-                    seq = cfg.validate_dynamic()
-                    bs = cfg.batch_size_scheduler.build(cfg.training.steps)
-                    micro = cfg.microbatch_scheduler.build(cfg.training.steps)
-                    values = [
-                        (seq.length_for_step(s), bs.value_for_step(s), micro.value_for_step(s))
-                        for s in range(1, cfg.training.steps + 1)
-                    ]
-                    self.assertEqual(len(values), 3840)
-                    self.assertEqual({length * batch for length, batch, _ in values}, {524288})
-                    self.assertEqual({length * m for length, _, m in values}, {131072})
-                    self.assertEqual({batch // (world * m) for _, batch, m in values}, {4 // world})
-                    self.assertEqual(sum(length * batch for length, batch, _ in values), 2013265920)
-                    self.assertEqual(
-                        {length for length, _, _ in values}, {8 * 2**i for i in range(9)}
-                    )
-                    self.assertEqual(cfg.validator.eval_seq_len, 2048)
-                    self.assertEqual(cfg.validator.freq, 20)
-                    self.assertEqual(cfg.training.seq_len, 2048)
-                    self.assertEqual(cfg.optimizer.learning_rate, 5e-4)
-                    self.assertEqual(cfg.lr_scheduler.warmup_steps, 0)
-                    self.assertEqual(cfg.lr_scheduler.min_lr_factor, 1.0)
-                    schedules[kind] = values
-        self.assertEqual(schedules["decreasing"], schedules["increasing"][::-1])
-        increasing = schedules["increasing"]
-        durations = [240, 480, 480, 480, 480, 480, 480, 480, 240]
-        expected = []
-        for i, duration in enumerate(durations):
-            expected.extend([(2048 // 2**i, 256 * 2**i, 64 * 2**i)] * duration)
-        self.assertEqual(increasing, expected)
-        cyclic = schedules["cyclic"]
-        self.assertEqual(Counter(cyclic), Counter(increasing))
-        self.assertEqual(Counter(cyclic), Counter(schedules["decreasing"]))
-        self.assertEqual(cyclic, cyclic[:256] * 15)
-        for phase, index in enumerate([*range(9), *range(7, 0, -1)]):
-            self.assertEqual(
-                cyclic[phase * 16 : (phase + 1) * 16],
-                [(2048 // 2**index, 256 * 2**index, 64 * 2**index)] * 16,
-            )
 
     def test_triangular_phase_offset(self):
         for config, field in (
@@ -279,8 +175,7 @@ class TrainerTest(unittest.TestCase):
 
     def test_native_gradient_equivalence_and_metrics(self):
         trainer = bs_trainer()
-        native = tiny_trainer(False, k=1, b=4, seq=8, model=ScalarModel())
-        native.__class__ = Trainer
+        native = tiny_trainer(k=1, b=4, seq=8, model=ScalarModel())
         native.config.training.max_norm = 1e12
         loss = native.loss_fn
         native.loss_fn = lambda pred, labels, total, **kwargs: loss(pred, labels, total)

@@ -26,6 +26,7 @@ from urllib.request import Request, urlopen
 import numpy as np
 import pyarrow as pa
 import pyarrow.parquet as pq
+import yaml
 import tokenizers as tokenizers_package
 from huggingface_hub import get_hf_file_metadata, hf_hub_url
 from profile_fineweb_edu_lengths import sha256, write_json
@@ -572,6 +573,11 @@ def materialize_stage(args):
             raise ValueError("Final artifact belongs to another selection")
         print(json.dumps({"event": "materialization_reused", "path": str(destination)}), flush=True)
         return
+    if args.training_config is None:
+        raise ValueError("Supply --training-config for a new dataset package.")
+    training = yaml.safe_load(args.training_config.read_text())
+    if not isinstance(training, dict) or not isinstance(training.get("fixed"), dict):
+        raise ValueError("The training configuration must contain a fixed mapping.")
     destination.mkdir(parents=True, exist_ok=True)
     build_identity = {"plan_sha256": plan["plan_sha256"], "selection_sha256": identity(selection)}
     identity_path = destination / "build_identity.json"
@@ -624,8 +630,6 @@ def materialize_stage(args):
     card += "\n## Rebuild the local token cache\n\nDownload the dataset. Download the tokenizer version in `tokenizer_provenance.json`. Access to the original Meta tokenizer may require license acceptance on Hugging Face. Run `python rebuild_long_token_cache.py --dataset-dir /path/to/dataset --tokenizer-dir /path/to/tokenizer`. Install numpy, pyarrow, and tokenizers first. The cache uses about 120 GB for 30B tokens, plus text files. It does not include special tokens or fixed training windows.\n"
     (destination / "README.md").write_text(card)
     (destination / "rebuild_long_token_cache.py").write_bytes((ROOT / "scripts/rebuild_long_token_cache.py").read_bytes())
-    import yaml
-    training = yaml.safe_load((ROOT / "legacy/configs/examples/llama3_1b_long_documents_smoke.yaml").read_text())
     training["fixed"].update({"training.seq_len": selection["minimum_llama3_tokens"],
                               "validator.eval_seq_len": selection["minimum_llama3_tokens"],
                               "dataloader.dataset_path": str(destination),
@@ -775,6 +779,7 @@ def main():
     parser.add_argument("stage", choices=["plan", "extract", "combine", "select", "materialize", "verify", "upload"])
     parser.add_argument("--root", type=Path, required=True)
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--training-config", type=Path, help="Training YAML to include when creating a new dataset package.")
     parser.add_argument("--ranks", type=int, default=8)
     parser.add_argument("--rank", type=int, default=0)
     parser.add_argument("--candidate-tokens", type=int, default=60_000_000_000)

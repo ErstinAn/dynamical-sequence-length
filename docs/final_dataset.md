@@ -88,26 +88,11 @@ Dataset manifest (`dataset_manifest.json`) SHA256:
 Use a native Llama 3 tokenizer/model configuration.
 Set the model's supported context capacity to at least 16,384 for this validation length.
 Keep the experiment's training length and batch schedules explicit.
-Set `validator.dataloader.packing: none`, `validator.eval_seq_len: 16384`, and
-`validator.token_budget: 15335424`.
-For a `LossLengthValidator`, also set `validator.follow_loss_length: false`.
+The main validator reads the fixed arrays directly.
+Keep `validator.eval_seq_len: 16384` and `validator.token_budget: 15335424`.
 
-This keeps validation at 16,384 even when training uses a 22,256-token parent.
-Other fixed validation classes do not need the `follow_loss_length` option.
-
-The historical four-step example is `legacy/configs/longseq_shuffled/smoke.yaml`.
-It disables W&B and uses the full fixed validation set.
-The current eight-step 1B smoke uses `configs/smoke.yaml` and requires online W&B.
-
-```bash
-python scripts/train.py legacy/configs/longseq_shuffled/smoke.yaml --nproc 4 --dry-run
-```
-
-This dry run creates a command. It does not train a model.
-The five configurations that already referenced this dataset now use the new
-validation length, packing setting, and budget. Their training schedules are unchanged.
-The two seq_grad configuration filenames retain `val22256` for path compatibility.
-Their actual validation settings and run names now use 16,384.
+Use `configs/smoke.yaml` for the eight-step smoke.
+Use section 6 of [the run guide](getting_started.md#6-run-automatic-checks) to check the plan.
 
 To reproduce the fixed sample in a new output directory:
 
@@ -126,7 +111,7 @@ The collaborator must create standalone directories from the pinned remote files
 Allow approximately 52 GB for text files and another 120 GB for token IDs.
 The main guide includes additional space for checkpoints, environments, and download caches.
 
-Use the final source bundle and its checksum receipt for code transfer.
+Clone the default GitHub branch and record its commit.
 Install the runtime with `requirements-portable.txt`.
 The original lock alone cannot resolve every historical nightly wheel.
 Each collaborator needs authorized Hugging Face access to the private dataset and Meta tokenizer.

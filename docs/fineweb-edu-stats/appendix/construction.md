@@ -95,7 +95,7 @@ Temporary supply counts do not replace the final selection record.
 | [rebuild_long_token_cache.py](../../../scripts/rebuild_long_token_cache.py) | Rebuild token files from shared text. |
 | [summarize_long_artifact.py](../../../scripts/summarize_long_artifact.py) | Calculate lengths and generate the long-document report. |
 | [long_documents.py](../../../torchtitan_dynamic_seq_len/data/long_documents.py) | Read windows within documents. |
-| [Final training check](../../../legacy/configs/examples/llama3_1b_long_documents_smoke.yaml) | Check the final artifact with a 1B-class model. |
+| [Final training check](https://github.com/ErstinAn/dynamical-sequence-length/blob/427d321c40e8b82444d2f5c07082e6155c0f914e/legacy/configs/examples/llama3_1b_long_documents_smoke.yaml) | Check the final artifact with a 1B-class model. |
 
 The shared artifact contains text, metadata, checks, and a cache reconstruction script.
 Text permits another tokenizer and direct content inspection.

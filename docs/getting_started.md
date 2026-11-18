@@ -399,50 +399,27 @@ The checker compares shifted labels and positions with the newly rebuilt cache.
 It also checks complete document permutations and disjoint windows, including each window's extra target position.
 It does not change the dataset or select new validation members.
 
-Run the required CPU checks from the repository root:
+Run all CPU unit tests from the repository root:
 
 ```bash
-OMP_NUM_THREADS=1 python -m unittest \
-  tests.test_fixed_document_order \
-  tests.test_document_packing \
-  tests.test_document_validation \
-  tests.test_download_dataset \
-  tests.test_rebuild_long_token_cache \
-  tests.test_dynamic_seq \
-  tests.test_dynamic_seq_bs \
-  tests.test_token_progress \
-  tests.test_main_launch \
-  tests.test_checkpoint_comparison -v
+OMP_NUM_THREADS=1 python -m unittest discover -s tests -t . -v
 ```
 
-Require every selected test to pass.
-These checks cover document boundaries, fixed validation, schedules, gradient normalization, counters, and complete checkpoint recovery.
-They also check the existing W&B metric names and token axes.
-
-Run the two-rank CPU check where server rules permit local distributed sockets:
+These tests check data order, document boundaries, masks, fixed validation, gradients, schedules, nominal tokens, W&B axes, and recovery.
+Require zero failures and zero errors.
+The distributed validation test requires local sockets.
+Run both distributed checks on a node that permits them:
 
 ```bash
+FIXED_VALIDATION_GLOO_TEST=1 OMP_NUM_THREADS=1 python -m unittest \
+  tests.test_fixed_validation.FixedBudgetValidationTest.test_real_two_rank_reduction_and_partial_batches -v
 OMP_NUM_THREADS=1 python -m torch.distributed.run \
-  --standalone --nproc_per_node=2 tests/token_progress_distributed.py
+  --standalone --nproc_per_node=2 --module tests.token_progress_distributed
 ```
 
-Require both ranks to finish without errors.
-The check writes ten complete checkpoints for a small CPU model.
+Require both commands to succeed.
+The second check writes ten complete checkpoints for a small CPU model.
 It compares resumed updates with uninterrupted updates.
-This check does not replace the real 1B GPU smoke.
-
-For the complete historical regression suite, run:
-
-```bash
-PYTHONPATH=.:cluster/vt_arc OMP_NUM_THREADS=1 \
-  python -m unittest discover -s tests -t . -v
-```
-
-Record failures and skipped tests separately.
-Historical configuration tests read `legacy/configs/`.
-Some historical artifact tests need earlier tokenizer files.
-Explain those skips in the verification record.
-Do not skip a failing main-experiment test.
 
 Check the concrete smoke plan before submitting GPUs:
 
@@ -558,6 +535,66 @@ Checkpoint saves took approximately 17 to 23 seconds each.
 The uninterrupted run reached 73.07 GiB of peak GPU memory.
 The resumed process reached 75.64 GiB.
 These values describe this allocation and do not replace the target server's probe.
+
+### Use another Slurm server
+
+Ask the collaborator for a working GPU job script from the target server.
+Set `SITE` to a short site name.
+For a Bash job script, set `SITE_EXAMPLE` to its absolute path.
+From the repository root, create the site file once:
+
+```bash
+: "${SITE:?Set SITE to the target site name}"
+: "${SITE_EXAMPLE:?Set SITE_EXAMPLE to the site script path}"
+mkdir -p "cluster/$SITE"
+cp -i "$SITE_EXAMPLE" "cluster/$SITE/run.sbatch"
+```
+
+Keep the site's resource directives, module commands, and environment setup.
+Select one node and one driver task.
+Set the shared checkout, Python environment, asset directory, and persistent output directory in the script.
+Keep credentials outside the file.
+
+Change to the checkout before the driver runs.
+Make the script pass its arguments to Python.
+For example, a site that runs one driver with `srun` can use this final line:
+
+```bash
+exec srun --ntasks=1 "$ENV_PREFIX/bin/python" "$@"
+```
+
+Set `ENV_PREFIX` in that script to the absolute Python environment prefix.
+Follow the site's example if it requires a different command.
+Each GPU runs one training process.
+
+For Slurm, set `GPU_COUNT` to the number of GPUs requested on that node.
+Set `RUN_STORAGE` and `DYNAMIC_SEQ_LEN_ASSETS` as described in section 4.
+Check the script and submit the smoke from the repository root:
+
+```bash
+bash -n "cluster/$SITE/run.sbatch"
+mkdir -p "$RUN_STORAGE/logs"
+sbatch --output="$RUN_STORAGE/logs/smoke-%j.log" "cluster/$SITE/run.sbatch" \
+  scripts/gpu_smoke.py --probe --nproc "$GPU_COUNT" \
+  --assets "$DYNAMIC_SEQ_LEN_ASSETS" --output "$RUN_STORAGE/smoke-attempt-1" \
+  --profile "$RUN_STORAGE/smoke-attempt-1/microbatches.json"
+```
+
+Expect a job ID.
+Check the output files in section 7 after the job finishes.
+Smoke checkpoints are under `$RUN_STORAGE/smoke-attempt-1/runs/<name>/<id>/checkpoint/`.
+
+For formal training, use the same site file with the approved resource request.
+Pass `scripts/train.py local/generated_configs/experiment.yaml --nproc "$GPU_COUNT"` after the site filename.
+Set the formal YAML field `paths.dump_root` to `${OUTPUT_ROOT}`.
+Set `DYNAMIC_SEQ_LEN_OUTPUT` to persistent storage in the job environment.
+Section 9 gives the checkpoint path and recovery command.
+
+Some sites accept a resource YAML through a local submission tool.
+For that format, save the site file as `cluster/<site>/submit.yaml`.
+Use the submission command from the example with the same Python driver and arguments.
+Keep the training schedule in its own experiment YAML.
+If the site uses another scheduler, use its example and submission command.
 
 ## 8. Submit on VT ARC
 
@@ -698,6 +735,7 @@ python scripts/train.py --resume-dir <RUN_DIRECTORY>
 Replace `<RUN_DIRECTORY>` with the original run directory.
 Do not supply replacement schedules or microbatches.
 The launcher checks recorded source and configuration hashes.
+To resume a run created before this cleanup, use the original checkout for that run.
 It resumes the latest checkpoint with DCP metadata.
 It rejects a run that already contains its final checkpoint.
 

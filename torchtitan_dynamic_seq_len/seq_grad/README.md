@@ -1,5 +1,7 @@
 # Paired single-document sequence-gradient monitor
 
+Use the [historical revision](https://github.com/ErstinAn/dynamical-sequence-length/tree/427d321c40e8b82444d2f5c07082e6155c0f914e) for the commands on this page.
+
 This document describes historical monitor experiments and their execution records.
 Use [the main guide](../../docs/getting_started.md) for the current 1B schedule experiment.
 Historical commands below require their original assets and server settings.

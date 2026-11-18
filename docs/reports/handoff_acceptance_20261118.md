@@ -11,6 +11,21 @@ Independent online checks passed for all required W&B losses and token axes.
 The final source packaging receipt records delivery checks separately.
 This test used the same cluster service, not another physical server service.
 
+## Checks after removing the historical configurations
+
+The cleanup used a separate checkout and the existing handoff Python environment.
+The unit suite ran 67 tests with distributed validation enabled.
+All 67 passed.
+A separate two-rank CPU run passed nominal token counting, ten complete saves, exact recovery, and the validation token axis.
+The two-GPU smoke dry run returned 31,457,280 tokens and save steps 2, 4, 6, and 8.
+The ARC submission script passed `bash -n`.
+See section 6 of the [run guide](../getting_started.md#6-run-automatic-checks) for the CPU commands.
+
+The remaining sections record the earlier hardware run.
+The cleanup did not repeat GPU training.
+It removed files from the launcher's source hash.
+Use the checkout recorded by the original run when resuming its checkpoints.
+
 ## Authorized smoke
 
 Use the native TorchTitan Llama3 1B model with random initialization.
@@ -49,7 +64,7 @@ Formal sequence schedules and learning rate sweeps remain outside this execution
 | GPU checkpoint recovery and exact comparison | All 489 tensors and 1,379 other state values matched exactly | [Online acceptance result](fresh_smoke_wandb_20261118.json) |
 | Uploaded W&B metrics and axes | All three runs finished, original loss names and token axes passed | [Online acceptance result](fresh_smoke_wandb_20261118.json) |
 | Main documentation links and text checks | Passed | [Run guide](../getting_started.md) |
-| Historical file preservation | All 76 configurations and 11 archived files retained their recorded bytes | [Archive inventory](../../legacy/report_checksums.json) |
+| Historical file preservation | All 76 configurations and 11 archived files retained their recorded bytes | [Archive inventory](https://github.com/ErstinAn/dynamical-sequence-length/blob/427d321c40e8b82444d2f5c07082e6155c0f914e/legacy/report_checksums.json) |
 
 The five skipped tests concern opt-in checks and unused historical artifacts.
 The explicit distributed checks ran separately.

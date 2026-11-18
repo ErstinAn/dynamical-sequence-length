@@ -18,7 +18,6 @@ The delivered code is on the default `main` branch.
 The run guide links to the environment instructions and required check scripts.
 Keep those supporting files in the cloned repository.
 
-The main entry and historical experiments now have separate documented paths.
 The new environment and complete data reconstruction passed their checks.
 The real-data smoke passed on two H200 GPUs.
 Recovered training matched every final checkpoint value from uninterrupted training.
@@ -57,14 +56,11 @@ See the [dataset description](docs/final_dataset.md) for identities and evaluati
 | `scripts/download_dataset.py`, `scripts/rebuild_long_token_cache.py` | Pinned downloads and checked token reconstruction |
 | `scripts/gpu_smoke.py` | GPU microbatch measurement, complete smoke, and recovery comparison |
 | `tests/` | Data, gradient, dynamic schedule, and recovery checks |
-| `legacy/configs/` | Historical configurations for regression tests and review |
-| `legacy/reports/` | Historical experiment results |
-| `cluster/vt_arc/` | Scripts specific to VT ARC |
+| `cluster/vt_arc/smoke_handoff.sbatch` | VT ARC submission example |
+| `cluster/<site>/run.sbatch` | Create this file from the target server’s working Slurm example |
 | `assets/`, `outputs/` | Local assets and run outputs, excluded from Git |
 
 The [environment record](docs/reports/fresh_environment_20261118.md) and [data record](docs/reports/fresh_data_20261118.md) identify verified steps and reuse.
-The [initial cleanup record](docs/reports/handoff_progress.md) describes the earlier archival phase.
 The [repository map](docs/repository.md) explains retained dependencies and entry points.
 The [collaborator prompt](docs/collaborator_prompt.md) identifies setup steps and required inputs.
-The [historical configuration guide](legacy/README.md) describes the old entries.
 See [LICENSE](LICENSE) and [NOTICE.md](NOTICE.md) for licensing and source attribution.
