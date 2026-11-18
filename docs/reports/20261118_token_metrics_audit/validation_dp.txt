@@ -1,0 +1,8 @@
+test_real_two_rank_reduction_and_partial_batches (tests.test_fixed_validation.FixedBudgetValidationTest.test_real_two_rank_reduction_and_partial_batches) ... /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=3611906) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  self.pid = os.fork()
+ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.110s
+
+OK

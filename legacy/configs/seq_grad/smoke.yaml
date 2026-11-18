@@ -1,0 +1,41 @@
+name: seq-grad-smoke
+torchtitan_config: llama3_debug_seq_grad
+paths:
+  dump_root: ${OUTPUT_ROOT}/runs
+wandb:
+  enabled: false
+  project: dynamic-seq-debug
+  entity: ''
+  mode: offline
+fixed:
+  dataloader.dataset: sequence_length_smoke
+  dataloader.dataset_path: ${PROJECT_ROOT}/tests/fixtures/text.jsonl
+  dataloader.num_workers: 0
+  dataloader.pin_memory: false
+  dataloader.persistent_workers: false
+  dataloader.infinite: true
+  training.steps: 4
+  training.seq_len: 16
+  training.local_batch_size: 2
+  training.global_batch_size: 8
+  training.dtype: float32
+  training.mixed_precision_param: float32
+  training.mixed_precision_reduce: float32
+  compile.enable: false
+  loss.num_chunks: 2
+  debug.seed: 42
+  debug.deterministic: true
+  checkpoint.enable: false
+  validator.enable: false
+  metrics.log_freq: 1
+  seq_grad.lengths:
+  - 8
+  - 16
+  - 24
+  - 32
+  seq_grad.seed: 12345
+  seq_grad.reference_length: 64
+  seq_grad.probe_global_batch_size: 8
+  seq_grad.interval: 2
+  seq_grad.include_initial: true
+sweep: {}

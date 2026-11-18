@@ -97,6 +97,34 @@ The tests compare the TorchTitan Trainer with constant dynamic training.
 They also restore checkpoints across changes in sequence length.
 They also run compiled training.
 
+## Compilation with joint schedules
+
+Run the shape replay in an allocation with one visible GPU:
+
+```bash
+OMP_NUM_THREADS=1 python -m tests.dynamic_compile_gpu \
+  --mode dynamic --output outputs/compile-replay
+```
+
+The replay uses one real Llama block, activation checkpoints, FlexAttention, and synthetic inputs.
+It tests all 3,840 scheduled shapes and switches to validation mode every 20 steps.
+It checks finite outputs and executes backward passes.
+Use `--mode baseline` in a separate process to test the default compiler behavior.
+
+Run the complete 100M Trainer at selected schedule boundaries:
+
+```bash
+OMP_NUM_THREADS=1 torchrun --standalone --nproc_per_node=1 \
+  -m tests.dynamic_compile_trainer_gpu --output outputs/compile-trainer
+```
+
+This test uses synthetic training tokens and the configured validation artifact.
+It checks finite loss, finite gradient norms, and exact training token counts.
+It also checks the validation token count at steps 20, 1520, and 3840.
+The selected steps cover the previous compiler failure at step 1529 and the final schedule period.
+This test does not restore a production checkpoint or measure convergence.
+See the [B200 repair test results](../legacy/reports/compile_repair_results.json) for the tested steps and source hashes.
+
 ## Sequence gradient distances
 
 Run `python -m unittest tests.test_seq_grad -v` for direct-gradient and training-state comparisons.
@@ -113,7 +141,7 @@ OMP_NUM_THREADS=1 python -m torch.distributed.run --standalone --nproc_per_node=
   -m tests.dynamic_seq_bs_distributed
 ```
 
-For a complete GPU launch, use `configs/dynamic_seq_bs/smoke.yaml` with the existing training script.
+For a complete GPU launch, use `legacy/configs/dynamic_seq_bs/smoke.yaml` with the existing training script.
 The [dynamic batch guide](dynamic_seq_bs.md) describes the test scope and configuration.
 
 Checks on 2026-11-02: the unit suite ran 100 tests.
@@ -146,7 +174,7 @@ The [W&B run](https://wandb.ai/dynamic_seq_length/dynamic-seq-bs-debug/runs/f21b
 Each record passed checks against the three schedules and the expected token counts.
 Loss, gradient norm, throughput, and FLOPs were finite.
 No OOM occurred, and the complete checkpoint exists at step 24.
-The configuration is `configs/dynamic_seq_bs/gpu_increasing_cyclic.yaml`.
+The configuration is `legacy/configs/dynamic_seq_bs/gpu_increasing_cyclic.yaml`.
 
 The first test saved correct TensorBoard records but could not initialize W&B.
 The submission environment now removes `WANDB_SERVICE` to prevent reuse of a service socket from the login node.

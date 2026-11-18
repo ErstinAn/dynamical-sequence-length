@@ -1,50 +1,63 @@
-"""Check sequence probes against direct gradients and the native optimizer step."""
+"""Independent sampling, actual loss normalization, state and event contracts."""
 
 import copy
+import random
+import tempfile
 import unittest
 from pathlib import Path
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
+import numpy as np
 import torch
-from torchtitan.components.dataloader import DataloaderExhaustedError
+from torchtitan.components.lr_scheduler import LRSchedulersContainer
 from torchtitan.config import ConfigManager
 
+from tests.test_document_packing import fixture
 from tests.test_dynamic_seq import ScalarModel
-from tests.test_grad_var_trainer import cpu_metrics, tiny_trainer
-from torchtitan_dynamic_seq_len.data.seq_grad_windows import crop_batches
+from tests.test_grad_var_trainer import batches, cpu_metrics, tiny_trainer
+from torchtitan_dynamic_seq_len.data.packed_documents import PackedDocumentDataset
 from torchtitan_dynamic_seq_len.run_config import resolve_point
 from torchtitan_dynamic_seq_len.seq_grad.metrics import SeqGradMetricsProcessor, SeqGradWandBLogger
-from torchtitan_dynamic_seq_len.seq_grad.monitor import SeqGradConfig, SeqGradMonitor
+from torchtitan_dynamic_seq_len.seq_grad.monitor import LENGTHS, SeqGradConfig, SeqGradMonitor
+from torchtitan_dynamic_seq_len.seq_grad.sampler import PackedProbeLoader, stream_seed
 from torchtitan_dynamic_seq_len.seq_grad.trainer import SeqGradTrainer
 
 
-def parents(k=2, batch=2, capacity=16):
-    rng = torch.Generator().manual_seed(200)
-    return [
-        (
-            {"input": torch.randn(batch, capacity, generator=rng, dtype=torch.float64)},
-            torch.randn(batch, capacity, generator=rng, dtype=torch.float64),
-        )
-        for _ in range(k)
-    ]
+class SyntheticSampler:
+    identity = {"protocol": "synthetic-independent-test"}
+    def sample_batch(self, *, length, global_sequences, local_batch_size, rank, degree, seed, step):
+        rows = []
+        for i in range(rank, global_sequences, degree):
+            rng = torch.Generator().manual_seed(stream_seed(seed, step, length, i))
+            x = torch.randn(length, dtype=torch.float64, generator=rng)
+            y = torch.randn(length, dtype=torch.float64, generator=rng)
+            y[:i % length] = -100  # Unequal valid counts across ranks/microbatches.
+            rows.append((x, y))
+        return [({"input": torch.stack([x for x, _ in rows[j:j+local_batch_size]])},
+                 torch.stack([y for _, y in rows[j:j+local_batch_size]]))
+                for j in range(0, len(rows), local_batch_size)]
 
 
-def probe_trainer(enabled=True, model=None, k=2, batch=2):
-    fixture = tiny_trainer(False, k=k, b=batch, seq=16, model=model or ScalarModel())
+def probe_trainer(enabled=True, model=None):
+    base = tiny_trainer(False, k=2, b=2, seq=4, model=model or ScalarModel(), log_freq=3)
     trainer = object.__new__(SeqGradTrainer)
-    trainer.__dict__.update(fixture.__dict__)
-    trainer.config.seq_grad = SeqGradConfig(enable=enabled, train_length=4, lengths=[2, 4, 8])
+    trainer.__dict__.update(base.__dict__)
+    trainer.config.seq_grad = SeqGradConfig(enable=enabled, interval=2, reference_length=16,
+                                          lengths=[2, 4, 8], probe_global_batch_size=8,
+                                          probe_local_batch_size=2)
     trainer.config.training.steps = 4
-    trainer._probe_active = False
-    trainer._training_calls = 0
-    trainer.n_valid_tokens_seen = 0
+    trainer._probe_active, trainer._last_event, trainer._signature = False, -1, "fixture"
+    trainer._training_calls = trainer.n_valid_tokens_seen = 0
+    trainer._probe_rank, trainer._probe_degree = 0, 1
+    trainer.probe_loader = SyntheticSampler()
     trainer.seq_grad_monitor = SeqGradMonitor(trainer.model_parts[0].named_parameters())
-    trainer.flops_by_length = dict.fromkeys([2, 4, 8, 16], 10)
     metrics = object.__new__(SeqGradMetricsProcessor)
-    metrics.__dict__.update(cpu_metrics(trainer.parallel_dims).__dict__)
-    metrics.config = SeqGradMetricsProcessor.Config(log_freq=1, profile_freq=2)
-    metrics.reset_window()
+    metrics.__dict__.update(cpu_metrics(trainer.parallel_dims, 3).__dict__)
     trainer.metrics_processor = metrics
+    scheduler = torch.optim.lr_scheduler.LambdaLR(trainer.optimizers.optimizer, lambda n: 1.0)
+    trainer.lr_schedulers.scheduler = scheduler
+    trainer.lr_schedulers.step = scheduler.step
+    trainer.lr_schedulers.get_metrics = lambda: {"lr": scheduler.get_last_lr()[0]}
     return trainer
 
 
@@ -64,293 +77,194 @@ class RandomModel(ScalarModel):
 
     def forward(self, inputs, **kwargs):
         self.calls.add_(1)
+        random.random()
+        np.random.random()
         return super().forward(inputs, **kwargs) * torch.rand_like(inputs)
 
 
-class WindowsTest(unittest.TestCase):
-    def test_contiguous_aligned_windows_and_document_positions(self):
-        data = [
-            (
-                {
-                    "input": torch.arange(16).reshape(2, 8),
-                    "positions": torch.tensor([[0, 1, 2, 0, 1, 2, 3, 4]] * 2),
-                },
-                torch.arange(16).reshape(2, 8) + 1,
-            )
-        ]
-        seen = set()
-        for step in range(1, 100):
-            cropped = crop_batches(data, 4, seed=3, step=step, rank=0, stream="train")
-            inputs, labels = cropped[0]
-            torch.testing.assert_close(labels, inputs["input"] + 1)
-            torch.testing.assert_close(
-                inputs["input"].diff(dim=1), torch.ones(2, 3, dtype=torch.long)
-            )
-            for row in range(2):
-                start = int(inputs["input"][row, 0]) - row * 8
-                seen.add(start)
-                positions = data[0][0]["positions"][row, start : start + 4].tolist()
-                offset = positions[0]
-                if offset:
-                    for i, value in enumerate(positions):
-                        if value == 0:
-                            break
-                        positions[i] -= offset
-                self.assertEqual(inputs["positions"][row].tolist(), positions)
-        self.assertEqual(seen, set(range(5)))
-
-    def test_seed_independence_and_full_length_identity(self):
-        data = parents()
-        state = torch.get_rng_state()
-        first = crop_batches(data, 4, seed=1, step=2, rank=0, stream="train")
-        crop_batches(data, 8, seed=1, step=2, rank=0, stream="probe:8")
-        again = crop_batches(data, 4, seed=1, step=2, rank=0, stream="train")
-        full = crop_batches(data, 16, seed=1, step=2, rank=0, stream="train")
-        for a, b, c, d in zip(first, again, full, data, strict=True):
-            torch.testing.assert_close(a[0]["input"], b[0]["input"], rtol=0, atol=0)
-            torch.testing.assert_close(c[1], d[1], rtol=0, atol=0)
-        torch.testing.assert_close(state, torch.get_rng_state(), rtol=0, atol=0)
+class SamplerTests(unittest.TestCase):
+    def test_streams_packing_dp_partition_and_training_isolation(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            fixture(root)
+            source = PackedDocumentDataset(root, split="train", seq_len=16, infinite=True)
+            iterator = iter(source)
+            next(iterator)
+            state = copy.deepcopy(source.state_dict())
+            sampler = PackedProbeLoader(source)
+            kwargs = dict(length=16, global_sequences=8, local_batch_size=2,
+                          rank=0, degree=1, seed=3, step=2)
+            first = sampler.sample_batch(**kwargs)
+            again = sampler.sample_batch(**kwargs)
+            short = sampler.sample_batch(**{**kwargs, "length": 8})
+            self.assertEqual(source.state_dict(), state)
+            for a, b in zip(first, again):
+                torch.testing.assert_close(a[1], b[1], rtol=0, atol=0)
+                self.assertTrue((a[0]["positions"][:, 0] == 0).all())
+                self.assertTrue((a[1][a[1] != -100] != source.bos).all())
+            self.assertTrue(any(not torch.equal(a[0]["input"][:, :8], b[0]["input"])
+                                for a, b in zip(first, short)))
+            whole = torch.cat([labels for _, labels in first])
+            for rank in range(2):
+                part = sampler.sample_batch(**{**kwargs, "rank": rank, "degree": 2})
+                torch.testing.assert_close(torch.cat([y for _, y in part]), whole[rank::2])
+            restored = PackedDocumentDataset(root, split="train", seq_len=16, infinite=True)
+            restored.load_state_dict(state)
+            expected, actual = next(iter(restored)), next(iterator)
+            torch.testing.assert_close(expected[1], actual[1])
+            # Production iterator is the same packing path at a selected start.
+            token_seed = stream_seed(3, 2, 16, 0)
+            direct = sampler._sample(16, token_seed)
+            torch.testing.assert_close(direct[0]["positions"], first[0][0]["positions"][0])
+            self.assertTrue(any((y == -100).any() for _, y in first))
 
 
-class MonitorTest(unittest.TestCase):
-    def test_direct_vector_distances_missing_and_zero_gradients(self):
+class MonitorTests(unittest.TestCase):
+    def test_chunked_missing_tied_and_nonfinite(self):
         p = torch.nn.Parameter(torch.zeros(7, dtype=torch.float64))
         q = torch.nn.Parameter(torch.zeros(2, dtype=torch.float64))
         monitor = SeqGradMonitor([("p", p), ("q", q), ("alias", p)])
         monitor.CHUNK_ELEMENTS = 3
         p.grad = torch.arange(7, dtype=torch.float64)
         ref = torch.cat([p.grad.clone(), torch.zeros(2)])
-        self.assertEqual(monitor.capture(), ref.norm().item())
-        self.assertEqual(monitor.compare()["distance"], 0)
-        p.grad = None
-        q.grad = torch.tensor([2.0, 3.0], dtype=torch.float64)
-        actual = torch.cat([torch.zeros(7), q.grad])
-        values = monitor.compare()
-        self.assertAlmostEqual(values["distance_sq"], (actual - ref).square().sum().item())
-        self.assertAlmostEqual(
-            values["relative_distance"], (actual - ref).norm().item() / (ref.norm().item() + 1e-12)
-        )
-        self.assertEqual(values["cosine"], 0)
-        q.grad = None
-        self.assertEqual(monitor.compare()["cosine_defined"], 0)
-        q.grad = torch.full_like(q, float("nan"))
+        monitor.capture()
+        self.assertEqual(monitor.distance(), 0)
+        p.grad, q.grad = None, torch.tensor([2., 3.], dtype=torch.float64)
+        self.assertAlmostEqual(monitor.distance(), (torch.cat([torch.zeros(7), q.grad])-ref).norm().item())
+        q.grad.fill_(float("nan"))
         with self.assertRaisesRegex(ValueError, "Nonfinite"):
-            monitor.compare()
+            monitor.distance()
+        with self.assertRaisesRegex(ValueError, "Nonfinite"):
+            monitor.capture()
+
+    def test_config_guards_and_grid(self):
+        self.assertEqual(len(LENGTHS), 16)
+        for dp in (1, 2, 4):
+            SeqGradConfig().validate(dp)
+        for values in ({"interval": 0}, {"lengths": [1, 1]}, {"lengths": [20000]},
+                       {"probe_global_batch_size": 7}, {"probe_local_batch_size": 0}):
+            with self.assertRaises(ValueError):
+                SeqGradConfig(**values).validate(4)
 
 
-class TrainerTest(unittest.TestCase):
-    def test_periodic_monitoring_preserves_updates_and_omits_skipped_distances(self):
-        off, periodic = probe_trainer(False), probe_trainer()
-        periodic.config.seq_grad.interval = 5
-        off.config.training.steps = periodic.config.training.steps = 12
-        for step in range(1, 13):
-            off.step = periodic.step = step
-            data = parents()
-            off.train_step(off.batch_generator(data))
-            periodic.train_step(periodic.batch_generator(data))
-            payload = periodic.metrics_processor.logger.log.call_args.args[0]
-            monitored = step in (1, 5, 10, 12)
-            self.assertEqual("seq_grad_distance/s00004" in payload, monitored)
-            self.assertEqual(payload["seq_grad/samples_per_length"], int(monitored))
-            self.assertEqual(payload["seq_grad_cost/probe_tokens"] > 0, monitored)
-            torch.testing.assert_close(
-                off.model_parts[0].weight, periodic.model_parts[0].weight, rtol=0, atol=0
-            )
-        self.assertEqual(off.ntokens_seen, periodic.ntokens_seen)
-
-    def test_accumulation_partition_preserves_global_batch_distances(self):
-        data = parents()
-        combined = [
-            (
-                {"input": torch.cat([inputs["input"] for inputs, _ in data])},
-                torch.cat([labels for _, labels in data]),
-            )
-        ]
-        trainers = [probe_trainer(k=2, batch=2), probe_trainer(k=1, batch=4)]
-        payloads = []
-        for trainer, batches in zip(trainers, [data, combined], strict=True):
-            trainer.train_step(trainer.batch_generator(batches))
-            payloads.append(trainer.metrics_processor.logger.log.call_args.args[0])
-        for key, value in payloads[0].items():
-            if key.startswith(("seq_grad_distance/", "seq_grad_reference/")):
-                self.assertAlmostEqual(value, payloads[1][key], places=12)
-        torch.testing.assert_close(
-            trainers[0].model_parts[0].weight, trainers[1].model_parts[0].weight
-        )
-
-    def test_all_distances_match_explicit_gradients_and_token_normalization(self):
+class TrainerTests(unittest.TestCase):
+    def test_full_grid_and_one_reference_per_event(self):
         trainer = probe_trainer()
-        data = parents()
-        data[0][1][0, 1] = -100
-        model = copy.deepcopy(trainer.model_parts[0])
-        reference = explicit_gradient(model, data)
-        expected = {}
-        for length in [2, 4, 8]:
-            batches = trainer._crop(data, length, "train" if length == 4 else f"probe:{length}")
-            grad = explicit_gradient(model, batches)
-            expected[length] = (grad - reference).norm().item()
-        trainer.train_step(trainer.batch_generator(data))
-        payload, step = trainer.metrics_processor.logger.log.call_args.args
-        self.assertEqual(step, 1)
-        for length, distance in expected.items():
-            self.assertAlmostEqual(payload[f"seq_grad_distance/s{length:05d}"], distance, places=12)
-        self.assertEqual(payload["seq_grad_reference/valid_tokens"], 63)
-        self.assertEqual(payload["n_tokens_seen"], 16)
-        self.assertEqual(payload["seq_grad_cost/probe_tokens"], 104)
-        self.assertEqual(payload["seq_grad_cost/forward_backward_tokens"], 120)
-        self.assertEqual(len(trainer.optimizers.gradients), 1)
-        self.assertIsNone(trainer.metrics_processor.pending)
-        self.assertFalse(trainer.seq_grad_monitor.reference)
+        trainer.config.seq_grad.lengths = list(LENGTHS)
+        trainer.config.seq_grad.reference_length = 16384
+        sampler = trainer.probe_loader.sample_batch
+        trainer.probe_loader.sample_batch = Mock(side_effect=sampler)
+        trainer.maybe_monitor(0)
+        payload = trainer.metrics_processor.logger.log.call_args.args[0]
+        self.assertEqual(set(payload), {"context_bias/step", *[f"context_bias/distance_s{s}" for s in LENGTHS]})
+        calls = trainer.probe_loader.sample_batch.call_args_list
+        self.assertEqual([call.kwargs["length"] for call in calls], [16384, *LENGTHS])
 
-    def test_probes_preserve_updates_optimizer_rng_buffers_and_lr(self):
+    def test_native_constant_scheduler_preserves_group_multipliers(self):
+        p, q = torch.nn.Parameter(torch.ones(1)), torch.nn.Parameter(torch.ones(1))
+        optimizer = torch.optim.AdamW([{"params": [p], "lr": 0.0005},
+                                       {"params": [q], "lr": 0.001}])
+        scheduler = LRSchedulersContainer.Config(warmup_steps=0, min_lr_factor=1.0).build(
+            optimizers=[optimizer], training_steps=3819)
+        for step in range(3820):
+            self.assertEqual([g["lr"] for g in optimizer.param_groups], [0.0005, 0.001])
+            optimizer.step()
+            scheduler.step()
+
+    def test_raw_distances_and_accumulation(self):
+        reference = probe_trainer()
+        cfg = reference.config.seq_grad
+        direct = {}
+        for length in [cfg.reference_length, *cfg.lengths]:
+            data = reference.probe_loader.sample_batch(length=length, global_sequences=8,
+                local_batch_size=8, rank=0, degree=1, seed=0, step=0)
+            direct[length] = explicit_gradient(copy.deepcopy(reference.model_parts[0]), data)
+        for size in (1, 2, 4, 8):
+            trainer = probe_trainer()
+            trainer.config.seq_grad.probe_local_batch_size = size
+            trainer.maybe_monitor(0)
+            payload = trainer.metrics_processor.logger.log.call_args.args[0]
+            self.assertEqual(set(payload), {"context_bias/step", *[f"context_bias/distance_s{s}" for s in cfg.lengths]})
+            for length in cfg.lengths:
+                self.assertAlmostEqual(payload[f"context_bias/distance_s{length}"],
+                    (direct[length]-direct[16]).norm().item(), places=12)
+            self.assertFalse(trainer.seq_grad_monitor.reference)
+            self.assertEqual(trainer.ntokens_seen, 0)
+
+    def test_state_rng_optimizer_lr_events_and_resume(self):
         off, on = probe_trainer(False, RandomModel()), probe_trainer(True, RandomModel())
-        for step in range(1, 4):
+        for step in range(1, 5):
+            torch_state, py_state, np_state = torch.get_rng_state(), random.getstate(), np.random.get_state()
             off.step = on.step = step
-            state = torch.get_rng_state()
-            off.train_step(off.batch_generator(parents()))
-            expected_rng = torch.get_rng_state()
-            torch.set_rng_state(state)
-            on.train_step(on.batch_generator(parents()))
-            torch.testing.assert_close(torch.get_rng_state(), expected_rng, rtol=0, atol=0)
-            for key, value in off.model_parts[0].state_dict().items():
-                torch.testing.assert_close(
-                    value, on.model_parts[0].state_dict()[key], rtol=0, atol=0
-                )
-            for a, b in zip(
-                off.optimizers.optimizer.state.values(),
-                on.optimizers.optimizer.state.values(),
-                strict=True,
-            ):
+            off.train_step(off.batch_generator(batches(k=2, b=2, seq=4)))
+            after = torch.get_rng_state(), random.getstate(), np.random.get_state()
+            torch.set_rng_state(torch_state)
+            random.setstate(py_state)
+            np.random.set_state(np_state)
+            on.train_step(on.batch_generator(batches(k=2, b=2, seq=4)))
+            torch.testing.assert_close(torch.get_rng_state(), after[0], rtol=0, atol=0)
+            self.assertEqual(random.getstate(), after[1])
+            np.testing.assert_equal(np.random.get_state(), after[2])
+            for name, value in off.model_parts[0].state_dict().items():
+                torch.testing.assert_close(value, on.model_parts[0].state_dict()[name], rtol=0, atol=0)
+            for a, b in zip(off.optimizers.optimizer.state.values(), on.optimizers.optimizer.state.values()):
                 for key in a:
                     torch.testing.assert_close(a[key], b[key], rtol=0, atol=0)
-            self.assertEqual(
-                off.lr_schedulers.scheduler.state_dict(), on.lr_schedulers.scheduler.state_dict()
-            )
-            self.assertEqual(off.ntokens_seen, on.ntokens_seen)
-            self.assertEqual(off.n_valid_tokens_seen, on.n_valid_tokens_seen)
-
-    def test_failure_prevents_update_and_clears_pending_metrics(self):
-        for failure in ("exhaustion", "shape", "nan", "no_tokens", "input_shape"):
-            with self.subTest(failure=failure):
-                trainer = probe_trainer()
-                data = parents()
-                if failure == "exhaustion":
-                    data.pop()
-                elif failure == "shape":
-                    data[0] = (data[0][0], data[0][1][:, :3])
-                elif failure == "nan":
-                    data[0][0]["input"].fill_(float("nan"))
-                elif failure == "input_shape":
-                    data[0][0]["input"] = torch.zeros(1, 16)
-                else:
-                    for _, labels in data:
-                        labels.fill_(-100)
-                with self.assertRaises((ValueError, RuntimeError, DataloaderExhaustedError)):
-                    trainer.train_step(trainer.batch_generator(data))
-                self.assertEqual(len(trainer.optimizers.gradients), 0)
-                self.assertEqual(trainer.ntokens_seen, 0)
-                self.assertEqual(trainer.n_valid_tokens_seen, 0)
-                self.assertIsNone(trainer.metrics_processor.pending)
-                trainer.train_step(trainer.batch_generator(parents()))
-                self.assertEqual(len(trainer.optimizers.gradients), 1)
-
-    def test_resume_preserves_crops_and_update(self):
-        full = probe_trainer()
-        full.train_step(full.batch_generator(parents()))
+            self.assertEqual(on.lr_schedulers.get_metrics()["lr"], 0.03)
+        events = [call.args[0] for call in on.metrics_processor.logger.log.call_args_list
+                  if "context_bias/step" in call.args[0]]
+        self.assertEqual([p["context_bias/step"] for p in events], [0, 2, 4])
+        self.assertEqual(off.ntokens_seen, on.ntokens_seen)
+        self.assertEqual(off.n_valid_tokens_seen, on.n_valid_tokens_seen)
+        state = copy.deepcopy(on.state_dict())
         resumed = probe_trainer()
-        resumed.load_state_dict(copy.deepcopy(full.state_dict()))
-        resumed.model_parts[0].load_state_dict(full.model_parts[0].state_dict())
-        resumed.optimizers.optimizer.load_state_dict(
-            copy.deepcopy(full.optimizers.optimizer.state_dict())
-        )
-        resumed.lr_schedulers.scheduler.load_state_dict(full.lr_schedulers.scheduler.state_dict())
-        for trainer in (full, resumed):
-            trainer.step = 2
-            trainer.train_step(trainer.batch_generator(parents()))
-        torch.testing.assert_close(
-            full.model_parts[0].weight, resumed.model_parts[0].weight, rtol=0, atol=0
-        )
-        self.assertEqual(full.state_dict(), resumed.state_dict())
-        resumed.config.seq_grad.seed += 1
-        with self.assertRaisesRegex(ValueError, "protocol"):
-            resumed.load_state_dict(full.state_dict())
+        resumed.load_state_dict(state)
+        resumed.maybe_monitor(4)
+        resumed.metrics_processor.logger.log.assert_not_called()
 
+    def test_error_restores_buffers_rng_and_reference(self):
+        trainer = probe_trainer(model=RandomModel())
+        saved = torch.get_rng_state().clone()
+        state = copy.deepcopy(trainer.model_parts[0].state_dict())
+        original = trainer._statistics
+        def fail(capture=False):
+            if not capture:
+                raise RuntimeError("test failure")
+            return original(capture=True)
+        trainer._statistics = fail
+        with self.assertRaisesRegex(RuntimeError, "test failure"):
+            trainer.maybe_monitor(0)
+        torch.testing.assert_close(saved, torch.get_rng_state(), rtol=0, atol=0)
+        for key, value in state.items():
+            torch.testing.assert_close(value, trainer.model_parts[0].state_dict()[key], rtol=0, atol=0)
+        self.assertFalse(trainer._probe_active)
+        self.assertFalse(trainer.seq_grad_monitor.reference)
+        self.assertEqual(trainer._last_event, -1)
+        self.assertTrue(all(p.grad is None for p in trainer.model_parts[0].parameters()))
 
-class LoggingAndConfigTest(unittest.TestCase):
-    def test_minimal_wandb_keeps_distances_train_validation_loss_and_time(self):
-        wrapped = Mock()
-        logger = SeqGradWandBLogger(wrapped, profile_freq=1, minimal=True)
-        metrics = {
-            "seq_grad_distance/s01024": 2.0,
-            "seq_grad_distance_sq/s01024": 4.0,
-            "seq_grad_relative_distance/s01024": 0.5,
-            "loss_metrics/global_avg_loss": 3.0,
-            "time_metrics/end_to_end(s)": 1.2,
-            "memory/max_reserved(GiB)": 100.0,
-        }
-        original = metrics.copy()
-        logger.log(metrics, 5)
-        wrapped.log.assert_called_once_with(
-            {
-                "context-truncation bound/seq_1024": 2.0,
-                "context-truncation bound sq/seq_1024": 4.0,
-                "train/loss": 3.0,
-                "time/step_seconds": 1.2,
-            },
-            5,
-        )
-        self.assertEqual(metrics, original)
-        wrapped.wandb.plot.line_series.assert_not_called()
-        logger.log({"validation_metrics/loss": 2.9}, 5)
-        wrapped.log.assert_called_with({"val/loss": 2.9}, 5)
-        logger.log({"memory/max_reserved(GiB)": 100}, 6)
-        self.assertEqual(wrapped.log.call_count, 2)
+    def test_logger_preserves_names_and_open_step(self):
+        wrapped = Mock(tag=None)
+        logger = SeqGradWandBLogger(wrapped, {"seed": 0})
+        payload = {"context_bias/step": 0, "context_bias/distance_s64": 1.2}
+        logger.log(payload, 0)
+        wrapped.wandb.log.assert_called_with(payload, step=0, commit=False)
+        normal = {"loss_metrics/global_avg_loss": 1.}
+        logger.log(normal, 2)
+        wrapped.wandb.log.assert_called_with(normal, step=2, commit=False)
+        logger.close()
+        wrapped.wandb.run.define_metric.assert_any_call("context_bias/distance_s*", step_metric="context_bias/step")
 
-    def test_wandb_profiles_share_scalar_commit_and_skip_validation(self):
-        wrapped = Mock()
-        logger = SeqGradWandBLogger(wrapped, profile_freq=2)
-        payload = {
-            f"seq_grad_{name}/s{length:05d}": float(length)
-            for name in ("distance", "relative_distance", "cosine")
-            for length in [8, 2, 4]
-        }
-        logger.log(payload, 1)
-        self.assertEqual(wrapped.log.call_count, 1)
-        self.assertEqual(wrapped.wandb.plot.line_series.call_count, 3)
-        self.assertEqual(wrapped.wandb.plot.line_series.call_args.kwargs["xs"], [2, 4, 8])
-        self.assertNotIn("seq_grad_profile/distance", payload)
-        logger.log({"validation/loss": 2}, 2)
-        logger.log(payload, 3)
-        self.assertEqual(wrapped.wandb.plot.line_series.call_count, 3)
-
-    def test_launch_configs_and_validation(self):
+    def test_example_configs(self):
         root = Path(__file__).resolve().parents[1]
-        for name in ("smoke", "reference16384"):
-            raw, _, _, args = resolve_point(root / f"configs/seq_grad/{name}.yaml", 0)
-            with patch.dict(
-                "os.environ",
-                {"DYNAMIC_SEQ_LEN_VALIDATION_DIR": raw["paths"].get("validation_dir", "")},
-            ):
-                cfg = ConfigManager().parse_args(
-                    [
-                        "--module",
-                        "torchtitan_dynamic_seq_len.config_registry",
-                        "--config",
-                        raw["torchtitan_config"],
-                        *args,
-                    ]
-                )
-            self.assertIs(cfg._owner, SeqGradTrainer)
+        for name in ("smoke", "reference16384", "variance_monitor", "variance_monitor_smoke",
+                     "variance_monitor_train16384", "variance_monitor_train16384_smoke",
+                     "variance_monitor_paired_train16384", "variance_monitor_paired_train16384_smoke",
+                     "variance_monitor_paired_document_train16384", "variance_monitor_paired_document_train16384_smoke",
+                     "variance_monitor_shuffled_v1_train16384_val22256", "variance_monitor_shuffled_v1_train16384_val22256_smoke"):
+            raw, _, _, args = resolve_point(root / f"legacy/configs/seq_grad/{name}.yaml", 0)
+            cfg = ConfigManager().parse_args(["--module", "torchtitan_dynamic_seq_len.config_registry",
+                "--config", raw["torchtitan_config"], *args])
             cfg.validate_seq_grad()
-            if name == "reference16384":
-                self.assertEqual(cfg.training.global_batch_size, 128)
-                self.assertEqual(cfg.training.seq_len, 16384)
-                self.assertEqual(cfg.seq_grad.train_length, 2048)
-                self.assertEqual(len(cfg.seq_grad.lengths), 11)
-                self.assertEqual(sum([16384, *cfg.seq_grad.lengths]) / 2048, 17)
-            cfg.metrics.log_freq = 2
-            with self.assertRaisesRegex(ValueError, "log_freq"):
-                cfg.validate_seq_grad()
 
 
 if __name__ == "__main__":

@@ -31,12 +31,19 @@ from torchtitan_dynamic_seq_len.data.dynamic_seq_bs_loader import DynamicSeqBSDa
 from torchtitan_dynamic_seq_len.data.dynamic_seq_loader import DynamicSeqDataLoader
 from torchtitan_dynamic_seq_len.data.fineweb100 import register_fineweb100
 from torchtitan_dynamic_seq_len.data.fixed_validation import FixedBudgetValidator
+from torchtitan_dynamic_seq_len.data.long_documents import (
+    LongDocumentBatchDataLoader,
+    LongDocumentDataLoader,
+)
 from torchtitan_dynamic_seq_len.dynamic_seq.metrics import DynamicSeqMetricsProcessor
 from torchtitan_dynamic_seq_len.dynamic_seq.trainer import DynamicSeqLenTrainer
 from torchtitan_dynamic_seq_len.dynamic_seq_bs.metrics import DynamicSeqBSMetricsProcessor
 from torchtitan_dynamic_seq_len.dynamic_seq_bs.trainer import DynamicSeqBSTrainer
 from torchtitan_dynamic_seq_len.grad_var.metrics import GradVarMetricsProcessor
 from torchtitan_dynamic_seq_len.grad_var.trainer import GradVarTrainer
+from torchtitan_dynamic_seq_len.loss_grad_seq.metrics import LossGradMetricsProcessor
+from torchtitan_dynamic_seq_len.loss_grad_seq.trainer import LossGradSeqTrainer
+from torchtitan_dynamic_seq_len.loss_grad_seq.validation import LossLengthValidator
 from torchtitan_dynamic_seq_len.optimizer import ExperimentOptimizers
 from torchtitan_dynamic_seq_len.seq_grad.metrics import SeqGradMetricsProcessor
 from torchtitan_dynamic_seq_len.seq_grad.trainer import SeqGradTrainer
@@ -57,20 +64,21 @@ DATASETS.setdefault(
 )
 
 
-def _model(attn_backend: str, *, dim=768, num_layers=12, num_heads=12, num_kv_heads=4):
+def _model(attn_backend: str, *, dim=768, num_layers=12, num_heads=12, num_kv_heads=4,
+           vocab_size=32000):
     return Llama3Model.Config(
-        vocab_size=32000,
+        vocab_size=vocab_size,
         dim=dim,
         norm=RMSNorm.Config(normalized_shape=dim, param_init=_NORM_INIT),
         enable_weight_tying=True,
         tok_embeddings=Embedding.Config(
-            num_embeddings=32000,
+            num_embeddings=vocab_size,
             embedding_dim=dim,
             param_init=_EMBEDDING_SKIP_INIT,
         ),
         lm_head=Linear.Config(
             in_features=dim,
-            out_features=32000,
+            out_features=vocab_size,
             param_init=_output_linear_init(dim),
         ),
         layers=_build_llama3_layers(
@@ -97,6 +105,11 @@ def _model_1b_llama2(attn_backend: str) -> Llama3Model.Config:
 
 llama3_configs.setdefault("llama3_1b_llama2", _model_1b_llama2)
 llama3_configs.setdefault("llama3_100m_llama2_split", _model)
+llama3_configs.setdefault(
+    "llama3_100m_native_vocab",
+    lambda attn_backend: _model(attn_backend, dim=512, num_layers=12,
+                               num_heads=8, num_kv_heads=4, vocab_size=128256),
+)
 llama3_configs.setdefault(
     "sequence_length_debug",
     lambda attn_backend: _model(attn_backend, dim=64, num_layers=2, num_heads=4, num_kv_heads=2),
@@ -241,8 +254,23 @@ def llama3_debug_dynamic_seq_bs() -> Trainer.Config:
     return config
 
 
+def llama3_100m_long_documents_dynamic_seq_bs() -> Trainer.Config:
+    """Use the original Llama 3 vocabulary and complete-document token caches."""
+    config = llama3_100m_llama2_adamw_dynamic_seq_bs()
+    config.model_spec = model_registry("llama3_100m_native_vocab", attn_backend="flex")
+    config.hf_assets_path = str(ASSETS / "hf/llama3-tokenizer")
+    config.loss.loss_fn.global_vocab_size = 128256
+    config.loss.num_chunks = 16
+    config.dataloader = LongDocumentBatchDataLoader.Config(infinite=True, pin_memory=True)
+    config.validator.dataloader = LongDocumentDataLoader.Config(split="validation", infinite=False)
+    config.validator.eval_seq_len = 12288
+    config.validator.eval_local_batch_size = 4
+    config.training.seq_len = 12288
+    return config
+
+
 def llama3_100m_llama2_adamw_seq_grad() -> Trainer.Config:
-    """Compare sequence lengths at each update on a shared long parent batch."""
+    """Constant-length training with independent packed gradient probes."""
     config = _trainer(
         config_type=SeqGradTrainer.Config, metrics_type=SeqGradMetricsProcessor.Config
     )
@@ -250,7 +278,7 @@ def llama3_100m_llama2_adamw_seq_grad() -> Trainer.Config:
     config.lr_scheduler = LRSchedulersContainer.Config(
         warmup_steps=0, decay_type="linear", min_lr_factor=1.0
     )
-    config.training.seq_len = 16384
+    config.training.seq_len = 2048
     config.training.local_batch_size = 1
     config.training.global_batch_size = 128
     config.optimizer.learning_rate = 0.0005
@@ -262,11 +290,33 @@ def llama3_debug_seq_grad() -> Trainer.Config:
     config = llama3_100m_llama2_adamw_seq_grad()
     config.model_spec = model_registry("sequence_length_debug")
     config.dataloader.dataset = "sequence_length_smoke"
-    config.training.seq_len = 64
+    config.training.seq_len = 16
     config.training.global_batch_size = 8
     config.training.steps = 4
-    config.seq_grad.train_length = 16
+    config.seq_grad.reference_length = 64
+    config.seq_grad.probe_global_batch_size = 8
+    config.seq_grad.interval = 2
     config.seq_grad.lengths = [8, 16, 24, 32]
+    return config
+
+
+def llama3_100m_long_documents_seq_grad() -> Trainer.Config:
+    """Variance_Monitor baseline with packed independent context-gradient probes."""
+    config = _trainer(config_type=SeqGradTrainer.Config, metrics_type=SeqGradMetricsProcessor.Config)
+    config.model_spec = model_registry("llama3_100m_native_vocab", attn_backend="flex")
+    config.hf_assets_path = str(ASSETS / "hf/llama3-tokenizer")
+    config.loss.loss_fn.global_vocab_size = 128256
+    config.dataloader = LongDocumentDataLoader.Config(packing="stream", infinite=True, pin_memory=True)
+    config.validator.dataloader = LongDocumentDataLoader.Config(split="validation", infinite=False)
+    config.validator.eval_seq_len = 1024
+    config.training.seq_len = 1024
+    config.training.global_batch_size = 512
+    config.training.local_batch_size = 16
+    config.training.steps = 3819
+    config.optimizer.learning_rate = 0.0005
+    config.lr_scheduler = LRSchedulersContainer.Config(
+        warmup_steps=0, decay_type="linear", min_lr_factor=1.0
+    )
     return config
 
 
@@ -302,3 +352,109 @@ def llama3_1b_llama2_adamw_dynamic_seq_bs() -> Trainer.Config:
 def llama3_1b_llama2_adamw_seq_grad() -> Trainer.Config:
     config = llama3_100m_llama2_adamw_seq_grad()
     return _with_1b_llama2(config)
+
+
+def llama3_1b_long_documents() -> Trainer.Config:
+    """Train the upstream 1B backbone on single-document Llama 3 token windows."""
+    config = _trainer(config_type=ExperimentTrainerConfig, metrics_type=MetricsProcessor.Config)
+    config.model_spec = model_registry("1B", attn_backend="varlen")
+    config.hf_assets_path = str(ASSETS / "hf/llama3-tokenizer")
+    config.loss.loss_fn.global_vocab_size = 128256
+    config.loss.num_chunks = 32
+    config.dataloader = LongDocumentDataLoader.Config(infinite=True, pin_memory=True)
+    config.validator = FixedBudgetValidator.Config(
+        enable=True, freq=3, steps=2, eval_seq_len=32768, eval_local_batch_size=1,
+        dataloader=LongDocumentDataLoader.Config(split="validation", infinite=False),
+    )
+    config.training.local_batch_size = 1
+    config.training.global_batch_size = 1
+    config.training.seq_len = 32768
+    config.training.steps = 3
+    return config
+
+
+def llama3_100m_llama2_adamw_loss_grad_seq() -> Trainer.Config:
+    config = _trainer(
+        config_type=LossGradSeqTrainer.Config, metrics_type=LossGradMetricsProcessor.Config
+    )
+    config.dataloader = DynamicSeqBSDataLoader.Config(dataset="c4", pin_memory=True)
+    config.lr_scheduler = LRSchedulersContainer.Config(
+        warmup_steps=0, decay_type="linear", min_lr_factor=1.0
+    )
+    config.training.seq_len = 12288
+    config.training.global_batch_size = 512
+    config.training.local_batch_size = 64
+    config.validator = LossLengthValidator.Config(enable=False, freq=200, steps=20, eval_seq_len=12288)
+    return config
+
+
+def llama3_debug_loss_grad_seq() -> Trainer.Config:
+    config = llama3_100m_llama2_adamw_loss_grad_seq()
+    config.model_spec = model_registry("sequence_length_debug")
+    config.dataloader.dataset = "sequence_length_smoke"
+    config.training.seq_len = 64
+    config.training.steps = 8
+    config.training.global_batch_size = 8
+    config.training.local_batch_size = 4
+    config.loss_seq_len_scheduler.length = 64
+    config.grad_seq_len_scheduler.kind = "cyclic"
+    config.grad_seq_len_scheduler.min_length = 16
+    config.grad_seq_len_scheduler.max_length = 64
+    config.grad_seq_len_scheduler.period_steps = 4
+    config.batch_size_scheduler.batch_size = 8
+    config.loss_microbatch_scheduler.batch_size = 1
+    config.grad_microbatch_scheduler.batch_size = 4
+    config.validator.eval_seq_len = 64
+    return config
+
+
+def llama3_100m_long_documents_loss_grad_seq() -> Trainer.Config:
+    """Measure long-document loss and train on crops with the native Llama 3 vocabulary."""
+    config = llama3_100m_llama2_adamw_loss_grad_seq()
+    config.model_spec = model_registry("llama3_100m_native_vocab", attn_backend="flex")
+    config.hf_assets_path = str(ASSETS / "hf/llama3-tokenizer")
+    config.loss.loss_fn.global_vocab_size = 128256
+    config.loss.num_chunks = 8
+    config.dataloader = LongDocumentBatchDataLoader.Config(infinite=True, pin_memory=True)
+    config.validator.dataloader = LongDocumentDataLoader.Config(split="validation", infinite=False)
+    config.validator.eval_seq_len = 12288
+    config.validator.eval_local_batch_size = 4
+    config.training.local_batch_size = 1
+    return config
+
+
+def llama3_1b_llama2_adamw_loss_grad_seq() -> Trainer.Config:
+    return _with_1b_llama2(llama3_100m_llama2_adamw_loss_grad_seq())
+
+
+def llama3_100m_packed_documents_loss_grad_seq() -> Trainer.Config:
+    """Use packed parents with configurable document masking, enabled by default."""
+    config = llama3_100m_long_documents_loss_grad_seq()
+    config.dataloader.packing = "stream"
+    config.validator.dataloader.packing = "stream"
+    config.document_masking = True
+    config.training.seq_len = 22256
+    config.loss_seq_len_scheduler.length = 22256
+    config.validator.eval_seq_len = 22256
+    return config
+
+
+def llama3_100m_long_documents_x_monitor() -> Trainer.Config:
+    """Independent X probes with separately configured validation length."""
+    from dataclasses import fields
+
+    from torchtitan_dynamic_seq_len.grad_var.validation import XValidator
+
+    config = _trainer()
+    config.validator = XValidator.Config(
+        **{field.name: getattr(config.validator, field.name) for field in fields(config.validator)}
+    )
+    config.model_spec = model_registry("llama3_100m_native_vocab", attn_backend="flex")
+    config.hf_assets_path = str(ASSETS / "hf/llama3-tokenizer")
+    config.loss.loss_fn.global_vocab_size = 128256
+    config.dataloader = LongDocumentDataLoader.Config(infinite=True, pin_memory=True)
+    config.validator.dataloader = LongDocumentDataLoader.Config(split="validation", infinite=False)
+    config.validator.eval_seq_len = 1024
+    config.grad_var_monitor.enable = True
+    config.grad_var_monitor.mode = "x"
+    return config

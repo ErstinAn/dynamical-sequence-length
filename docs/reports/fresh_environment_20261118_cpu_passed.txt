@@ -1,0 +1,593 @@
+W1118 05:06:22.417000 52 site-packages/torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W1118 05:06:22.495000 52 site-packages/torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+test_exact_local_alias_only_and_existing_directory_wins (tests.test_archived_data_paths.ArchivedDataPathTests.test_exact_local_alias_only_and_existing_directory_wins) ... ok
+test_missing_archive_does_not_substitute_new_data (tests.test_archived_data_paths.ArchivedDataPathTests.test_missing_archive_does_not_substitute_new_data) ... ok
+test_tensor_and_counter_differences_are_detected (tests.test_checkpoint_comparison.CheckpointComparisonTest.test_tensor_and_counter_differences_are_detected) ... /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/environment/conda/lib/python3.12/site-packages/torch/distributed/checkpoint/utils.py:488: UserWarning: torch.distributed is disabled, unavailable or uninitialized, assuming the intent is to save in a single process.
+  return func(*args, **kwargs)
+/projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/environment/conda/lib/python3.12/site-packages/torch/distributed/checkpoint/utils.py:488: UserWarning: torch.distributed is disabled, unavailable or uninitialized, assuming the intent is to load in a single process.
+  return func(*args, **kwargs)
+ok
+test_constant_updates_and_checkpoint_resume (tests.test_constant_lr.ConstantLearningRateTest.test_constant_updates_and_checkpoint_resume) ... initial_load_model_only=True has no effect without an initial_load_path.
+/projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/environment/conda/lib/python3.12/site-packages/torch/optim/lr_scheduler.py:461: UserWarning: To get the last learning rate computed by the scheduler, please use `get_last_lr()`.
+  _warn_get_lr_called_within_step(self)
+ok
+test_every_sweep_point_builds_native_trainer_with_fixed_batch_and_length (tests.test_constant_lr.ConstantLearningRateTest.test_every_sweep_point_builds_native_trainer_with_fixed_batch_and_length) ... initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+ok
+test_batch_loader_checkpoint_with_changed_shape (tests.test_document_packing.PackingTests.test_batch_loader_checkpoint_with_changed_shape) ... /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/environment/conda/lib/python3.12/site-packages/torchdata/stateful_dataloader/stateful_dataloader.py:379: UserWarning: 'set_vital' is deprecated, please do not call
+  torch.set_vital("Dataloader", "enabled", "True")  # type: ignore[attr-defined]
+ok
+test_configuration_defaults_and_all_schedules (tests.test_document_packing.PackingTests.test_configuration_defaults_and_all_schedules) ... initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+ok
+test_crop_positions_and_mask_toggle (tests.test_document_packing.PackingTests.test_crop_positions_and_mask_toggle) ... ok
+test_exact_coverage_and_parallel_assignment (tests.test_document_packing.PackingTests.test_exact_coverage_and_parallel_assignment) ... ok
+test_failed_preparation_leaves_no_artifact (tests.test_document_packing.PackingTests.test_failed_preparation_leaves_no_artifact) ... ok
+test_masking_change_rejects_checkpoint (tests.test_document_packing.PackingTests.test_masking_change_rejects_checkpoint) ... initial_load_model_only=True has no effect without an initial_load_path.
+ok
+test_recovery_after_shards_epochs_and_shape_changes (tests.test_document_packing.PackingTests.test_recovery_after_shards_epochs_and_shape_changes) ... ok
+test_validation_budget_prefix_and_provenance (tests.test_document_packing.PackingTests.test_validation_budget_prefix_and_provenance) ... ok
+test_insufficient_pool_fails_without_partial_dataset (tests.test_document_validation.DocumentValidationTests.test_insufficient_pool_fails_without_partial_dataset) ... ok
+test_multiple_windows_per_document_without_overlap_including_targets (tests.test_document_validation.DocumentValidationTests.test_multiple_windows_per_document_without_overlap_including_targets) ... {"output": "/localscratch/kangan/tmpzb7xxb6l/frozen", "sequences": 4, "valid_labels": 58}
+{"output": "/localscratch/kangan/tmpgqaz8qu_/fixed", "sequences": 6, "valid_labels": 48, "eligible_documents": 3, "candidate_windows": 6}
+ok
+test_seed_reproduces_exact_arrays_and_random_offsets (tests.test_document_validation.DocumentValidationTests.test_seed_reproduces_exact_arrays_and_random_offsets) ... {"output": "/localscratch/kangan/tmpea7opdq4/a", "sequences": 5, "valid_labels": 40, "eligible_documents": 3, "candidate_windows": 6}
+{"output": "/localscratch/kangan/tmpea7opdq4/b", "sequences": 5, "valid_labels": 40, "eligible_documents": 3, "candidate_windows": 6}
+ok
+test_hash_checks_cover_order_validation_and_tokenizer (tests.test_download_dataset.DownloadDatasetTest.test_hash_checks_cover_order_validation_and_tokenizer) ... ok
+test_refuses_original_data_and_token_links (tests.test_download_dataset.DownloadDatasetTest.test_refuses_original_data_and_token_links) ... ok
+test_disabled_or_loss_only_compile_keeps_blocks_unchanged (tests.test_dynamic_compile.DynamicCompileTest.test_disabled_or_loss_only_compile_keeps_blocks_unchanged) ... ok
+test_dynamic_wrapper_is_lazy_and_preserves_parameters (tests.test_dynamic_compile.DynamicCompileTest.test_dynamic_wrapper_is_lazy_and_preserves_parameters) ... ok
+test_wandb_failure_and_normal_close (tests.test_dynamic_compile.DynamicCompileTest.test_wandb_failure_and_normal_close) ... ok
+test_cyclic_full_period_packing_and_resume (tests.test_dynamic_seq.PackingTest.test_cyclic_full_period_packing_and_resume) ... /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/environment/conda/lib/python3.12/site-packages/torchdata/stateful_dataloader/stateful_dataloader.py:379: UserWarning: 'set_vital' is deprecated, please do not call
+  torch.set_vital("Dataloader", "enabled", "True")  # type: ignore[attr-defined]
+ok
+test_document_labels_and_tail_across_lengths (tests.test_dynamic_seq.PackingTest.test_document_labels_and_tail_across_lengths) ... ok
+test_infinite_resume_after_exact_document_end (tests.test_dynamic_seq.PackingTest.test_infinite_resume_after_exact_document_end) ... Dataset dynamic_test is being re-looped (epoch 1)
+Dataset dynamic_test is being re-looped (epoch 1)
+ok
+test_live_lengths_and_resume_at_end_of_document_stream (tests.test_dynamic_seq.PackingTest.test_live_lengths_and_resume_at_end_of_document_stream) ... ok
+test_bad_parameters (tests.test_dynamic_seq.SchedulesTest.test_bad_parameters) ... ok
+test_cyclic_linear_steps_and_exact_budget (tests.test_dynamic_seq.SchedulesTest.test_cyclic_linear_steps_and_exact_budget) ... ok
+test_dynamic_launch_from_checkout_without_local_directory (tests.test_dynamic_seq.SchedulesTest.test_dynamic_launch_from_checkout_without_local_directory) ... ok
+test_public_profiles_preserve_training_budgets (tests.test_dynamic_seq.SchedulesTest.test_public_profiles_preserve_training_budgets) ... initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+ok
+test_public_submission_sweeps_dry_run (tests.test_dynamic_seq.SchedulesTest.test_public_submission_sweeps_dry_run) ... ok
+test_rounded_cyclic_symmetry_and_exact_budget (tests.test_dynamic_seq.SchedulesTest.test_rounded_cyclic_symmetry_and_exact_budget) ... ok
+test_shapes_and_exact_time_reversal (tests.test_dynamic_seq.SchedulesTest.test_shapes_and_exact_time_reversal) ... ok
+test_yaml_cli_dispatch_and_capacity (tests.test_dynamic_seq.SchedulesTest.test_yaml_cli_dispatch_and_capacity) ... initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+ok
+test_constant_is_native_update (tests.test_dynamic_seq.TrainerTest.test_constant_is_native_update) ... ok
+test_fixed_validation_length_is_independent_of_capacity (tests.test_dynamic_seq.TrainerTest.test_fixed_validation_length_is_independent_of_capacity) ... ok
+test_masked_labels_and_cancelled_accumulation (tests.test_dynamic_seq.TrainerTest.test_masked_labels_and_cancelled_accumulation) ... ok
+test_partial_final_batch_cancels_whole_step (tests.test_dynamic_seq.TrainerTest.test_partial_final_batch_cancels_whole_step) ... ok
+test_resume_across_transition_and_nonlogging_steps (tests.test_dynamic_seq.TrainerTest.test_resume_across_transition_and_nonlogging_steps) ... ok
+test_rope_capacity_matches_short_cache_and_is_reused (tests.test_dynamic_seq.TrainerTest.test_rope_capacity_matches_short_cache_and_is_reused) ... ok
+test_weighted_flops_and_validation_window (tests.test_dynamic_seq.TrainerTest.test_weighted_flops_and_validation_window) ... ok
+test_changes_shapes_without_losing_tokens_and_restores (tests.test_dynamic_seq_bs.LoaderTest.test_changes_shapes_without_losing_tokens_and_restores) ... ok
+test_partial_batch_and_exact_end_resume (tests.test_dynamic_seq_bs.LoaderTest.test_partial_batch_and_exact_end_resume) ... Dataset dynamic_bs_test is being re-looped (epoch 1)
+ok
+test_all_kinds_share_sequence_schedule_rules (tests.test_dynamic_seq_bs.SchedulerTest.test_all_kinds_share_sequence_schedule_rules) ... ok
+test_fixed_token_profiles (tests.test_dynamic_seq_bs.SchedulerTest.test_fixed_token_profiles) ... initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+ok
+test_public_profiles_and_owners (tests.test_dynamic_seq_bs.SchedulerTest.test_public_profiles_and_owners) ... initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+ok
+test_rejects_invalid_intermediate_step_and_initial_values (tests.test_dynamic_seq_bs.SchedulerTest.test_rejects_invalid_intermediate_step_and_initial_values) ... initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+ok
+test_triangular_phase_offset (tests.test_dynamic_seq_bs.SchedulerTest.test_triangular_phase_offset) ... ok
+test_native_gradient_equivalence_and_metrics (tests.test_dynamic_seq_bs.TrainerTest.test_native_gradient_equivalence_and_metrics) ... ok
+test_phase_offset_checkpoint_signatures (tests.test_dynamic_seq_bs.TrainerTest.test_phase_offset_checkpoint_signatures) ... ok
+test_resume_at_batch_transition_and_nonlogging_step (tests.test_dynamic_seq_bs.TrainerTest.test_resume_at_batch_transition_and_nonlogging_step) ... ok
+test_window_flops_use_actual_tokens (tests.test_dynamic_seq_bs.TrainerTest.test_window_flops_use_actual_tokens) ... ok
+test_artifact_budget_source_capacity_and_hashes (tests.test_fineweb100.FineWeb100Tests.test_artifact_budget_source_capacity_and_hashes) ... ok
+test_different_artifact_identity_is_rejected_before_training (tests.test_fineweb100.FineWeb100Tests.test_different_artifact_identity_is_rejected_before_training) ... ok
+test_exact_full_split_is_pinned_and_disjoint (tests.test_fineweb100.FineWeb100Tests.test_exact_full_split_is_pinned_and_disjoint) ... ok
+test_incomplete_local_snapshot_does_not_become_prefix_training (tests.test_fineweb100.FineWeb100Tests.test_incomplete_local_snapshot_does_not_become_prefix_training) ... ok
+test_insufficient_tokens_fails_atomically (tests.test_fineweb100.FineWeb100Tests.test_insufficient_tokens_fails_atomically) ... ok
+test_loader_never_opens_validation_and_filters_copies (tests.test_fineweb100.FineWeb100Tests.test_loader_never_opens_validation_and_filters_copies) ... ok
+test_missing_or_tampered_exclusion_index_fails_closed (tests.test_fineweb100.FineWeb100Tests.test_missing_or_tampered_exclusion_index_fails_closed) ... ok
+test_packing_matches_actual_upstream_dataset (tests.test_fineweb100.FineWeb100Tests.test_packing_matches_actual_upstream_dataset) ... Dataset fineweb100_packing_test has run out of data
+ok
+test_source_hash_failure_leaves_no_output (tests.test_fineweb100.FineWeb100Tests.test_source_hash_failure_leaves_no_output) ... ok
+test_checkpoint_replays_across_order_boundaries_and_epochs (tests.test_fixed_document_order.FixedDocumentOrderTests.test_checkpoint_replays_across_order_boundaries_and_epochs) ... ok
+test_frozen_sample_is_reproducible_and_counts_only_selected_windows (tests.test_fixed_document_order.FixedDocumentOrderTests.test_frozen_sample_is_reproducible_and_counts_only_selected_windows) ... ok
+test_global_shuffle_precedes_rank_split_and_preserves_targets (tests.test_fixed_document_order.FixedDocumentOrderTests.test_global_shuffle_precedes_rank_split_and_preserves_targets) ... ok
+test_rejects_duplicate_or_modified_order (tests.test_fixed_document_order.FixedDocumentOrderTests.test_rejects_duplicate_or_modified_order) ... ok
+test_actual_nll_count_training_state_and_no_gradients (tests.test_fixed_validation.FixedBudgetValidationTest.test_actual_nll_count_training_state_and_no_gradients) ... ok
+test_bad_budget_and_sequence_count_rejected (tests.test_fixed_validation.FixedBudgetValidationTest.test_bad_budget_and_sequence_count_rejected) ... ok
+test_checksum_tampering_rejected (tests.test_fixed_validation.FixedBudgetValidationTest.test_checksum_tampering_rejected) ... ok
+test_document_provenance_checksum_rejected (tests.test_fixed_validation.FixedBudgetValidationTest.test_document_provenance_checksum_rejected) ... ok
+test_frozen_arrays_identical_and_partial_forward_not_padded (tests.test_fixed_validation.FixedBudgetValidationTest.test_frozen_arrays_identical_and_partial_forward_not_padded) ... ok
+test_ignored_labels_rejected_despite_valid_checksum (tests.test_fixed_validation.FixedBudgetValidationTest.test_ignored_labels_rejected_despite_valid_checksum) ... ok
+test_insufficient_array_rejected_despite_valid_checksum (tests.test_fixed_validation.FixedBudgetValidationTest.test_insufficient_array_rejected_despite_valid_checksum) ... ok
+test_legacy_mode_delegates_and_never_requires_artifact (tests.test_fixed_validation.FixedBudgetValidationTest.test_legacy_mode_delegates_and_never_requires_artifact) ... ok
+test_nonfinite_fails_and_restores_eval_state (tests.test_fixed_validation.FixedBudgetValidationTest.test_nonfinite_fails_and_restores_eval_state) ... ok
+test_production_budget_population_identical_dp_and_batch_matrix (tests.test_fixed_validation.FixedBudgetValidationTest.test_production_budget_population_identical_dp_and_batch_matrix) ... ok
+test_real_chunked_loss_matches_full_logits_without_backward (tests.test_fixed_validation.FixedBudgetValidationTest.test_real_chunked_loss_matches_full_logits_without_backward) ... ok
+test_real_two_rank_reduction_and_partial_batches (tests.test_fixed_validation.FixedBudgetValidationTest.test_real_two_rank_reduction_and_partial_batches) ... skipped 'opt in to local Gloo sockets'
+test_tokenizer_mismatch_rejected (tests.test_fixed_validation.FixedBudgetValidationTest.test_tokenizer_mismatch_rejected) ... ok
+initial_load_model_only=True has no effect without an initial_load_path.
+test_built_artifact_checksums_vocabulary_and_training_exclusions (tests.test_formal_experiment.FormalExperimentTest.test_built_artifact_checksums_vocabulary_and_training_exclusions) ... skipped 'Set DYNAMIC_SEQ_LEN_ARTIFACT_TEST=1 to check local data.'
+test_launcher_exports_exact_wandb_target_and_validation_dir (tests.test_formal_experiment.FormalExperimentTest.test_launcher_exports_exact_wandb_target_and_validation_dir) ... ok
+test_real_model_count_tied_vocab_and_rounded_20tpp (tests.test_formal_experiment.FormalExperimentTest.test_real_model_count_tied_vocab_and_rounded_20tpp) ... skipped 'Run scripts/prepare_tokenizer.py to check the tokenizer.'
+test_three_lengths_parse_into_matching_trainer_and_dp (tests.test_formal_experiment.FormalExperimentTest.test_three_lengths_parse_into_matching_trainer_and_dp) ... initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+ok
+test_chunked_ce_against_independent_full_ce_gradients (tests.test_grad_var_chunked_loss.GradVarChunkedLossTest.test_chunked_ce_against_independent_full_ce_gradients) ... ok
+test_four_rank_vectors_tokens_errors_and_dtensor (tests.test_grad_var_distributed.GradVarDistributedTest.test_four_rank_vectors_tokens_errors_and_dtensor) ... skipped 'opt in to local Gloo sockets'
+test_equal_norm_opposite_directions (tests.test_grad_var_monitor.GradVarMonitorTest.test_equal_norm_opposite_directions) ... ok
+test_identical_samples_and_large_mean (tests.test_grad_var_monitor.GradVarMonitorTest.test_identical_samples_and_large_mean) ... ok
+test_invalid_samples_lifecycle_and_names (tests.test_grad_var_monitor.GradVarMonitorTest.test_invalid_samples_lifecycle_and_names) ... ok
+test_shared_frozen_and_missing_gradients (tests.test_grad_var_monitor.GradVarMonitorTest.test_shared_frozen_and_missing_gradients) ... ok
+test_stacked_reference_multiple_k_and_parameter_shapes (tests.test_grad_var_monitor.GradVarMonitorTest.test_stacked_reference_multiple_k_and_parameter_shapes) ... ok
+test_cadence_recovery_and_validation_do_not_leak (tests.test_grad_var_trainer.GradVarTrainerTest.test_cadence_recovery_and_validation_do_not_leak) ... ok
+test_config_owner_both_registry_templates_and_build (tests.test_grad_var_trainer.GradVarTrainerTest.test_config_owner_both_registry_templates_and_build) ... initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+ok
+test_disabled_k1_and_enabled_unsupported_runtime (tests.test_grad_var_trainer.GradVarTrainerTest.test_disabled_k1_and_enabled_unsupported_runtime) ... ok
+test_errors_before_update_and_next_step_reset (tests.test_grad_var_trainer.GradVarTrainerTest.test_errors_before_update_and_next_step_reset) ... ok
+test_logging_merges_once_and_checks_step (tests.test_grad_var_trainer.GradVarTrainerTest.test_logging_merges_once_and_checks_step) ... ok
+test_preclip_reference_and_exact_training_equivalence (tests.test_grad_var_trainer.GradVarTrainerTest.test_preclip_reference_and_exact_training_equivalence) ... ok
+test_configs_and_optimizer_steps_without_original_packages (tests.test_independence.ProjectIndependenceTest.test_configs_and_optimizer_steps_without_original_packages) ... ok
+test_asset_root_changes_both_data_and_tokenizer_paths (tests.test_launch.LocalLaunchTest.test_asset_root_changes_both_data_and_tokenizer_paths) ... ok
+test_dry_run_does_not_create_output (tests.test_launch.LocalLaunchTest.test_dry_run_does_not_create_output) ... ok
+test_smoke_config_uses_local_data_and_ten_steps (tests.test_launch.LocalLaunchTest.test_smoke_config_uses_local_data_and_ten_steps) ... initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+ok
+test_unknown_optimizer_method_is_rejected (tests.test_launch.LocalLaunchTest.test_unknown_optimizer_method_is_rejected) ... ok
+test_cluster_selection_and_missing_account (tests.test_launcher.LauncherTest.test_cluster_selection_and_missing_account) ... ok
+test_compute_side_dry_run_uses_manifest_id_and_directory (tests.test_launcher.LauncherTest.test_compute_side_dry_run_uses_manifest_id_and_directory) ... ok
+test_entry_points_without_pythonpath (tests.test_launcher.LauncherTest.test_entry_points_without_pythonpath) ... ok
+test_launch_rejects_changed_source (tests.test_launcher.LauncherTest.test_launch_rejects_changed_source) ... ok
+test_manifest_round_trip_binds_id_to_grid_point (tests.test_launcher.LauncherTest.test_manifest_round_trip_binds_id_to_grid_point) ... ok
+test_new_submissions_get_distinct_ids_and_directories (tests.test_launcher.LauncherTest.test_new_submissions_get_distinct_ids_and_directories) ... ok
+test_resume_one_sweep_index_with_walltime_override (tests.test_launcher.LauncherTest.test_resume_one_sweep_index_with_walltime_override) ... ok
+test_resume_rejects_changed_config_and_run_record (tests.test_launcher.LauncherTest.test_resume_rejects_changed_config_and_run_record) ... ok
+test_resume_requires_complete_dcp_metadata (tests.test_launcher.LauncherTest.test_resume_requires_complete_dcp_metadata) ... ok
+test_storage_paths_do_not_change_the_selected_directory (tests.test_launcher.LauncherTest.test_storage_paths_do_not_change_the_selected_directory) ... ok
+test_submission_does_not_export_login_node_wandb_service (tests.test_launcher.LauncherTest.test_submission_does_not_export_login_node_wandb_service) ... ok
+test_submission_paths_are_in_process_environment (tests.test_launcher.LauncherTest.test_submission_paths_are_in_process_environment) ... ok
+test_submission_persists_an_immutable_config_snapshot (tests.test_launcher.LauncherTest.test_submission_persists_an_immutable_config_snapshot) ... ok
+test_submit_dry_run_uses_plain_export_all (tests.test_launcher.LauncherTest.test_submit_dry_run_uses_plain_export_all) ... ok
+test_wandb_entity_and_legacy_team_alias (tests.test_launcher.LauncherTest.test_wandb_entity_and_legacy_team_alias) ... ok
+test_writer_lock_rejects_a_second_writer_and_cleans_up (tests.test_launcher.LauncherTest.test_writer_lock_rejects_a_second_writer_and_cleans_up) ... ok
+test_adapted_architecture_parameter_count_and_tied_weights (tests.test_llama3_1b.Llama3OneBTest.test_adapted_architecture_parameter_count_and_tied_weights) ... initial_load_model_only=True has no effect without an initial_load_path.
+ok
+test_downloaded_tokenizer_if_available (tests.test_llama3_1b.Llama3OneBTest.test_downloaded_tokenizer_if_available) ... initial_load_model_only=True has no effect without an initial_load_path.
+skipped 'Prepare the Llama2 tokenizer first.'
+test_every_trainer_uses_matching_model_tokenizer_and_loss (tests.test_llama3_1b.Llama3OneBTest.test_every_trainer_uses_matching_model_tokenizer_and_loss) ... initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+ok
+test_examples_parse_for_one_and_two_gpus (tests.test_llama3_1b.Llama3OneBTest.test_examples_parse_for_one_and_two_gpus) ... initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+ok
+{"output": "/localscratch/kangan/tmpv1zr6s3m/validation_a", "sequences": 2, "valid_labels": 29}
+{"output": "/localscratch/kangan/tmpv1zr6s3m/validation_b", "sequences": 2, "valid_labels": 29}
+{"event": "selected", "minimum_llama3_tokens": 80, "splits": {"train": {"documents": 14, "tokens": 1240, "minimum": 83, "maximum": 95}, "validation": {"documents": 14, "tokens": 1252, "minimum": 83, "maximum": 95}}}
+{"event": "materialized", "split": "train", "path": "data/train-00000.parquet", "tokens": 1240}
+{"event": "materialized", "split": "validation", "path": "data/validation-00000.parquet", "tokens": 1252}
+{"event": "artifact_complete", "path": "/localscratch/kangan/tmp_09a12s2/artifact"}
+{"passed": true, "totals": {"train": {"documents": 14, "tokens": 1240}, "validation": {"documents": 14, "tokens": 1252}}, "url_group_overlap": 0, "retokenized_documents": 4, "manifest_sha256": "a21196c9bd82983117ea2220cb2a7975a9a6d88e8d8b0a9d12c98fb06d970857", "all_text_hashes_and_token_bounds_checked": true, "dataset_manifest_sha256": "9125306069259c267567967479b8714ce5fb39a6fcda960cf3afdffc0cb172f6"}
+test_combined_pools_remove_cross_pool_duplicates (tests.test_long_documents.LongDocumentTests.test_combined_pools_remove_cross_pool_duplicates) ... {"event": "combined", "candidate_roots": ["/localscratch/kangan/tmp_09a12s2/source", "/localscratch/kangan/tmpc660tc32/second"], "plan_sha256": "e5466121a4d013af6117780ac13609e0ff73177e3d00f909625090534e31b4f6"}
+{"event": "selected", "minimum_llama3_tokens": 80, "splits": {"train": {"documents": 14, "tokens": 1240, "minimum": 83, "maximum": 95}, "validation": {"documents": 14, "tokens": 1252, "minimum": 83, "maximum": 95}}}
+{"event": "materialized", "split": "train", "path": "data/train-00000.parquet", "tokens": 1240}
+{"event": "materialized", "split": "validation", "path": "data/validation-00000.parquet", "tokens": 1252}
+{"event": "artifact_complete", "path": "/localscratch/kangan/tmpc660tc32/artifact"}
+{"passed": true, "totals": {"train": {"documents": 14, "tokens": 1240}, "validation": {"documents": 14, "tokens": 1252}}, "url_group_overlap": 0, "retokenized_documents": 4, "manifest_sha256": "5b70b6a325d9a144a98469ae6493c0363cf31f3c367a4d6749d77b2c5d8aef60", "all_text_hashes_and_token_bounds_checked": true, "dataset_manifest_sha256": "a6247ee74c8f0b49de39851ccefdbc98d1944e71f6f01d5e0c4b10f349f70f5d"}
+ok
+test_completed_build_resumes_without_rewriting (tests.test_long_documents.LongDocumentTests.test_completed_build_resumes_without_rewriting) ... {"event": "selection_reused", "minimum_llama3_tokens": 80}
+{"event": "materialization_reused", "path": "/localscratch/kangan/tmp_09a12s2/artifact"}
+ok
+test_dedup_split_and_budget (tests.test_long_documents.LongDocumentTests.test_dedup_split_and_budget) ... ok
+test_dynamic_batch_shape_and_resume (tests.test_long_documents.LongDocumentTests.test_dynamic_batch_shape_and_resume) ... /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/environment/conda/lib/python3.12/site-packages/torchdata/stateful_dataloader/stateful_dataloader.py:379: UserWarning: 'set_vital' is deprecated, please do not call
+  torch.set_vital("Dataloader", "enabled", "True")  # type: ignore[attr-defined]
+ok
+test_loader_build_and_checkpoint (tests.test_long_documents.LongDocumentTests.test_loader_build_and_checkpoint) ... ok
+test_ordered_package_rebuild_preserves_manifest_and_validation (tests.test_long_documents.LongDocumentTests.test_ordered_package_rebuild_preserves_manifest_and_validation) ... {"stage": "document_order", "split": "train", "documents": 14, "raw_tokens": 1240, "supplement_raw_tokens": 1240, "supplement_token_fraction": 1.0, "length_token_fractions": [1.0, 0.0, 0.0, 0.0, 0.0, 0.0], "length_bin_edges": [0, 16384, 24576, 32768, 65536, 131072, null], "document_length": {"unit": "raw Llama 3 tokens; excludes BOS and EOS", "population": "distinct source documents with at least one selected raw input token", "minimum": 83, "maximum": 95, "mean": 88.57142857142857, "quantiles": {"0.25": 83.0, "0.5": 89.0, "0.75": 93.5, "0.9": 95.0, "0.95": 95.0, "0.99": 95.0}, "bin_documents": [14, 0, 0, 0, 0, 0]}, "order_sha256": "cdbae0e6a0c525991291ce66b8e6fcfc3e28dc575955e2f52d268cdf316433e1", "dp4_physical_positions": [352, 358, 279, 279], "ordered_block_definition": "32 contiguous equal-document-count blocks, or fewer for a small dataset", "ordered_block_supplement_token_fractions": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], "ordered_block_document_length_means": [83.0, 89.0, 89.0, 89.0, 83.0, 83.0, 95.0, 95.0, 95.0, 83.0, 89.0, 89.0, 83.0, 95.0], "dp4_ordered_block_document_length_means": [[83.0, 83.0, 95.0, 83.0], [89.0, 83.0, 83.0, 95.0], [89.0, 95.0, 89.0], [89.0, 95.0, 89.0]]}
+{"stage": "document_order", "split": "validation", "documents": 14, "raw_tokens": 1252, "supplement_raw_tokens": 1252, "supplement_token_fraction": 1.0, "length_token_fractions": [1.0, 0.0, 0.0, 0.0, 0.0, 0.0], "length_bin_edges": [0, 16384, 24576, 32768, 65536, 131072, null], "document_length": {"unit": "raw Llama 3 tokens; excludes BOS and EOS", "population": "distinct source documents with at least one selected raw input token", "minimum": 83, "maximum": 95, "mean": 89.42857142857143, "quantiles": {"0.25": 84.5, "0.5": 89.0, "0.75": 95.0, "0.9": 95.0, "0.95": 95.0, "0.99": 95.0}, "bin_documents": [14, 0, 0, 0, 0, 0]}, "order_sha256": "6a318c8111b2d1375b9895c0ba3e339c5abffadf889513d3cd597c5b2b670f8e", "dp4_physical_positions": [358, 376, 267, 279]}
+{"output": "/localscratch/kangan/tmp1_fbcxzb/final.partial-wsoy6yhv/validation", "sequences": 8, "valid_labels": 256, "eligible_documents": 14, "candidate_windows": 28}
+{"stage": "complete", "output": "/localscratch/kangan/tmp1_fbcxzb/final", "documents": 7, "raw_tokens": 256, "supplement_raw_tokens": 256, "supplement_token_fraction": 1.0, "length_token_fractions": [1.0, 0.0, 0.0, 0.0, 0.0, 0.0], "length_bin_edges": [0, 16384, 24576, 32768, 65536, 131072, null], "document_length": {"unit": "raw Llama 3 tokens; excludes BOS and EOS", "population": "distinct source documents with at least one selected raw input token", "minimum": 83, "maximum": 95, "mean": 91.57142857142857, "quantiles": {"0.25": 89.0, "0.5": 95.0, "0.75": 95.0, "0.9": 95.0, "0.95": 95.0, "0.99": 95.0}, "bin_documents": [7, 0, 0, 0, 0, 0]}, "original_documents": 0, "supplement_documents": 7, "length_token_fraction_differences": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "num_sequences": 8, "sequence_length": 32, "valid_labels": 256, "padding_positions": 0, "manifest_sha256": "d8fbd4d833c942fd6362fbd4e14add464895987a2f15a08410e54a45f590a60c", "documents_with_multiple_selected_windows": 1, "max_selected_windows_per_document": 2, "representative_of_full_validation": false, "selection_population": "uniform_disjoint_document_windows_without_replacement", "eligible_original_documents": 0, "eligible_supplement_documents": 14}
+{"shard": "train-00000", "tokens": 1240, "reused_checked_cache": false, "elapsed_seconds": 0.3025748690124601}
+{"shard": "validation-00000", "tokens": 1252, "reused_checked_cache": false, "elapsed_seconds": 0.004396286909468472}
+ok
+test_parallel_partition (tests.test_long_documents.LongDocumentTests.test_parallel_partition) ... ok
+test_parallel_shards_preserve_document_order_and_tokens (tests.test_long_documents.LongDocumentTests.test_parallel_shards_preserve_document_order_and_tokens) ... {"event": "materialized", "split": "train", "path": "data/train-00000.parquet", "tokens": 338}
+{"event": "materialized", "split": "train", "path": "data/train-00001.parquet", "tokens": 356}
+{"event": "materialized", "split": "train", "path": "data/train-00002.parquet", "tokens": 362}
+{"event": "materialized", "split": "train", "path": "data/train-00003.parquet", "tokens": 184}
+{"event": "materialized", "split": "validation", "path": "data/validation-00000.parquet", "tokens": 368}
+{"event": "materialized", "split": "validation", "path": "data/validation-00001.parquet", "tokens": 356}
+{"event": "materialized", "split": "validation", "path": "data/validation-00002.parquet", "tokens": 350}
+{"event": "materialized", "split": "validation", "path": "data/validation-00003.parquet", "tokens": 178}
+{"event": "artifact_complete", "path": "/localscratch/kangan/tmpgxsvczps/artifact"}
+{"passed": true, "totals": {"train": {"documents": 14, "tokens": 1240}, "validation": {"documents": 14, "tokens": 1252}}, "url_group_overlap": 0, "retokenized_documents": 16, "manifest_sha256": "cb77f43badd8066b029506507ff7760adadf45da7e3e50e94abc450b5dc3c420", "all_text_hashes_and_token_bounds_checked": true, "dataset_manifest_sha256": "38457a6e28a3649bd19894c1ee8dbbf0eb38c34b04fe63240f471c99f2fe94c9"}
+ok
+test_partial_build_reuses_complete_shards (tests.test_long_documents.LongDocumentTests.test_partial_build_reuses_complete_shards) ... {"event": "shard_reused", "path": "data/train-00000.parquet"}
+{"event": "materialized", "split": "train", "path": "data/train-00000.parquet", "tokens": 1240}
+{"event": "materialized", "split": "validation", "path": "data/validation-00000.parquet", "tokens": 1252}
+{"event": "artifact_complete", "path": "/localscratch/kangan/tmpvpbicwo0/artifact"}
+{"passed": true, "totals": {"train": {"documents": 14, "tokens": 1240}, "validation": {"documents": 14, "tokens": 1252}}, "url_group_overlap": 0, "retokenized_documents": 4, "manifest_sha256": "a21196c9bd82983117ea2220cb2a7975a9a6d88e8d8b0a9d12c98fb06d970857", "all_text_hashes_and_token_bounds_checked": true, "dataset_manifest_sha256": "9125306069259c267567967479b8714ce5fb39a6fcda960cf3afdffc0cb172f6"}
+ok
+test_resume_and_length_change (tests.test_long_documents.LongDocumentTests.test_resume_and_length_change) ... ok
+test_shared_text_rebuilds_identical_tokens (tests.test_long_documents.LongDocumentTests.test_shared_text_rebuilds_identical_tokens) ... {"shard": "train-00000", "tokens": 1240, "reused_checked_cache": false, "elapsed_seconds": 0.0023127730237320065}
+{"shard": "validation-00000", "tokens": 1252, "reused_checked_cache": false, "elapsed_seconds": 0.001526891952380538}
+{"passed": true, "totals": {"train": {"documents": 14, "tokens": 1240}, "validation": {"documents": 14, "tokens": 1252}}, "url_group_overlap": 0, "retokenized_documents": 4, "manifest_sha256": "a21196c9bd82983117ea2220cb2a7975a9a6d88e8d8b0a9d12c98fb06d970857", "all_text_hashes_and_token_bounds_checked": true, "dataset_manifest_sha256": "9125306069259c267567967479b8714ce5fb39a6fcda960cf3afdffc0cb172f6"}
+ok
+test_snapshot_uses_only_completed_files_and_stays_fixed (tests.test_long_documents.LongDocumentTests.test_snapshot_uses_only_completed_files_and_stays_fixed) ... {"event": "combined", "candidate_roots": ["/localscratch/kangan/tmpsg8stpus/first", "/localscratch/kangan/tmpsg8stpus/second"], "plan_sha256": "0162627f48fb2ad763c8dedfb3f8825efadd13b56165151e6c19b19e8d01963d"}
+{"event": "selected", "minimum_llama3_tokens": 80, "splits": {"train": {"documents": 14, "tokens": 1240, "minimum": 83, "maximum": 95}, "validation": {"documents": 14, "tokens": 1252, "minimum": 83, "maximum": 95}}}
+ok
+test_windows_do_not_cross_documents (tests.test_long_documents.LongDocumentTests.test_windows_do_not_cross_documents) ... ok
+test_budgets_and_batch_serialization (tests.test_longseq_loss_grad_schedules.ScheduleTests.test_budgets_and_batch_serialization) ... ok
+test_cycles_and_linear_batch_pair (tests.test_longseq_loss_grad_schedules.ScheduleTests.test_cycles_and_linear_batch_pair) ... ok
+test_monotonic_mirrors (tests.test_longseq_loss_grad_schedules.ScheduleTests.test_monotonic_mirrors) ... ok
+test_yaml_profiles_and_formal_cycles (tests.test_loss_grad_seq.ConfigTest.test_yaml_profiles_and_formal_cycles) ... initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+ok
+test_crop_independent_of_loss_partition_and_preserves_alignment (tests.test_loss_grad_seq.IndependentBatchTest.test_crop_independent_of_loss_partition_and_preserves_alignment) ... initial_load_model_only=True has no effect without an initial_load_path.
+ok
+test_invalid_intermediate_lengths_and_chunk_alignment (tests.test_loss_grad_seq.IndependentBatchTest.test_invalid_intermediate_lengths_and_chunk_alignment) ... initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+ok
+test_phase_capacities_are_independent (tests.test_loss_grad_seq.IndependentBatchTest.test_phase_capacities_are_independent) ... ok
+test_chunked_loss_matches_full_cross_entropy_with_tied_weights (tests.test_loss_grad_seq.TwoPhaseTrainerTest.test_chunked_loss_matches_full_cross_entropy_with_tied_weights) ... initial_load_model_only=True has no effect without an initial_load_path.
+/projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/environment/conda/lib/python3.12/site-packages/torchtitan/trainer.py:883: UserWarning: Detected call of `lr_scheduler.step()` before `optimizer.step()`. In PyTorch 1.1.0 and later, you should call them in the opposite order: `optimizer.step()` before `lr_scheduler.step()`.  Failure to do this will result in PyTorch skipping the first value of the learning rate schedule. See more details at https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate
+  self.lr_schedulers.step()
+ok
+test_constant_batch_cyclic_lengths_match_direct_crop_updates (tests.test_loss_grad_seq.TwoPhaseTrainerTest.test_constant_batch_cyclic_lengths_match_direct_crop_updates) ... initial_load_model_only=True has no effect without an initial_load_path.
+ok
+test_dynamic_batch_and_both_lengths_match_direct_crop_updates (tests.test_loss_grad_seq.TwoPhaseTrainerTest.test_dynamic_batch_and_both_lengths_match_direct_crop_updates) ... initial_load_model_only=True has no effect without an initial_load_path.
+ok
+test_long_forward_restores_rng_buffers_and_does_not_create_gradients (tests.test_loss_grad_seq.TwoPhaseTrainerTest.test_long_forward_restores_rng_buffers_and_does_not_create_gradients) ... initial_load_model_only=True has no effect without an initial_load_path.
+ok
+test_nondivisible_microbatches_keep_full_update_and_weighted_gradient (tests.test_loss_grad_seq.TwoPhaseTrainerTest.test_nondivisible_microbatches_keep_full_update_and_weighted_gradient) ... initial_load_model_only=True has no effect without an initial_load_path.
+ok
+test_partial_data_rejects_before_update (tests.test_loss_grad_seq.TwoPhaseTrainerTest.test_partial_data_rejects_before_update) ... initial_load_model_only=True has no effect without an initial_load_path.
+ok
+test_resume_at_batch_boundary_and_without_logging (tests.test_loss_grad_seq.TwoPhaseTrainerTest.test_resume_at_batch_boundary_and_without_logging) ... initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+ok
+test_fixed_and_dynamic_validation_lengths_and_exact_counts (tests.test_loss_grad_validation.LossGradValidationTest.test_fixed_and_dynamic_validation_lengths_and_exact_counts) ... ok
+test_fixed_validation_ignores_longer_and_shorter_training_lengths (tests.test_loss_grad_validation.LossGradValidationTest.test_fixed_validation_ignores_longer_and_shorter_training_lengths) ... ok
+test_only_one_additional_training_loss_in_existing_namespace (tests.test_loss_grad_validation.LossGradValidationTest.test_only_one_additional_training_loss_in_existing_namespace) ... initial_load_model_only=True has no effect without an initial_load_path.
+ok
+test_agreed_smoke_and_controlled_stop_parse_without_launch (tests.test_main_launch.MainLaunchTest.test_agreed_smoke_and_controlled_stop_parse_without_launch) ... ok
+test_plan_is_concrete_and_dry_run_has_no_files (tests.test_main_launch.MainLaunchTest.test_plan_is_concrete_and_dry_run_has_no_files) ... ok
+test_rejects_missing_settings_and_disabled_wandb (tests.test_main_launch.MainLaunchTest.test_rejects_missing_settings_and_disabled_wandb) ... usage: train.py [-h] [--nproc NPROC] [--index INDEX] [--list] [--list-legacy]
+                [--dry-run] [--resume-dir RESUME_DIR]
+                [--stop-after-checkpoint {2,4,6}]
+                [config]
+train.py: error: The main experiment requires online W&B with an entity and project.
+usage: train.py [-h] [--nproc NPROC] [--index INDEX] [--list] [--list-legacy]
+                [--dry-run] [--resume-dir RESUME_DIR]
+                [--stop-after-checkpoint {2,4,6}]
+                [config]
+train.py: error: Specify experiment settings explicitly: token_budget
+usage: train.py [-h] [--nproc NPROC] [--index INDEX] [--list] [--list-legacy]
+                [--dry-run] [--resume-dir RESUME_DIR]
+                [--stop-after-checkpoint {2,4,6}]
+                [config]
+train.py: error: Keep all 936 fixed validation windows at length 16384.
+ok
+test_resume_preserves_directory_and_uses_new_wandb_segment (tests.test_main_launch.MainLaunchTest.test_resume_preserves_directory_and_uses_new_wandb_segment) ... usage: train.py [-h] [--nproc NPROC] [--index INDEX] [--list] [--list-legacy]
+                [--dry-run] [--resume-dir RESUME_DIR]
+                [--stop-after-checkpoint {2,4,6}]
+                [config]
+train.py: error: Resume requires the recorded source, configuration, and DP degree.
+ok
+test_actual_optimizer_lr_and_resume (tests.test_piecewise_schedules.PiecewiseScheduleTest.test_actual_optimizer_lr_and_resume) ... initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+/projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/environment/conda/lib/python3.12/site-packages/torch/optim/lr_scheduler.py:461: UserWarning: To get the last learning rate computed by the scheduler, please use `get_last_lr()`.
+  _warn_get_lr_called_within_step(self)
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+ok
+test_anchor_changes_invalidate_checkpoint_signature (tests.test_piecewise_schedules.PiecewiseScheduleTest.test_anchor_changes_invalidate_checkpoint_signature) ... ok
+test_interpolation_rounding_repeat_and_hold (tests.test_piecewise_schedules.PiecewiseScheduleTest.test_interpolation_rounding_repeat_and_hold) ... ok
+test_invalid_anchors_and_rounding (tests.test_piecewise_schedules.PiecewiseScheduleTest.test_invalid_anchors_and_rounding) ... ok
+test_profiles_have_equal_steps_and_total_tokens (tests.test_piecewise_schedules.PiecewiseScheduleTest.test_profiles_have_equal_steps_and_total_tokens) ... initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+ok
+test_resume_reuses_only_checked_shards_and_repairs_interruption (tests.test_rebuild_long_token_cache.RebuildCacheTest.test_resume_reuses_only_checked_shards_and_repairs_interruption) ... {"shard": "train-00000", "tokens": 60, "reused_checked_cache": false, "elapsed_seconds": 0.0034229459706693888}
+{"shard": "train-00000", "tokens": 60, "reused_checked_cache": true, "elapsed_seconds": 0.0002572110388427973}
+{"shard": "train-00001", "tokens": 60, "reused_checked_cache": false, "elapsed_seconds": 0.0014260520692914724}
+{"shard": "train-00000", "tokens": 60, "reused_checked_cache": false, "elapsed_seconds": 0.001287122955545783}
+{"shard": "train-00001", "tokens": 60, "reused_checked_cache": true, "elapsed_seconds": 0.0002496300730854273}
+{"shard": "train-00000", "tokens": 60, "reused_checked_cache": true, "elapsed_seconds": 0.0002567209303379059}
+{"shard": "train-00001", "tokens": 60, "reused_checked_cache": false, "elapsed_seconds": 0.0012656119652092457}
+ok
+test_resume_still_rejects_changed_source_and_order (tests.test_rebuild_long_token_cache.RebuildCacheTest.test_resume_still_rejects_changed_source_and_order) ... {"shard": "train-00000", "tokens": 60, "reused_checked_cache": false, "elapsed_seconds": 0.0014178419951349497}
+{"shard": "train-00001", "tokens": 60, "reused_checked_cache": false, "elapsed_seconds": 0.0011951120104640722}
+ok
+test_sequential_and_parallel_match_independent_oracle (tests.test_rebuild_long_token_cache.RebuildCacheTest.test_sequential_and_parallel_match_independent_oracle) ... {"shard": "train-00000", "tokens": 60, "reused_checked_cache": false, "elapsed_seconds": 0.0013599219964817166}
+{"shard": "train-00001", "tokens": 60, "reused_checked_cache": false, "elapsed_seconds": 0.0012099520536139607}
+{"shard": "train-00000", "tokens": 60, "reused_checked_cache": false, "elapsed_seconds": 0.01942132308613509}
+{"shard": "train-00001", "tokens": 60, "reused_checked_cache": false, "elapsed_seconds": 0.03027740097604692}
+ok
+test_current_revision_is_resolved_once_and_pinned_for_all_data_reads (tests.test_restore_final_dataset.RestoreFinalDatasetTests.test_current_revision_is_resolved_once_and_pinned_for_all_data_reads) ... ok
+test_mismatched_remote_package_stops_before_large_download_or_rebuild (tests.test_restore_final_dataset.RestoreFinalDatasetTests.test_mismatched_remote_package_stops_before_large_download_or_rebuild) ... ok
+test_chunked_missing_tied_and_nonfinite (tests.test_seq_grad.MonitorTests.test_chunked_missing_tied_and_nonfinite) ... ok
+test_config_guards_and_grid (tests.test_seq_grad.MonitorTests.test_config_guards_and_grid) ... ok
+test_streams_packing_dp_partition_and_training_isolation (tests.test_seq_grad.SamplerTests.test_streams_packing_dp_partition_and_training_isolation) ... ok
+test_error_restores_buffers_rng_and_reference (tests.test_seq_grad.TrainerTests.test_error_restores_buffers_rng_and_reference) ... ok
+test_example_configs (tests.test_seq_grad.TrainerTests.test_example_configs) ... initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+HF assets path /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama-tokenizer does not exist!
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+ok
+test_full_grid_and_one_reference_per_event (tests.test_seq_grad.TrainerTests.test_full_grid_and_one_reference_per_event) ... ok
+test_logger_preserves_names_and_open_step (tests.test_seq_grad.TrainerTests.test_logger_preserves_names_and_open_step) ... ok
+test_native_constant_scheduler_preserves_group_multipliers (tests.test_seq_grad.TrainerTests.test_native_constant_scheduler_preserves_group_multipliers) ... ok
+test_raw_distances_and_accumulation (tests.test_seq_grad.TrainerTests.test_raw_distances_and_accumulation) ... ok
+test_state_rng_optimizer_lr_events_and_resume (tests.test_seq_grad.TrainerTests.test_state_rng_optimizer_lr_events_and_resume) ... ok
+test_baseline_survives_two_restores_and_training_trajectories (tests.test_seq_grad_gpu_fixture.FixtureIsolationTest.test_baseline_survives_two_restores_and_training_trajectories) ... ok
+test_distance_to_full_parent_token_mean_and_cache_release (tests.test_seq_grad_paired.PairedGradientTests.test_distance_to_full_parent_token_mean_and_cache_release) ... ok
+test_failure_releases_parent_cache_and_gradients (tests.test_seq_grad_paired.PairedGradientTests.test_failure_releases_parent_cache_and_gradients) ... ok
+test_monitor_attention_hook_preserves_native_bookkeeping_and_training_path (tests.test_seq_grad_paired.PairedGradientTests.test_monitor_attention_hook_preserves_native_bookkeeping_and_training_path) ... ok
+test_dp_microbatch_order_and_replay_invariance (tests.test_seq_grad_paired.PairedSamplerTests.test_dp_microbatch_order_and_replay_invariance) ... ok
+test_one_parent_batch_aligned_random_crops_and_document_resets (tests.test_seq_grad_paired.PairedSamplerTests.test_one_parent_batch_aligned_random_crops_and_document_resets) ... ok
+test_single_document_parents_exclude_short_records_and_boundary_tokens (tests.test_seq_grad_paired.PairedSamplerTests.test_single_document_parents_exclude_short_records_and_boundary_tokens) ... ok
+test_extended_cache_preserves_short_logits_and_gradients (tests.test_seq_grad_validation.SeparateValidationLengthTests.test_extended_cache_preserves_short_logits_and_gradients) ... ok
+test_validator_receives_eval_capacity_and_checks_dataset_identity (tests.test_seq_grad_validation.SeparateValidationLengthTests.test_validator_receives_eval_capacity_and_checks_dataset_identity) ... ok
+test_dense_and_sparse_history_have_the_same_events (tests.test_seq_grad_wandb_history.MetricHistoryTests.test_dense_and_sparse_history_have_the_same_events) ... ok
+test_partial_probe_is_rejected (tests.test_seq_grad_wandb_history.MetricHistoryTests.test_partial_probe_is_rejected) ... ok
+test_model_definition_matches_native_1b_and_data_protocol_is_fixed (tests.test_token_progress.MainEntryTest.test_model_definition_matches_native_1b_and_data_protocol_is_fixed) ... ok
+test_recovery_rejects_changed_budget_and_corrupt_counts (tests.test_token_progress.TokenCheckpointTest.test_recovery_rejects_changed_budget_and_corrupt_counts) ... ok
+test_ten_complete_saves_and_resume_without_duplicate_milestones (tests.test_token_progress.TokenCheckpointTest.test_ten_complete_saves_and_resume_without_duplicate_milestones) ... /projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/environment/conda/lib/python3.12/site-packages/torch/distributed/checkpoint/utils.py:488: UserWarning: torch.distributed is disabled, unavailable or uninitialized, assuming the intent is to save in a single process.
+  return func(*args, **kwargs)
+/projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/environment/conda/lib/python3.12/site-packages/torch/distributed/checkpoint/utils.py:488: UserWarning: torch.distributed is disabled, unavailable or uninitialized, assuming the intent is to load in a single process.
+  return func(*args, **kwargs)
+ok
+test_validation_between_logs_uses_current_total_including_masked_positions (tests.test_token_progress.TokenMetricsTest.test_validation_between_logs_uses_current_total_including_masked_positions) ... ok
+test_wandb_keeps_names_and_binds_explicit_token_axes (tests.test_token_progress.TokenMetricsTest.test_wandb_keeps_names_and_binds_explicit_token_axes) ... ok
+test_eight_step_smoke_uses_phase_checkpoints_without_changing_formal_policy (tests.test_token_progress.TokenPlanTest.test_eight_step_smoke_uses_phase_checkpoints_without_changing_formal_policy) ... ok
+test_rejects_incomplete_repeated_or_colliding_milestones (tests.test_token_progress.TokenPlanTest.test_rejects_incomplete_repeated_or_colliding_milestones) ... ok
+test_rejects_retention_and_partial_recovery (tests.test_token_progress.TokenPlanTest.test_rejects_retention_and_partial_recovery) ... ok
+test_variable_steps_and_integer_thresholds (tests.test_token_progress.TokenPlanTest.test_variable_steps_and_integer_thresholds) ... ok
+test_accumulation_matches_direct_gradient (tests.test_x_monitor.XMonitorTests.test_accumulation_matches_direct_gradient) ... ok
+test_arithmetic_missing_tied_and_two_group_identity (tests.test_x_monitor.XMonitorTests.test_arithmetic_missing_tied_and_two_group_identity) ... ok
+test_config_guards (tests.test_x_monitor.XMonitorTests.test_config_guards) ... ok
+test_dropout_buffers_and_training_stream_are_preserved (tests.test_x_monitor.XMonitorTests.test_dropout_buffers_and_training_stream_are_preserved) ... ok
+test_events_training_equivalence_resume_and_exception_restore (tests.test_x_monitor.XMonitorTests.test_events_training_equivalence_resume_and_exception_restore) ... ok
+test_independent_replicates_match_direct_global_gradients (tests.test_x_monitor.XMonitorTests.test_independent_replicates_match_direct_global_gradients) ... ok
+test_pipeline_accepts_configured_grid_and_checks_repeats (tests.test_x_monitor.XMonitorTests.test_pipeline_accepts_configured_grid_and_checks_repeats) ... ok
+test_probe_padding_guard_and_initial_disabled (tests.test_x_monitor.XMonitorTests.test_probe_padding_guard_and_initial_disabled) ... ok
+test_real_pool_prefix_alignment_and_ownership (tests.test_x_monitor.XMonitorTests.test_real_pool_prefix_alignment_and_ownership) ... ok
+test_validation_requires_explicit_matching_artifact (tests.test_x_monitor.XMonitorTests.test_validation_requires_explicit_matching_artifact) ... initial_load_model_only=True has no effect without an initial_load_path.
+ok
+test_wandb_commit_contract (tests.test_x_monitor.XMonitorTests.test_wandb_commit_contract) ... ok
+test_config_does_not_apply_parent_limit_to_random_windows (tests.test_x_random_sampling.RandomWindowTests.test_config_does_not_apply_parent_limit_to_random_windows) ... ok
+test_dp_ownership_keeps_duplicate_draws (tests.test_x_random_sampling.RandomWindowTests.test_dp_ownership_keeps_duplicate_draws) ... ok
+test_event_resamples_each_length_and_replays_after_grid_reorder (tests.test_x_random_sampling.RandomWindowTests.test_event_resamples_each_length_and_replays_after_grid_reorder) ... ok
+test_every_valid_start_exactly_once_no_document_crossing (tests.test_x_random_sampling.RandomWindowTests.test_every_valid_start_exactly_once_no_document_crossing) ... ok
+test_replay_independent_lengths_and_events_preserve_global_rng (tests.test_x_random_sampling.RandomWindowTests.test_replay_independent_lengths_and_events_preserve_global_rng) ... ok
+test_context_limit_includes_validation_and_packed_data_requires_masks (tests.test_x_validation.XValidationTests.test_context_limit_includes_validation_and_packed_data_requires_masks) ... initial_load_model_only=True has no effect without an initial_load_path.
+ok
+test_longer_validation_uses_all_tokens_and_restores_model_mode (tests.test_x_validation.XValidationTests.test_longer_validation_uses_all_tokens_and_restores_model_mode) ... ok
+
+----------------------------------------------------------------------
+Ran 211 tests in 52.418s
+
+OK (skipped=5)
+{"restored": "/localscratch/kangan/tmptc42gf0p", "manifest_sha256": "1c6c91228666cbca3e625c109f243bcd913b1e8c9532dfc3e41c1372d25e063d", "hub_revision": "current-commit"}

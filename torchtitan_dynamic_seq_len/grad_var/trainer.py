@@ -19,6 +19,11 @@ class GradVarTrainer(Trainer):
         grad_var_monitor: GradVarMonitorConfig = field(default_factory=GradVarMonitorConfig)
 
     def __init__(self, config: Config):
+        self._x_last_event = -1
+        if config.grad_var_monitor.enable and config.grad_var_monitor.mode == "x":
+            from torchtitan_dynamic_seq_len.grad_var.probes import validate_config
+
+            validate_config(config)
         super().__init__(config)
         self._init_grad_var_monitor()
 
@@ -39,6 +44,11 @@ class GradVarTrainer(Trainer):
             raise ValueError("gradient variance requires GradVarMetricsProcessor")
         if self.num_pipeline_parallel_microbatches != 1:
             raise ValueError("gradient variance requires one local batch per backward")
+        if self.config.grad_var_monitor.mode == "x":
+            from torchtitan_dynamic_seq_len.grad_var.probes import initialize
+
+            initialize(self)
+            return
         self.grad_var_monitor = GradVarMonitor(
             self.model_parts[0].named_parameters(), self.gradient_accumulation_steps
         )
@@ -67,6 +77,13 @@ class GradVarTrainer(Trainer):
                         )
 
     def train_step(self, data_iterator):
+        if self.config.grad_var_monitor.enable and self.config.grad_var_monitor.mode == "x":
+            from torchtitan_dynamic_seq_len.grad_var.probes import maybe_monitor
+
+            maybe_monitor(self, self.step - 1)
+            result = super().train_step(data_iterator)
+            maybe_monitor(self, self.step)
+            return result
         monitor = self.grad_var_monitor
         self._grad_var_active = monitor is not None and self.metrics_processor.should_log(self.step)
         if self._grad_var_active:
@@ -146,3 +163,25 @@ class GradVarTrainer(Trainer):
                 f"at step {self.step}; got {counts.tolist()}"
             )
         self.metrics_processor.queue_grad_var(self.step, metrics)
+
+    def post_dataloading_process(self, input_dict, labels):
+        before = self.ntokens_seen
+        try:
+            return super().post_dataloading_process(input_dict, labels)
+        finally:
+            if getattr(self, "_x_probe_active", False):
+                self.ntokens_seen = before
+
+    def state_dict(self):
+        state = super().state_dict()
+        if self.config.grad_var_monitor.enable and self.config.grad_var_monitor.mode == "x":
+            state["x_last_event"] = self._x_last_event
+            state["x_signature"] = self._x_signature
+        return state
+
+    def load_state_dict(self, state_dict):
+        if self.config.grad_var_monitor.enable and self.config.grad_var_monitor.mode == "x":
+            if state_dict.get("x_signature") != self._x_signature:
+                raise ValueError("Checkpoint X protocol or dataset differs")
+            self._x_last_event = state_dict["x_last_event"]
+        super().load_state_dict(state_dict)

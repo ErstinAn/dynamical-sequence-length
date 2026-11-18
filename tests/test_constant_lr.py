@@ -16,7 +16,7 @@ from torchtitan_dynamic_seq_len.optimizer import ExperimentOptimizers
 from torchtitan_dynamic_seq_len.run_config import grid, load_config, resolve_point
 
 ROOT = Path(__file__).resolve().parents[1]
-SWEEP = ROOT / "configs/lr_sweep_constant.yaml"
+SWEEP = ROOT / "legacy/configs/lr_sweep_constant.yaml"
 
 
 class ConstantLearningRateTest(unittest.TestCase):

@@ -99,7 +99,7 @@ class SchedulerTest(unittest.TestCase):
         self.assertEqual(sum(rounded.value_for_step(s) for s in range(1, 257)), 256 * 1024)
 
     def config(self, filename="smoke.yaml", world=2):
-        path = Path(__file__).resolve().parents[1] / "configs/dynamic_seq_bs" / filename
+        path = Path(__file__).resolve().parents[1] / "legacy/configs/dynamic_seq_bs" / filename
         raw, _, _, args = resolve_point(path, 0)
         with patch.dict(os.environ, {"WORLD_SIZE": str(world)}):
             return ConfigManager().parse_args(

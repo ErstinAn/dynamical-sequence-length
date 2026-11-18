@@ -28,7 +28,7 @@ from submit import (
 from torchtitan_dynamic_seq_len.run_config import load_config, source_digest
 
 HERE = Path(__file__).resolve().parents[1] / "cluster/vt_arc"
-SOURCE_CONFIG = HERE.parents[1] / "configs/seq512.yaml"
+SOURCE_CONFIG = HERE.parents[1] / "legacy/configs/seq512.yaml"
 
 
 class LauncherTest(unittest.TestCase):

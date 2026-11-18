@@ -1,10 +1,11 @@
 """Calculate metrics for dynamic training with the TorchTitan logger."""
 
+import sys
 import time
 from contextlib import contextmanager
 from dataclasses import dataclass
 
-from torchtitan.components.metrics import MetricsProcessor
+from torchtitan.components.metrics import MetricsProcessor, WandBLogger
 
 
 class DynamicSeqMetricsProcessor(MetricsProcessor):
@@ -24,6 +25,15 @@ class DynamicSeqMetricsProcessor(MetricsProcessor):
         self._saved_memory = {}
         self.ntokens_since_last_log = 0
         self.data_loading_times = []
+
+    def close(self):
+        # TorchTitan calls close while handling a training or validation error.
+        # Its default W&B close omits the exit code and reports success.
+        if sys.exception() is not None:
+            for logger in getattr(self.logger, "_loggers", ()):
+                if isinstance(logger, WandBLogger) and logger.wandb.run is not None:
+                    logger.wandb.finish(exit_code=1)
+        super().close()
 
     def begin_step(self):
         self.step_started = time.perf_counter()

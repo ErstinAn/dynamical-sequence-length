@@ -1,5 +1,8 @@
 # Data procedure
 
+This page describes historical FineWeb 100BT experiments in `legacy/configs/`.
+For the current native-vocabulary 1B handoff, read [getting_started.md](getting_started.md).
+
 ## Data identity
 
 The source is `HuggingFaceFW/fineweb`, with configuration `sample-100BT`.

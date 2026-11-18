@@ -1,0 +1,116 @@
+{
+  "recorded_utc": "2026-11-18T06:58:31.244423+00:00",
+  "phase": "Configuration archive and handoff scope; full delivery remains incomplete",
+  "git_head": "91ef5297deae1d0cf96d9d22869151e68bd31142",
+  "worktree_is_uncommitted": true,
+  "source_sha256": "9f1d9f5aea833eb0e0041640275b1dc9d87bd2155187c81cc610580845288df0",
+  "baseline": "local/handoff-baseline-20261118T064923Z",
+  "baseline_archive_sha256": "8bf6f7df80568b23a1237a12ea17eaa18b2c9df9f19cc748dc1567da1a73a59e",
+  "environment": {
+    "python_executable": "/home/kangan/.conda/envs/torchtitan-macro/bin/python",
+    "python_version": "3.12.14",
+    "packages": {
+      "torch": "2.15.0.dev20260830+cu130",
+      "torchtitan": "0.2.2",
+      "datasets": "4.7.0",
+      "numpy": "2.5.2",
+      "pyarrow": "25.0.1",
+      "tokenizers": "0.23.1",
+      "huggingface-hub": "1.29.0"
+    },
+    "reused_existing_environment": true,
+    "reused_local_tokenizers": true,
+    "torchtitan_source": "/home/kangan/titanprecond-lab/torchtitan-main-lastest",
+    "torchtitan_revision": "737594746fda65a6d94dc9482ef07863a80c8588"
+  },
+  "cpu_tests": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:cluster/vt_arc OMP_NUM_THREADS=1 /home/kangan/.conda/envs/torchtitan-macro/bin/python -m unittest discover -s tests -t . -v",
+    "exit_code": 0,
+    "total": 192,
+    "passed": 189,
+    "skipped": 3,
+    "seconds": 51.566,
+    "log": "docs/reports/20261118_cleanup_cpu.txt",
+    "log_sha256": "73bd25f7c35a8c15d5f1701eba194528a82c30f848a296d4226f796f96acc340",
+    "skipped_test_lines": [
+      "test_real_two_rank_reduction_and_partial_batches (tests.test_fixed_validation.FixedBudgetValidationTest.test_real_two_rank_reduction_and_partial_batches) ... skipped 'opt in to local Gloo sockets'",
+      "test_built_artifact_checksums_vocabulary_and_training_exclusions (tests.test_formal_experiment.FormalExperimentTest.test_built_artifact_checksums_vocabulary_and_training_exclusions) ... skipped 'Set DYNAMIC_SEQ_LEN_ARTIFACT_TEST=1 to check local data.'",
+      "test_four_rank_vectors_tokens_errors_and_dtensor (tests.test_grad_var_distributed.GradVarDistributedTest.test_four_rank_vectors_tokens_errors_and_dtensor) ... skipped 'opt in to local Gloo sockets'"
+    ]
+  },
+  "other_checks": {
+    "historical_yaml_hashes": "76/76 unchanged",
+    "active_configs": [
+      "configs/smoke.yaml"
+    ],
+    "python_syntax": "passed",
+    "draft_normal_launch": "rejected with exit 2 before creating output",
+    "draft_dry_run": "rejected with exit 2 before creating output",
+    "new_chinese_documents_text_check": "passed",
+    "git_diff_check": "passed",
+    "ruff": "not run: ruff is absent from this environment and PATH"
+  },
+  "checkpoint_requirement": {
+    "basis": "cumulative nominal global_batch_size * sequence_length",
+    "count": 10,
+    "fractions": [
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.5,
+      0.6,
+      0.7,
+      0.8,
+      0.9,
+      1.0
+    ],
+    "include_final": true,
+    "save_on_first_complete_step_reaching_threshold": true,
+    "keep_all_ten": true,
+    "runtime_integration_implemented": false
+  },
+  "not_performed": [
+    "fresh dependency installation",
+    "fresh Hugging Face download",
+    "full token cache rebuild",
+    "new native-vocabulary 1B GPU smoke",
+    "W&B upload verification",
+    "token milestone checkpoint runtime and recovery verification",
+    "formal run or Slurm submission"
+  ],
+  "next_inputs": [
+    "experiment document with exact budget and schedules",
+    "target server launch example",
+    "W&B entity/project"
+  ],
+  "english_documentation_review": {
+    "recorded_utc": "2026-11-18T07:04:11.421870+00:00",
+    "language": "English",
+    "style": "ASD-STE100 writing principles",
+    "files_sha256": {
+      "README.md": "4a57dcfc6d4edddedbeeacd36ee23b6d116a509e770d1557b9c0b28fda9ae47e",
+      "instruction.md": "8a85381e84a3a388635e753941c1987b929f82b12018b55abccfa707bb6096e4",
+      "legacy/README.md": "a65ecea9605cbc1b50e8ea5601fb5bde670f48c3a3a26131fb833f07ff9f378a",
+      "docs/getting_started.md": "a42e2ca212b9283684163eab5a43c80c2b977ed1c73e6d3887d6c59c1031f564",
+      "docs/reports/handoff_progress.md": "f0bdf915aec14ec45e6efa0ae03bf5cd521c54df2b5962c798a1e9b03f4b43b7",
+      "configs/smoke.yaml": "c0201624d6057886a4c51ab14982d6220b110186b67a21d6f4a2ce97878b0924"
+    },
+    "ste_lint": {
+      "violations": [],
+      "count": 0,
+      "hard_count": 0,
+      "baseline": 0,
+      "words": 2662,
+      "per_100_words": 0.0
+    },
+    "project_text_checks": "passed",
+    "local_markdown_links": "passed",
+    "command_arguments_preserved": true,
+    "smoke_configuration_values_preserved": true,
+    "training_source_digest_preserved": true,
+    "historical_cpu_log_hash_preserved": true,
+    "training_tests_repeated": false,
+    "reason": "Only documentation and YAML comments changed."
+  }
+}

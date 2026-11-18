@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class LocalLaunchTest(unittest.TestCase):
     def test_smoke_config_uses_local_data_and_ten_steps(self):
-        config, _, _, args = resolve_point(ROOT / "configs/smoke.yaml", 0)
+        config, _, _, args = resolve_point(ROOT / "legacy/configs/smoke.yaml", 0)
         with patch.dict(os.environ, {"WORLD_SIZE": "1"}):
             parsed = ConfigManager().parse_args(
                 [
@@ -45,7 +45,7 @@ class LocalLaunchTest(unittest.TestCase):
                 [
                     sys.executable,
                     str(ROOT / "scripts/train.py"),
-                    str(ROOT / "configs/seq512.yaml"),
+                    str(ROOT / "legacy/configs/seq512.yaml"),
                     "--nproc",
                     "2",
                     "--dry-run",
@@ -61,7 +61,7 @@ class LocalLaunchTest(unittest.TestCase):
 
     def test_asset_root_changes_both_data_and_tokenizer_paths(self):
         with patch.dict(os.environ, {"DYNAMIC_SEQ_LEN_ASSETS": "/tmp/selected-assets"}):
-            config, _, _, _ = resolve_point(ROOT / "configs/seq1024.yaml", 0)
+            config, _, _, _ = resolve_point(ROOT / "legacy/configs/seq1024.yaml", 0)
         self.assertEqual(
             config["fixed"]["hf_assets_path"], "/tmp/selected-assets/hf/llama-tokenizer"
         )

@@ -1,216 +1,113 @@
-"""Measure ordinary and monitored steps with real parent batches on allocated GPUs."""
+"""Real FSDP2 state isolation with monitoring on/off; run with torchrun on GPUs."""
 
 import argparse
+import copy
 import json
-import math
 import os
-import statistics
-import time
-from datetime import datetime, timezone
+import random
 from pathlib import Path
 
+import numpy as np
 import torch
 import torch.distributed as dist
 from torchtitan.config import ConfigManager
-from torchtitan.tools.logging import init_logger
 
 from torchtitan_dynamic_seq_len.run_config import resolve_point
 
 
-def atomic_json(path, value):
-    temporary = path.with_suffix(".tmp")
-    temporary.write_text(json.dumps(value, indent=2) + "\n")
-    temporary.replace(path)
-
-
-class CaptureLogger:
-    def __init__(self, wrapped):
-        self.wrapped = wrapped
-        self.last = None
-
-    def log(self, metrics, step):
-        self.last = dict(metrics)
-        self.wrapped.log(metrics, step)
-
-    def close(self):
-        self.wrapped.close()
-
-
-def summarize(rows):
-    result = {}
-    for phase in ("ordinary", "monitor"):
-        measured = [row for row in rows if row["phase"] == phase and not row["warmup"]]
-        result[phase] = {
-            "samples": len(measured),
-            "median_wall_seconds": statistics.median(row["wall_seconds"] for row in measured),
-            "min_wall_seconds": min(row["wall_seconds"] for row in measured),
-            "max_wall_seconds": max(row["wall_seconds"] for row in measured),
-            "median_probe_seconds": statistics.median(row["probe_seconds"] for row in measured),
-            "peak_active_gib": max(row["peak_active_gib"] for row in measured),
-            "peak_reserved_gib": max(row["peak_reserved_gib"] for row in measured),
-        }
-    base = result["ordinary"]["median_wall_seconds"]
-    extra = max(0.0, result["monitor"]["median_wall_seconds"] - base)
-    result["projected_hours_20tpp_with_45min_margin"] = {
-        "interval20_398_monitors": (7637 * base + 398 * extra) / 3600 + 0.75,
-        "interval50_172_monitors": (7637 * base + 172 * extra) / 3600 + 0.75,
-        "interval100_97_monitors": (7637 * base + 97 * extra) / 3600 + 0.75,
+def capture_fixture_state(trainer):
+    """Test-only baseline; production probes never copy model/optimizer state."""
+    return {
+        "model": copy.deepcopy(trainer.model_parts[0].state_dict()),
+        "buffers": {k: v.detach().clone() for k, v in trainer.model_parts[0].named_buffers()},
+        "optimizer": copy.deepcopy(trainer.optimizers.state_dict()),
+        "scheduler": copy.deepcopy(trainer.lr_schedulers.state_dict()),
+        "data": copy.deepcopy(trainer.dataloader.state_dict()),
+        "torch_rng": torch.get_rng_state().clone(),
+        "cuda_rng": torch.cuda.get_rng_state(trainer.device).clone()
+        if trainer.device.type == "cuda" else None,
+        "python_rng": random.getstate(),
+        "numpy_rng": np.random.get_state(),
     }
-    return result
+
+
+def restore_fixture_state(trainer, baseline):
+    trainer.model_parts[0].load_state_dict(copy.deepcopy(baseline["model"]))
+    with torch.no_grad():
+        for name, buffer in trainer.model_parts[0].named_buffers():
+            buffer.copy_(baseline["buffers"][name])
+    # Optimizer.load_state_dict can retain same-device tensor storage; the
+    # StatefulDataLoader can retain dataset packing lists. Never hand either
+    # loader the reusable baseline: the first trajectory would overwrite it.
+    trainer.optimizers.load_state_dict(copy.deepcopy(baseline["optimizer"]))
+    trainer.lr_schedulers.load_state_dict(copy.deepcopy(baseline["scheduler"]))
+    trainer.dataloader.load_state_dict(copy.deepcopy(baseline["data"]))
+    trainer.ntokens_seen = trainer.n_valid_tokens_seen = 0
+    trainer._last_event = -1
+    torch.set_rng_state(baseline["torch_rng"])
+    if baseline["cuda_rng"] is not None:
+        torch.cuda.set_rng_state(baseline["cuda_rng"], trainer.device)
+    random.setstate(baseline["python_rng"])
+    np.random.set_state(baseline["numpy_rng"])
+
+
+def assert_identical(a, b, path="state"):
+    if isinstance(a, dict):
+        assert a.keys() == b.keys(), path
+        for key in a:
+            assert_identical(a[key], b[key], f"{path}.{key}")
+    elif isinstance(a, (list, tuple)):
+        for index, (left, right) in enumerate(zip(a, b, strict=True)):
+            assert_identical(left, right, f"{path}[{index}]")
+    elif isinstance(a, torch.Tensor):
+        torch.testing.assert_close(a, b, rtol=0, atol=0, msg=lambda message: f"{path}: {message}")
+    elif isinstance(a, np.ndarray):
+        np.testing.assert_array_equal(a, b, err_msg=path)
+    else:
+        assert a == b, (path, a, b)
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--config", type=Path, required=True)
-    parser.add_argument("--microbatch", type=int, required=True)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--preflight", action="store_true")
+    parser.add_argument("--sampling", choices=("independent", "paired_window"), default="independent")
     args = parser.parse_args()
-    init_logger()
-    raw, _, _, cli = resolve_point(args.config, 0)
-    os.environ["DYNAMIC_SEQ_LEN_VALIDATION_DIR"] = raw["paths"]["validation_dir"]
-    config = ConfigManager().parse_args(
-        [
-            "--module",
-            "torchtitan_dynamic_seq_len.config_registry",
-            "--config",
-            raw["torchtitan_config"],
-            *cli,
-        ]
-    )
-    config.training.local_batch_size = args.microbatch
-    config.training.steps = 27
-    config.checkpoint.enable = False
-    config.debug.print_config = False
-    config.metrics.enable_wandb = False
-    config.metrics.enable_tensorboard = True
-    config.metrics.profile_freq = 0
-    config.dump_folder = str(args.output / "run")
-    config.validate_seq_grad()
-    world = int(os.environ["WORLD_SIZE"])
-    assert world == 2 and 128 % (world * args.microbatch) == 0
-    assert config.training.global_batch_size == 128 and config.training.seq_len == 16384
-    if args.preflight:
-        print(
-            json.dumps(
-                {
-                    "microbatch": args.microbatch,
-                    "accumulation": 128 // (world * args.microbatch),
-                    "config": "valid",
-                }
-            )
-        )
-        return
     args.output.mkdir(parents=True, exist_ok=True)
-    trainer = None
-    rank = int(os.environ.get("RANK", "0"))
-    rows = []
+    raw, _, _, cli = resolve_point(Path("legacy/configs/seq_grad/smoke.yaml"), 0)
+    cfg = ConfigManager().parse_args(["--module", "torchtitan_dynamic_seq_len.config_registry",
+                                     "--config", raw["torchtitan_config"], *cli])
+    cfg.dump_folder = str(args.output)
+    cfg.parallelism.data_parallel_replicate_degree = int(os.environ["WORLD_SIZE"])
+    cfg.seq_grad.probe_local_batch_size = 1
+    cfg.seq_grad.sampling = args.sampling
+    cfg.metrics.enable_wandb = False
+    cfg.metrics.log_freq = 1
+    trainer = cfg.build()
     try:
-        trainer = config.build()
-        capture = CaptureLogger(trainer.metrics_processor.logger)
-        trainer.metrics_processor.logger = capture
-        iterator = trainer.batch_generator(trainer.dataloader)
-        # Use the actual train_step without the outer loop's validation or saves.
-        # Every step still reads new [128,16384] data, including ordinary steps.
-        phases = [("ordinary", True)] * 3 + [("ordinary", False)] * 20
-        phases += [("monitor", True)] + [("monitor", False)] * 3
-        for step, (phase, warmup) in enumerate(phases, start=1):
-            trainer.step = step
-            config.seq_grad.enable = phase == "monitor"
-            trainer.gc_handler.run(step)
-            dist.barrier()
-            torch.cuda.synchronize(trainer.device)
-            started = time.perf_counter()
-            trainer.train_step(iterator)
-            torch.cuda.synchronize(trainer.device)
-            wall = time.perf_counter() - started
-            values = capture.last
-            assert values is not None and values["n_tokens_seen"] == step * 128 * 2048
-            assert math.isfinite(values["loss_metrics/global_avg_loss"])
-            assert math.isfinite(values["grad_norm"])
-            if phase == "monitor":
-                for length in config.seq_grad.lengths:
-                    for name in ("distance", "relative_distance", "grad_norm", "cosine"):
-                        assert math.isfinite(values[f"seq_grad_{name}/s{length:05d}"])
-                assert values["seq_grad_reference/valid_tokens"] == 128 * 16384
-            measured = torch.tensor(
-                [
-                    wall,
-                    values["time_metrics/end_to_end(s)"],
-                    values["seq_grad_cost/probe_seconds"],
-                    values["memory/max_active(GiB)"],
-                    values["memory/max_reserved(GiB)"],
-                    values["memory/num_ooms"],
-                    values["memory/num_alloc_retries"],
-                    values["time_metrics/data_loading(s)"] * trainer.gradient_accumulation_steps,
-                ],
-                dtype=torch.float64,
-                device=trainer.device,
-            )
-            dist.all_reduce(measured, op=dist.ReduceOp.MAX)
-            numbers = measured.tolist()
-            assert numbers[5] == 0, "CUDA OOM recorded"
-            row = dict(
-                zip(
-                    [
-                        "wall_seconds",
-                        "internal_step_seconds",
-                        "probe_seconds",
-                        "peak_active_gib",
-                        "peak_reserved_gib",
-                        "oom_count",
-                        "allocation_retries",
-                        "data_loading_seconds",
-                    ],
-                    numbers,
-                    strict=True,
-                )
-            )
-            row.update(
-                step=step,
-                phase=phase,
-                warmup=warmup,
-                loss=values["loss_metrics/global_avg_loss"],
-                grad_norm=values["grad_norm"],
-            )
-            rows.append(row)
-            if rank == 0:
-                atomic_json(
-                    args.output / "progress.json", {"microbatch": args.microbatch, "rows": rows}
-                )
-                print("MICROBATCH_STEP " + json.dumps(row), flush=True)
-        if rank == 0:
-            result = dict(
-                status="passed",
-                microbatch=args.microbatch,
-                world_size=world,
-                gradient_accumulation_steps=trainer.gradient_accumulation_steps,
-                gpu=torch.cuda.get_device_name(trainer.device),
-                gpu_total_gib=torch.cuda.get_device_properties(trainer.device).total_memory / 2**30,
-                finished_at_utc=datetime.now(timezone.utc).isoformat(),
-                warmup_excluded=True,
-                validation_and_checkpoint_excluded=True,
-                wandb_disabled_for_benchmark=True,
-                summary=summarize(rows),
-                rows=rows,
-            )
-            atomic_json(args.output / "result.json", result)
-            print(
-                "MICROBATCH_RESULT " + json.dumps({k: v for k, v in result.items() if k != "rows"}),
-                flush=True,
-            )
-    except Exception as error:
-        atomic_json(
-            args.output / f"failure_rank{rank}.json",
-            {
-                "microbatch": args.microbatch,
-                "exception": type(error).__name__,
-                "message": str(error)[:2000],
-                "completed_steps": len(rows),
-            },
-        )
-        raise
-    else:
+        baseline = capture_fixture_state(trainer)
+        baseline_check = copy.deepcopy(baseline)
+        results = []
+        for enabled in (False, True):
+            restore_fixture_state(trainer, baseline)
+            assert_identical(trainer.optimizers.state_dict(), baseline["optimizer"], "restored_optimizer")
+            assert_identical(trainer.model_parts[0].state_dict(), baseline["model"], "restored_model")
+            cfg.seq_grad.enable = enabled
+            iterator = trainer.batch_generator(trainer.dataloader)
+            for step in range(1, 5):
+                trainer.step = step
+                trainer.train_step(iterator)
+            results.append(capture_fixture_state(trainer))
+            results[-1]["tokens"] = (trainer.ntokens_seen, trainer.n_valid_tokens_seen)
+            assert_identical(baseline, baseline_check, "immutable_baseline")
+        assert_identical(*results)
+        if dist.get_rank() == 0:
+            report = {"passed": True, "world_size": dist.get_world_size(),
+                      "exact_equality": ["model", "buffers", "optimizer", "scheduler", "data",
+                                         "CPU/CUDA/Python/NumPy RNG", "training tokens"],
+                      "baseline_immutable": True, "sampling": args.sampling}
+            (args.output / "result.json").write_text(json.dumps(report, indent=2) + "\n")
+            print("PASS: actual FSDP2 parameters, optimizer, buffers, RNG, dataloader and training tokens unchanged", flush=True)
+    finally:
         trainer.close()
         dist.destroy_process_group()
 

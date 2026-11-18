@@ -1,0 +1,76 @@
+W1118 02:10:17.806000 3 site-packages/torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W1118 02:10:17.931000 3 site-packages/torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+test_constant_is_native_update (tests.test_dynamic_seq.TrainerTest.test_constant_is_native_update) ... /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torchdata/stateful_dataloader/stateful_dataloader.py:379: UserWarning: 'set_vital' is deprecated, please do not call
+  torch.set_vital("Dataloader", "enabled", "True")  # type: ignore[attr-defined]
+ok
+test_fixed_validation_length_is_independent_of_capacity (tests.test_dynamic_seq.TrainerTest.test_fixed_validation_length_is_independent_of_capacity) ... ok
+test_masked_labels_and_cancelled_accumulation (tests.test_dynamic_seq.TrainerTest.test_masked_labels_and_cancelled_accumulation) ... ok
+test_partial_final_batch_cancels_whole_step (tests.test_dynamic_seq.TrainerTest.test_partial_final_batch_cancels_whole_step) ... ok
+test_resume_across_transition_and_nonlogging_steps (tests.test_dynamic_seq.TrainerTest.test_resume_across_transition_and_nonlogging_steps) ... ok
+test_rope_capacity_matches_short_cache_and_is_reused (tests.test_dynamic_seq.TrainerTest.test_rope_capacity_matches_short_cache_and_is_reused) ... ok
+test_weighted_flops_and_validation_window (tests.test_dynamic_seq.TrainerTest.test_weighted_flops_and_validation_window) ... ok
+test_native_gradient_equivalence_and_metrics (tests.test_dynamic_seq_bs.TrainerTest.test_native_gradient_equivalence_and_metrics) ... ok
+test_phase_offset_checkpoint_signatures (tests.test_dynamic_seq_bs.TrainerTest.test_phase_offset_checkpoint_signatures) ... ok
+test_resume_at_batch_transition_and_nonlogging_step (tests.test_dynamic_seq_bs.TrainerTest.test_resume_at_batch_transition_and_nonlogging_step) ... ok
+test_window_flops_use_actual_tokens (tests.test_dynamic_seq_bs.TrainerTest.test_window_flops_use_actual_tokens) ... ok
+test_all_kinds_share_sequence_schedule_rules (tests.test_dynamic_seq_bs.SchedulerTest.test_all_kinds_share_sequence_schedule_rules) ... ok
+test_fixed_token_profiles (tests.test_dynamic_seq_bs.SchedulerTest.test_fixed_token_profiles) ... initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+ok
+test_public_profiles_and_owners (tests.test_dynamic_seq_bs.SchedulerTest.test_public_profiles_and_owners) ... initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+ok
+test_rejects_invalid_intermediate_step_and_initial_values (tests.test_dynamic_seq_bs.SchedulerTest.test_rejects_invalid_intermediate_step_and_initial_values) ... initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+initial_load_model_only=True has no effect without an initial_load_path.
+ok
+test_triangular_phase_offset (tests.test_dynamic_seq_bs.SchedulerTest.test_triangular_phase_offset) ... ok
+test_actual_nll_count_training_state_and_no_gradients (tests.test_fixed_validation.FixedBudgetValidationTest.test_actual_nll_count_training_state_and_no_gradients) ... ok
+test_bad_budget_and_sequence_count_rejected (tests.test_fixed_validation.FixedBudgetValidationTest.test_bad_budget_and_sequence_count_rejected) ... ok
+test_checksum_tampering_rejected (tests.test_fixed_validation.FixedBudgetValidationTest.test_checksum_tampering_rejected) ... ok
+test_document_provenance_checksum_rejected (tests.test_fixed_validation.FixedBudgetValidationTest.test_document_provenance_checksum_rejected) ... ok
+test_frozen_arrays_identical_and_partial_forward_not_padded (tests.test_fixed_validation.FixedBudgetValidationTest.test_frozen_arrays_identical_and_partial_forward_not_padded) ... ok
+test_ignored_labels_rejected_despite_valid_checksum (tests.test_fixed_validation.FixedBudgetValidationTest.test_ignored_labels_rejected_despite_valid_checksum) ... ok
+test_insufficient_array_rejected_despite_valid_checksum (tests.test_fixed_validation.FixedBudgetValidationTest.test_insufficient_array_rejected_despite_valid_checksum) ... ok
+test_legacy_mode_delegates_and_never_requires_artifact (tests.test_fixed_validation.FixedBudgetValidationTest.test_legacy_mode_delegates_and_never_requires_artifact) ... ok
+test_nonfinite_fails_and_restores_eval_state (tests.test_fixed_validation.FixedBudgetValidationTest.test_nonfinite_fails_and_restores_eval_state) ... ok
+test_production_budget_population_identical_dp_and_batch_matrix (tests.test_fixed_validation.FixedBudgetValidationTest.test_production_budget_population_identical_dp_and_batch_matrix) ... ok
+test_real_chunked_loss_matches_full_logits_without_backward (tests.test_fixed_validation.FixedBudgetValidationTest.test_real_chunked_loss_matches_full_logits_without_backward) ... ok
+test_real_two_rank_reduction_and_partial_batches (tests.test_fixed_validation.FixedBudgetValidationTest.test_real_two_rank_reduction_and_partial_batches) ... skipped 'opt in to local Gloo sockets'
+test_tokenizer_mismatch_rejected (tests.test_fixed_validation.FixedBudgetValidationTest.test_tokenizer_mismatch_rejected) ... ok
+test_checkpoint_replays_across_order_boundaries_and_epochs (tests.test_fixed_document_order.FixedDocumentOrderTests.test_checkpoint_replays_across_order_boundaries_and_epochs) ... ok
+test_frozen_sample_is_reproducible_and_counts_only_selected_windows (tests.test_fixed_document_order.FixedDocumentOrderTests.test_frozen_sample_is_reproducible_and_counts_only_selected_windows) ... ok
+test_global_shuffle_precedes_rank_split_and_preserves_targets (tests.test_fixed_document_order.FixedDocumentOrderTests.test_global_shuffle_precedes_rank_split_and_preserves_targets) ... ok
+test_rejects_duplicate_or_modified_order (tests.test_fixed_document_order.FixedDocumentOrderTests.test_rejects_duplicate_or_modified_order) ... ok
+
+----------------------------------------------------------------------
+Ran 33 tests in 1.453s
+
+OK (skipped=1)
+{"output": "/localscratch/kangan/tmpfqwdd6bo/validation_a", "sequences": 2, "valid_labels": 29}
+{"output": "/localscratch/kangan/tmpfqwdd6bo/validation_b", "sequences": 2, "valid_labels": 29}

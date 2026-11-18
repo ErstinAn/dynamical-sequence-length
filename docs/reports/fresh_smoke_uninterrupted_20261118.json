@@ -1,0 +1,182 @@
+{
+  "run_id": "baa83f28bed34c2fbd4ca05168a42570",
+  "url": "https://wandb.ai/rotation_optimizer/debug/runs/baa83f28bed34c2fbd4ca05168a42570",
+  "state": "finished",
+  "resume_step": 0,
+  "final_step": 8,
+  "loss_axes": {
+    "loss_metrics/global_avg_loss": "n_tokens_seen",
+    "loss_metrics/global_max_loss": "n_tokens_seen",
+    "validation_metrics/loss": "n_tokens_seen"
+  },
+  "training_rows": [
+    {
+      "validation_metrics/evaluated_tokens": 15335424,
+      "loss_metrics/global_avg_loss": 12.283363342285156,
+      "validation_metrics/loss": 13.463331995866238,
+      "_step": 1,
+      "loss_metrics/global_max_loss": 12.287185668945312,
+      "validation_metrics/num_sequences": 936,
+      "global_batch_size": 512,
+      "n_valid_tokens_seen": 1048532,
+      "valid_tokens_per_step": 1048532,
+      "seq_len": 2048,
+      "microbatch_size": 32,
+      "n_tokens_seen": 1048576,
+      "gradient_accumulation_steps": 8
+    },
+    {
+      "loss_metrics/global_avg_loss": 12.912681579589844,
+      "valid_tokens_per_step": 1048535,
+      "global_batch_size": 512,
+      "gradient_accumulation_steps": 8,
+      "loss_metrics/global_max_loss": 12.930299758911133,
+      "microbatch_size": 32,
+      "n_tokens_seen": 2097152.0,
+      "n_valid_tokens_seen": 2097067,
+      "seq_len": 2048,
+      "_step": 2
+    },
+    {
+      "global_batch_size": 512,
+      "n_valid_tokens_seen": 4194136,
+      "seq_len": 4096,
+      "gradient_accumulation_steps": 16,
+      "loss_metrics/global_max_loss": 12.823798179626465,
+      "valid_tokens_per_step": 2097069,
+      "microbatch_size": 16,
+      "n_tokens_seen": 4194304.0,
+      "loss_metrics/global_avg_loss": 12.821107864379883,
+      "_step": 3
+    },
+    {
+      "n_tokens_seen": 6291456.0,
+      "gradient_accumulation_steps": 16,
+      "_step": 4,
+      "loss_metrics/global_max_loss": 14.022432327270508,
+      "seq_len": 4096,
+      "n_valid_tokens_seen": 6291198,
+      "microbatch_size": 16,
+      "loss_metrics/global_avg_loss": 13.956199645996094,
+      "valid_tokens_per_step": 2097062,
+      "global_batch_size": 512
+    },
+    {
+      "n_tokens_seen": 10485760.0,
+      "gradient_accumulation_steps": 32,
+      "loss_metrics/global_avg_loss": 12.15574836730957,
+      "seq_len": 8192,
+      "_step": 5,
+      "microbatch_size": 8,
+      "loss_metrics/global_max_loss": 12.180112838745117,
+      "valid_tokens_per_step": 4194120,
+      "global_batch_size": 512,
+      "n_valid_tokens_seen": 10485318
+    },
+    {
+      "gradient_accumulation_steps": 32,
+      "n_valid_tokens_seen": 14679435,
+      "loss_metrics/global_avg_loss": 11.341306686401367,
+      "seq_len": 8192,
+      "microbatch_size": 8,
+      "n_tokens_seen": 14680064.0,
+      "valid_tokens_per_step": 4194117,
+      "global_batch_size": 512,
+      "_step": 6,
+      "loss_metrics/global_max_loss": 11.3485689163208
+    },
+    {
+      "loss_metrics/global_avg_loss": 10.917759895324707,
+      "seq_len": 16384,
+      "valid_tokens_per_step": 8388225,
+      "n_tokens_seen": 23068672.0,
+      "gradient_accumulation_steps": 64,
+      "_step": 7,
+      "loss_metrics/global_max_loss": 10.92390251159668,
+      "n_valid_tokens_seen": 23067660,
+      "microbatch_size": 4,
+      "global_batch_size": 512
+    },
+    {
+      "n_tokens_seen": 31457280,
+      "validation_metrics/loss": 10.225661943101475,
+      "valid_tokens_per_step": 8388240,
+      "microbatch_size": 4,
+      "global_batch_size": 512,
+      "_step": 8,
+      "loss_metrics/global_avg_loss": 10.598470687866211,
+      "seq_len": 16384,
+      "validation_metrics/num_sequences": 936,
+      "gradient_accumulation_steps": 64,
+      "validation_metrics/evaluated_tokens": 15335424,
+      "loss_metrics/global_max_loss": 10.605973243713379,
+      "n_valid_tokens_seen": 31455900
+    }
+  ],
+  "validation_rows": [
+    {
+      "validation_metrics/evaluated_tokens": 15335424,
+      "loss_metrics/global_avg_loss": 12.283363342285156,
+      "validation_metrics/loss": 13.463331995866238,
+      "_step": 1,
+      "loss_metrics/global_max_loss": 12.287185668945312,
+      "validation_metrics/num_sequences": 936,
+      "global_batch_size": 512,
+      "n_valid_tokens_seen": 1048532,
+      "valid_tokens_per_step": 1048532,
+      "seq_len": 2048,
+      "microbatch_size": 32,
+      "n_tokens_seen": 1048576,
+      "gradient_accumulation_steps": 8
+    },
+    {
+      "n_tokens_seen": 31457280,
+      "validation_metrics/loss": 10.225661943101475,
+      "valid_tokens_per_step": 8388240,
+      "microbatch_size": 4,
+      "global_batch_size": 512,
+      "_step": 8,
+      "loss_metrics/global_avg_loss": 10.598470687866211,
+      "seq_len": 16384,
+      "validation_metrics/num_sequences": 936,
+      "gradient_accumulation_steps": 64,
+      "validation_metrics/evaluated_tokens": 15335424,
+      "loss_metrics/global_max_loss": 10.605973243713379,
+      "n_valid_tokens_seen": 31455900
+    }
+  ],
+  "loss_by_step": {
+    "1": [
+      12.283363342285156,
+      12.287185668945312
+    ],
+    "2": [
+      12.912681579589844,
+      12.930299758911133
+    ],
+    "3": [
+      12.821107864379883,
+      12.823798179626465
+    ],
+    "4": [
+      13.956199645996094,
+      14.022432327270508
+    ],
+    "5": [
+      12.15574836730957,
+      12.180112838745117
+    ],
+    "6": [
+      11.341306686401367,
+      11.3485689163208
+    ],
+    "7": [
+      10.917759895324707,
+      10.92390251159668
+    ],
+    "8": [
+      10.598470687866211,
+      10.605973243713379
+    ]
+  }
+}

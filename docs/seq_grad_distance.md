@@ -1,3 +1,7 @@
+# Archived v1 sequence-gradient experiment
+
+The active v2 implementation uses independent packed probes and completed-update coordinates. See [the current protocol and launch commands](../torchtitan_dynamic_seq_len/seq_grad/README.md). The text below records the old parent-crop protocol and its historical results. Its settings and metric names do not describe current runs.
+
 # Gradient distance across sequence lengths
 
 This experiment uses one training trajectory and a fixed global batch of 128 sequences.
@@ -54,7 +58,7 @@ It does not allocate a covariance matrix or retain all candidate gradients.
 
 ## Configuration
 
-Use `configs/seq_grad/reference16384.yaml` for the 100M model.
+Use `legacy/configs/seq_grad/reference16384.yaml` for the 100M model.
 It retains AdamW with constant LR `0.0005` and matrix weight decay `0.1`.
 It uses BF16 model parameters with FP32 gradient reductions.
 Validation remains fixed at length 1024.
@@ -152,20 +156,20 @@ They are measured on the logging rank, with device synchronization at the interv
 Examine the full command without launching training:
 
 ```bash
-python scripts/train.py configs/seq_grad/reference16384.yaml --nproc 2 --dry-run
+python scripts/train.py legacy/configs/seq_grad/reference16384.yaml --nproc 2 --dry-run
 ```
 
 Within a GPU allocation, run the small integration configuration:
 
 ```bash
-python scripts/train.py configs/seq_grad/smoke.yaml --nproc 2
+python scripts/train.py legacy/configs/seq_grad/smoke.yaml --nproc 2
 ```
 
 The full run requires the existing FineWeb validation artifact and tokenizer.
 Use a short full-length run to measure memory before starting the full budget:
 
 ```bash
-python scripts/train.py configs/seq_grad/reference16384.yaml --nproc 2 --training.steps 2
+python scripts/train.py legacy/configs/seq_grad/reference16384.yaml --nproc 2 --training.steps 2
 ```
 
 Run CPU correctness tests:

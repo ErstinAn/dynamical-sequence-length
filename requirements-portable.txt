@@ -1,0 +1,11 @@
+# Preserve locked versions and add the required Hopper attention dependency.
+# Use CPython 3.12 on Linux x86_64.
+# Historical nightly wheels can remain downloadable after their index entries expire.
+# Official URLs bind the three nightly artifacts and FA3 to exact SHA256 values.
+-c requirements-transitive.txt
+flash-attn-3 @ https://download.pytorch.org/whl/test/cu130/flash_attn_3-3.0.0-cp39-abi3-manylinux_2_28_x86_64.whl#sha256=44a019ca428d0866fc73ca49b8af02eb4b6a37ae8a1a6b1a07917c383a187fe6
+ninja==1.13.0
+torch @ https://download.pytorch.org/whl/nightly/cu130/torch-2.15.0.dev20260830%2Bcu130-cp312-cp312-manylinux_2_28_x86_64.whl#sha256=372f832c820465e796f041bee40d1c3c84c6b84dfbb7a904b73748428e47ba24
+torchao @ https://download.pytorch.org/whl/nightly/cu130/torchao-0.19.0.dev20260831%2Bcu130-cp310-abi3-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl#sha256=b52b9672dcfbf23a71c7811054dff71048c30553064fc251717398d9e7242f03
+triton @ https://download-r2.pytorch.org/whl/nightly/triton-3.8.0%2Bgitb252c7c4-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl#sha256=c7ecbbf070c68018fa1df6e402e05377247e80c01203648cf8790494f6ce8ad0
+-r requirements-lock.txt

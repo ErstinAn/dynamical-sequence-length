@@ -1,0 +1,131 @@
+{
+  "run_directory": "/projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/acceptance/runs/smoke-uninterrupted/baa83f28bed34c2fbd4ca05168a42570",
+  "rank0_logs": [
+    "/projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/acceptance/runs/smoke-uninterrupted/baa83f28bed34c2fbd4ca05168a42570/structured_logs/training.global_rank_0.20261118-070408-NVV3BD.jsonl"
+  ],
+  "step_timings": [
+    {
+      "step": 1,
+      "sequence_length": 2048,
+      "nominal_tokens": 1048576,
+      "training_and_gc_seconds": 13.554616,
+      "checkpoint_call_seconds": 0.00012681446969509125,
+      "validation_and_loop_overhead_seconds": 60.333161,
+      "whole_step_seconds": 73.88781033921987,
+      "nominal_tokens_per_training_second": 77359.32910235156,
+      "saved_checkpoint": false,
+      "ran_validation": true
+    },
+    {
+      "step": 2,
+      "sequence_length": 2048,
+      "nominal_tokens": 1048576,
+      "training_and_gc_seconds": 11.564407,
+      "checkpoint_call_seconds": 23.42858993727714,
+      "validation_and_loop_overhead_seconds": 0.005373,
+      "whole_step_seconds": 34.998407187871635,
+      "nominal_tokens_per_training_second": 90672.69943024317,
+      "saved_checkpoint": true,
+      "ran_validation": false
+    },
+    {
+      "step": 3,
+      "sequence_length": 4096,
+      "nominal_tokens": 2097152,
+      "training_and_gc_seconds": 23.752521,
+      "checkpoint_call_seconds": 0.0001257834956049919,
+      "validation_and_loop_overhead_seconds": 8e-05,
+      "whole_step_seconds": 23.752714768983424,
+      "nominal_tokens_per_training_second": 88291.76490360749,
+      "saved_checkpoint": false,
+      "ran_validation": false
+    },
+    {
+      "step": 4,
+      "sequence_length": 4096,
+      "nominal_tokens": 2097152,
+      "training_and_gc_seconds": 22.712721,
+      "checkpoint_call_seconds": 18.660884039476514,
+      "validation_and_loop_overhead_seconds": 0.003179,
+      "whole_step_seconds": 41.37677985616028,
+      "nominal_tokens_per_training_second": 92333.80712068801,
+      "saved_checkpoint": true,
+      "ran_validation": false
+    },
+    {
+      "step": 5,
+      "sequence_length": 8192,
+      "nominal_tokens": 4194304,
+      "training_and_gc_seconds": 48.075099,
+      "checkpoint_call_seconds": 0.00014798715710639954,
+      "validation_and_loop_overhead_seconds": 6.5e-05,
+      "whole_step_seconds": 48.07530130073428,
+      "nominal_tokens_per_training_second": 87244.83333877273,
+      "saved_checkpoint": false,
+      "ran_validation": false
+    },
+    {
+      "step": 6,
+      "sequence_length": 8192,
+      "nominal_tokens": 4194304,
+      "training_and_gc_seconds": 48.186122,
+      "checkpoint_call_seconds": 17.427072149701416,
+      "validation_and_loop_overhead_seconds": 0.005478,
+      "whole_step_seconds": 65.61867745127529,
+      "nominal_tokens_per_training_second": 87043.81730490783,
+      "saved_checkpoint": true,
+      "ran_validation": false
+    },
+    {
+      "step": 7,
+      "sequence_length": 16384,
+      "nominal_tokens": 8388608,
+      "training_and_gc_seconds": 105.840494,
+      "checkpoint_call_seconds": 0.0001726774498820305,
+      "validation_and_loop_overhead_seconds": 7e-05,
+      "whole_step_seconds": 105.84072683751583,
+      "nominal_tokens_per_training_second": 79257.07527404398,
+      "saved_checkpoint": false,
+      "ran_validation": false
+    },
+    {
+      "step": 8,
+      "sequence_length": 16384,
+      "nominal_tokens": 8388608,
+      "training_and_gc_seconds": 107.355404,
+      "checkpoint_call_seconds": 18.669043347239494,
+      "validation_and_loop_overhead_seconds": 59.313614,
+      "whole_step_seconds": 185.3380175959319,
+      "nominal_tokens_per_training_second": 78138.66547416654,
+      "saved_checkpoint": true,
+      "ran_validation": true
+    }
+  ],
+  "checkpoint_storage": [
+    {
+      "path": "/projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/acceptance/runs/smoke-uninterrupted/baa83f28bed34c2fbd4ca05168a42570/checkpoint/step-2",
+      "files": 4,
+      "apparent_bytes": 15883544494,
+      "allocated_bytes": 15883567616
+    },
+    {
+      "path": "/projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/acceptance/runs/smoke-uninterrupted/baa83f28bed34c2fbd4ca05168a42570/checkpoint/step-4",
+      "files": 4,
+      "apparent_bytes": 15883544494,
+      "allocated_bytes": 15883567616
+    },
+    {
+      "path": "/projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/acceptance/runs/smoke-uninterrupted/baa83f28bed34c2fbd4ca05168a42570/checkpoint/step-6",
+      "files": 4,
+      "apparent_bytes": 15883544496,
+      "allocated_bytes": 15883567616
+    },
+    {
+      "path": "/projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/acceptance/runs/smoke-uninterrupted/baa83f28bed34c2fbd4ca05168a42570/checkpoint/step-8",
+      "files": 4,
+      "apparent_bytes": 15883544496,
+      "allocated_bytes": 15883567616
+    }
+  ],
+  "all_checkpoint_apparent_bytes": 63534177980
+}

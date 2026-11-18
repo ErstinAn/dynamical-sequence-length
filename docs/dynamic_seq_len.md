@@ -7,7 +7,7 @@ The [writing guide](writing.md) gives the meanings of the technical terms in thi
 
 ## Experiment configurations
 
-The six experiment configurations in `configs/dynamic_seq/` have the same training parameters as the completed experiments.
+The six experiment configurations in `legacy/configs/dynamic_seq/` have the same training parameters as the completed experiments.
 Each configuration uses 3840 optimizer steps.
 The global batch size is 512 sequences, and the local batch size is 16 sequences.
 The learning rate is constant at `0.0005`, with no warmup.
@@ -31,7 +31,7 @@ The sweep selects the two cyclic configurations in the table.
 The smoke test uses a different, smaller budget.
 
 The constant configuration uses `DynamicSeqLenTrainer` for comparison with the other schedules.
-`configs/lr_sweep_constant.yaml` uses the TorchTitan Trainer.
+`legacy/configs/lr_sweep_constant.yaml` uses the TorchTitan Trainer.
 That sweep has 3819 steps and five learning rates.
 The configurations for gradient variance use a different Trainer.
 
@@ -65,26 +65,26 @@ The loss calculation uses the same normalization by valid tokens.
 6. Examine the smoke test command.
 
    ```bash
-   python scripts/train.py configs/dynamic_seq/smoke.yaml --nproc 1 --dry-run
+   python scripts/train.py legacy/configs/dynamic_seq/smoke.yaml --nproc 1 --dry-run
    ```
 
 7. In a GPU allocation, run the smoke test.
 
    ```bash
-   python scripts/train.py configs/dynamic_seq/smoke.yaml --nproc 1
+   python scripts/train.py legacy/configs/dynamic_seq/smoke.yaml --nproc 1
    ```
 
 8. In an allocation with two GPUs, run the selected experiment.
 
    ```bash
-   python scripts/train.py configs/dynamic_seq/cyclic.yaml --nproc 2
+   python scripts/train.py legacy/configs/dynamic_seq/cyclic.yaml --nproc 2
    ```
 
 The following command selects index 1 from the cyclic sweep.
 Index 0 selects a period of 256 steps. index 1 selects a period of 64 steps.
 
 ```bash
-python scripts/train.py configs/dynamic_seq/cyclic_sweep.yaml --nproc 2 --index 1
+python scripts/train.py legacy/configs/dynamic_seq/cyclic_sweep.yaml --nproc 2 --index 1
 ```
 
 ## Slurm submission procedure
@@ -104,7 +104,7 @@ The selected short QoS has a higher billing factor.
 2. Copy the selected configuration to this directory.
 
    ```bash
-   cp configs/dynamic_seq/cyclic_sweep.yaml outputs/launch/experiment.yaml
+   cp legacy/configs/dynamic_seq/cyclic_sweep.yaml outputs/launch/experiment.yaml
    ```
 
 3. Set `resources.account` to your allocation account in the copied file.
@@ -228,7 +228,7 @@ The other training configurations use their existing Trainer and metrics classes
 The [test procedure](tests.md) gives the CPU, distributed, and GPU checks.
 
 `scripts/benchmark_dataloader.py` compares TorchTitan training with zero workers, four workers, and cached batches on the CPU.
-`configs/benchmark_dataloader.yaml` supplies the benchmark configuration.
+`legacy/configs/benchmark_dataloader.yaml` supplies the benchmark configuration.
 The benchmark uses the same GPU allocation for all cases.
 The measured execution time does not include warmup.
 It includes data transfer from the CPU to the GPU.

@@ -1,0 +1,28 @@
+{
+  "checked_utc": "2026-11-18T11:56:21.301975+00:00",
+  "dataset_dir": "/projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/data/fineweb_edu_long_30b_shuffled_v1",
+  "python": "/projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/environment/conda/bin/python",
+  "python_version": "3.12.14 (main, Sep  2 2026, 23:27:36) [GCC 15.3.0]",
+  "numpy_version": "2.5.2",
+  "checker_sha256": "979cc58992b8815319497816c6a85b53a3b00ca1c48a2d3aaa4bcae52e7b9941",
+  "python_optimization": 0,
+  "passed": true,
+  "checked_indexes": 236,
+  "split_documents": {
+    "train": 1348067,
+    "validation": 2725
+  },
+  "reconstructed_validation_windows": 936,
+  "window_length": 16384,
+  "valid_targets": 15335424,
+  "unique_validation_documents": 798,
+  "documents_with_multiple_windows": 100,
+  "overlap_including_lookahead": false,
+  "shifted_labels_match_new_cache": true,
+  "positions_match": true,
+  "all_index_offsets_contiguous": true,
+  "order_permutations_complete": true,
+  "optional_marker_simulated_absent": true,
+  "original_marker_preserved": true,
+  "elapsed_seconds": 1.543106049997732
+}

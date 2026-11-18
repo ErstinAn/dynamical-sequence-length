@@ -1,0 +1,205 @@
+{
+  "checked_utc": "2026-11-18T11:41:09.923760+00:00",
+  "dataset_dir": "/projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/data/fineweb_edu_long_30b_shuffled_v1",
+  "tokenizer_dir": "/projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/hf/llama3-tokenizer",
+  "revision": "b6ea2fde77bab36dff963aba5e6f482477959933",
+  "metadata_hash_checks_passed": true,
+  "orders": {
+    "train": {
+      "documents": 1348067,
+      "complete_permutation": true,
+      "sha256": "986f8942f27a0c965edb40308aecac399e6e042a8693df7e27ce181d7d03b2f5"
+    },
+    "validation": {
+      "documents": 2725,
+      "complete_permutation": true,
+      "sha256": "26d6cc2e1c010b94673d8e61b35fddeccb1571a1b2845bf6b3be93c27705ab80"
+    }
+  },
+  "validation": {
+    "shape": [
+      936,
+      16384
+    ],
+    "valid_targets": 15335424,
+    "ignored_labels": 0
+  },
+  "tokenizer_revision": "8cde5ca8380496c9a6cc7ef3a8b46a0372a1d920",
+  "bootstrap_environment_reused": true,
+  "text_download_complete": true,
+  "token_cache_rebuilt": true,
+  "new_hub_local_download_directories": true,
+  "preliminary_xet_cache_isolation": "not explicitly set in the initial metadata-only command; possible chunk-cache reuse is not excluded",
+  "raw_text_bytes": 52027268242,
+  "expected_token_binary_bytes": 120249458012,
+  "fresh_environment_tests": {
+    "python": "/projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/environment/conda/bin/python",
+    "tests": [
+      "tests.test_download_dataset",
+      "tests.test_rebuild_long_token_cache"
+    ],
+    "passed": 5,
+    "elapsed_seconds": 1.135,
+    "test_fixture": "Synthetic unit test files only. Real dataset reconstruction remains pending.",
+    "final_builder_repeat_passed": 3,
+    "final_builder_repeat_seconds": 0.977
+  },
+  "full_download_approval_attempts": {
+    "first_attempt": "Automatic permission review timed out before command dispatch.",
+    "retry": "Automatic permission review timed out before command dispatch.",
+    "safety_rejection_stated": false
+  },
+  "cpu_wrapper": "scripts/data_handoff_cpu.sh",
+  "cpu_wrapper_syntax_check_passed": true,
+  "first_shard_tokens": 128002324,
+  "all_236_index_reference_hashes_present": true,
+  "cpu_job": {
+    "job_id": 8795433,
+    "submitted_utc": "2026-11-18T09:43:09Z",
+    "started_utc": "2026-11-18T09:43:16Z",
+    "pipeline_started_utc": "2026-11-18T09:43:18Z",
+    "queue_seconds": 7,
+    "node": "tc093",
+    "partition": "normal_q",
+    "qos": "tc_normal_base",
+    "account": "jason_optai-paid",
+    "cpus": 32,
+    "memory_gib": 128,
+    "walltime": "02:00:00",
+    "compute_node_tests_passed": 5,
+    "compute_node_test_seconds": 8.542,
+    "log": "local/slurm_logs/data-8795433.log",
+    "persistent_log": "/projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/logs/data_handoff_8795433.log",
+    "script_sha256": {
+      "scripts/download_dataset.py": "a364f2f74b13027a8b44c6bb95e2e4436cd3e47451a2b32402f3842748a83d9f",
+      "scripts/rebuild_long_token_cache.py": "096e1347db138710a9e6ad927a9fd9fb4f6b610089eecd799d250c0d9be6ecce",
+      "scripts/data_handoff_cpu.sh": "26e678030a24d13766d24966135b058702d3693329fcbdf07d8958bc56cd93ba"
+    },
+    "last_observed_stage": "Complete reconstruction passed.",
+    "ended_utc": "2026-11-18T11:38:10Z",
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "execution_seconds": 6894,
+    "full_rebuild_seconds": 5295.83084625192,
+    "full_rebuild_checked_shards": 236,
+    "full_rebuild_encoded_shards": 235,
+    "same_session_benchmark_shards_reused": 1
+  },
+  "full_text_download": {
+    "completed_utc": "2026-11-18T10:08:43.377540+00:00",
+    "checked_shards": 236,
+    "bytes": 52027268242,
+    "hub_cache_preexisting": false,
+    "metadata_directory_preexisting_from_this_session": true,
+    "existing_huggingface_credentials_used": true,
+    "transport_issue": "HTTP416 range errors and retries. Download recovered without intervention.",
+    "all_text_hashes_passed": true
+  },
+  "cpu_continuation": {
+    "job_id": 8796361,
+    "dependency": "afterany:8795433",
+    "cpus": 32,
+    "memory_gib": 128,
+    "walltime": "01:00:00",
+    "script": "scripts/resume_data_handoff_cpu.sh",
+    "slurm_log": "/projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/logs/data-resume-slurm-8796361.log",
+    "pipeline_log": "/projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/logs/data_resume_8796361.log",
+    "active_job_walltime_extension": "The Slurm scheduler denied an increase to 02:30:00. The active job continues unchanged.",
+    "gpu_job": 8796064,
+    "gpu_dependency": "afterok:8796361",
+    "network_downloads_repeated": false,
+    "existing_files_require_source_token_index_hash_checks": true,
+    "status": "All checks passed.",
+    "submitted_utc": "2026-11-18T10:30:59Z",
+    "eligible_utc": "2026-11-18T11:38:11Z",
+    "started_utc": "2026-11-18T11:38:11Z",
+    "ended_utc": "2026-11-18T11:40:01Z",
+    "dependency_hold_seconds": 4032,
+    "scheduler_wait_after_eligibility_seconds": 0,
+    "node": "tc093",
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "execution_seconds": 110,
+    "hash_check_seconds": 107.20341513305902,
+    "checked_reused_shards": 236,
+    "encoded_shards": 0
+  },
+  "first_shard_benchmark": {
+    "shard": "train-00000",
+    "tokens": 128002324,
+    "elapsed_seconds": 67.09520519711077,
+    "tokenizer_threads": 8,
+    "tokens_per_second": 1907771.5557163537,
+    "token_and_index_hashes_passed": true,
+    "old_token_cache_reused": false,
+    "ideal_four_worker_remaining_hours": 1.0896352580007307,
+    "estimate_is_guaranteed": false
+  },
+  "status": "passed",
+  "original_token_cache_reused": false,
+  "standalone_ready": {
+    "recorded_utc": "2026-11-18T11:40:00.118305+00:00",
+    "complete": true,
+    "shards": 236,
+    "manifest_sha256": "4bf6946f7b7f7cbad0799746519baaa9ef2518f974d2239a8df2f184db004806",
+    "labels_shape": [
+      936,
+      16384
+    ],
+    "valid_targets": 15335424,
+    "dataset_dir": "/projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/data/fineweb_edu_long_30b_shuffled_v1",
+    "tokenizer_revision": "8cde5ca8380496c9a6cc7ef3a8b46a0372a1d920",
+    "checked_reused_shards": 236,
+    "encoded_shards_in_this_continuation": 0
+  },
+  "independent_window_check": {
+    "checked_utc": "2026-11-18T11:41:09.923760+00:00",
+    "dataset_dir": "/projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/assets/data/fineweb_edu_long_30b_shuffled_v1",
+    "python": "/projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/environment/conda/bin/python",
+    "python_version": "3.12.14 (main, Sep  2 2026, 23:27:36) [GCC 15.3.0]",
+    "numpy_version": "2.5.2",
+    "checker_sha256": "979cc58992b8815319497816c6a85b53a3b00ca1c48a2d3aaa4bcae52e7b9941",
+    "python_optimization": 0,
+    "passed": true,
+    "checked_indexes": 236,
+    "split_documents": {
+      "train": 1348067,
+      "validation": 2725
+    },
+    "reconstructed_validation_windows": 936,
+    "window_length": 16384,
+    "valid_targets": 15335424,
+    "unique_validation_documents": 798,
+    "documents_with_multiple_windows": 100,
+    "overlap_including_lookahead": false,
+    "shifted_labels_match_new_cache": true,
+    "positions_match": true,
+    "all_index_offsets_contiguous": true,
+    "order_permutations_complete": true
+  },
+  "independent_window_check_seconds": 5.75,
+  "cache_counts": {
+    "unique_shards_reencoded_from_downloaded_text": 236,
+    "raw_training_tokens": 30000004070,
+    "raw_validation_tokens": 62360433,
+    "token_binary_bytes": 120249458012,
+    "index_bytes": 21642880,
+    "data_file_links": 0,
+    "token_file_links": 0,
+    "dataset_logical_bytes": 172672635493,
+    "tokenizer_logical_bytes": 9139915
+  },
+  "optional_marker_check": {
+    "passed": true,
+    "optional_marker_simulated_absent": true,
+    "original_marker_preserved": true,
+    "elapsed_seconds": 1.543106049997732,
+    "record": "docs/reports/fresh_data_20261118_optional_marker.json"
+  },
+  "data_job_code_checkout": "/home/kangan/titanprecond-lab/dynamic_seq_len",
+  "reused_host_components": [
+    "Host operating system",
+    "Slurm installation",
+    "Existing Hugging Face credentials"
+  ]
+}

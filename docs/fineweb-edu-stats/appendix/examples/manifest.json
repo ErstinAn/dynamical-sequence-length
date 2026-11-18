@@ -1,0 +1,223 @@
+{
+  "source": {
+    "repo_id": "HuggingFaceFW/fineweb-edu",
+    "revision": "87f09149ef4734204d70ed1d046ddc9ca3f2b8f9",
+    "config": "sample-100BT",
+    "seed": 20261104,
+    "relative_tolerance": 0.02,
+    "targets": [
+      2096,
+      8192,
+      16384,
+      32768
+    ],
+    "candidate_pool_sizes": {
+      "2096": 1024,
+      "8192": 256,
+      "16384": 256,
+      "32768": 1024
+    },
+    "eligible_documents": {
+      "2096": 548629,
+      "8192": 65980,
+      "16384": 19254,
+      "32768": 3320
+    },
+    "method": "Random priority sample within each length range. Select agency publications for full text inspection. This is not a representative sample.",
+    "job_id": "8439315"
+  },
+  "examples": [
+    {
+      "target": 2096,
+      "path": "sample/100BT/009_00003.parquet",
+      "row": 350209,
+      "source_tokens": 2106,
+      "priority": 0.0002787144468560099,
+      "id": "<urn:uuid:bae20f63-0fe6-4cdf-8fe1-999abec59f3c>",
+      "url": "https://www.osha.gov/SLTC/heatillness/heat_index/protective_veryhigh.html",
+      "dump": "CC-MAIN-2019-13",
+      "token_count": 2106,
+      "score": 2.921875,
+      "int_score": 3,
+      "text_sha256": "8725397921c2a72459a9f478c2d8ca19f464df62930a295354cee3c3b3fee6c0",
+      "characters": 10197,
+      "lines": 60,
+      "words_whitespace": 1564,
+      "tokenizer_lengths_without_special_tokens": {
+        "llama2": 2456,
+        "llama3": 1993
+      },
+      "markdown": "2096_01_heat_precautions.md",
+      "raw_text": "raw/2096_01_heat_precautions.txt",
+      "display_roundtrip_verified": true
+    },
+    {
+      "target": 2096,
+      "path": "sample/100BT/004_00006.parquet",
+      "row": 742379,
+      "source_tokens": 2069,
+      "priority": 0.00022063854911003045,
+      "id": "<urn:uuid:6c1b9b62-e0cb-40a5-9d6c-2b618d5fe047>",
+      "url": "http://www.cr.nps.gov/history/online_books/hh/39/hh39a.htm",
+      "dump": "CC-MAIN-2015-11",
+      "token_count": 2069,
+      "score": 3.546875,
+      "int_score": 4,
+      "text_sha256": "00257dead727ac60f27ced95513eca74f2a5584f89e0e2ed6c039d29da7c1f49",
+      "characters": 9351,
+      "lines": 20,
+      "words_whitespace": 1544,
+      "tokenizer_lengths_without_special_tokens": {
+        "llama2": 2319,
+        "llama3": 2090
+      },
+      "markdown": "2096_02_civil_war.md",
+      "raw_text": "raw/2096_02_civil_war.txt",
+      "display_roundtrip_verified": true
+    },
+    {
+      "target": 8192,
+      "path": "sample/100BT/011_00005.parquet",
+      "row": 704433,
+      "source_tokens": 8148,
+      "priority": 0.003542066765288565,
+      "id": "<urn:uuid:45431927-e4a8-4eea-8f2f-3292df530646>",
+      "url": "https://www.ncdc.noaa.gov/sotc/national/201207",
+      "dump": "CC-MAIN-2019-39",
+      "token_count": 8148,
+      "score": 3.0625,
+      "int_score": 3,
+      "text_sha256": "d55f73c7c873bfae023f207473e1017e9fc6f49569bd41efcea218b11da0292d",
+      "characters": 37242,
+      "lines": 81,
+      "words_whitespace": 6064,
+      "tokenizer_lengths_without_special_tokens": {
+        "llama2": 10053,
+        "llama3": 8407
+      },
+      "markdown": "8192_01_climate_report.md",
+      "raw_text": "raw/8192_01_climate_report.txt",
+      "display_roundtrip_verified": true
+    },
+    {
+      "target": 8192,
+      "path": "sample/100BT/013_00002.parquet",
+      "row": 166961,
+      "source_tokens": 8167,
+      "priority": 0.0009784301776256665,
+      "id": "<urn:uuid:70cf46fd-1e68-4955-b054-63e3f6cd6475>",
+      "url": "https://wwwnc.cdc.gov/eid/article/22/10/15-1612_article",
+      "dump": "CC-MAIN-2019-51",
+      "token_count": 8167,
+      "score": 2.6875,
+      "int_score": 3,
+      "text_sha256": "417d5ad6eb878548c3a7bc7c43b62f027bc1f16dadf8c79b322964ff23798516",
+      "characters": 29219,
+      "lines": 71,
+      "words_whitespace": 4151,
+      "tokenizer_lengths_without_special_tokens": {
+        "llama2": 9630,
+        "llama3": 7857
+      },
+      "markdown": "8192_02_research_article.md",
+      "raw_text": "raw/8192_02_research_article.txt",
+      "display_roundtrip_verified": true
+    },
+    {
+      "target": 16384,
+      "path": "sample/100BT/001_00007.parquet",
+      "row": 25422,
+      "source_tokens": 16215,
+      "priority": 0.012692751521704126,
+      "id": "<urn:uuid:5415dda0-ce1c-4626-907b-25643f959d14>",
+      "url": "http://www.cdc.gov/pcd/issues/2004/oct/04_0019.htm",
+      "dump": "CC-MAIN-2014-10",
+      "token_count": 16215,
+      "score": 3.109375,
+      "int_score": 3,
+      "text_sha256": "4e0670baf788ea4b2fc50a488a0639173d8fe891f529810735902528b7409770",
+      "characters": 65916,
+      "lines": 1125,
+      "words_whitespace": 9956,
+      "tokenizer_lengths_without_special_tokens": {
+        "llama2": 19156,
+        "llama3": 15736
+      },
+      "markdown": "16384_01_internet_access.md",
+      "raw_text": "raw/16384_01_internet_access.txt",
+      "display_roundtrip_verified": true
+    },
+    {
+      "target": 16384,
+      "path": "sample/100BT/003_00002.parquet",
+      "row": 606607,
+      "source_tokens": 16574,
+      "priority": 0.00262961859070876,
+      "id": "<urn:uuid:fe8f9a77-c982-4b62-a226-c1429cb39fef>",
+      "url": "https://www.fs.fed.us/land/pubs/ecoregions/ch17.html",
+      "dump": "CC-MAIN-2020-40",
+      "token_count": 16574,
+      "score": 2.828125,
+      "int_score": 3,
+      "text_sha256": "87afd0fd93ddd0cbc1e64b1226cd2c582e056a48a87107a84f71df866a435608",
+      "characters": 73201,
+      "lines": 164,
+      "words_whitespace": 10915,
+      "tokenizer_lengths_without_special_tokens": {
+        "llama2": 19958,
+        "llama3": 16469
+      },
+      "markdown": "16384_02_ecoregions.md",
+      "raw_text": "raw/16384_02_ecoregions.txt",
+      "display_roundtrip_verified": true
+    },
+    {
+      "target": 32768,
+      "path": "sample/100BT/000_00003.parquet",
+      "row": 42658,
+      "source_tokens": 32772,
+      "priority": 0.1077653283773693,
+      "id": "<urn:uuid:907a3880-5e81-4266-a1bc-9896746cb10b>",
+      "url": "http://www.nps.gov/history/history/online_books/foun/chap2.htm",
+      "dump": "CC-MAIN-2013-20",
+      "token_count": 32772,
+      "score": 3.390625,
+      "int_score": 3,
+      "text_sha256": "8f4280b8db03bec188d2c4d8ef54ed7c8c673509611f6e819c293e9c6add1f3a",
+      "characters": 155970,
+      "lines": 196,
+      "words_whitespace": 26247,
+      "tokenizer_lengths_without_special_tokens": {
+        "llama2": 37009,
+        "llama3": 33115
+      },
+      "markdown": "32768_01_fort_union.md",
+      "raw_text": "raw/32768_01_fort_union.txt",
+      "display_roundtrip_verified": true
+    },
+    {
+      "target": 32768,
+      "path": "sample/100BT/009_00009.parquet",
+      "row": 288779,
+      "source_tokens": 32585,
+      "priority": 0.05226077780786731,
+      "id": "<urn:uuid:36eb95c5-e640-4a7c-8b00-5ef0b2937409>",
+      "url": "https://www.nps.gov/history/archeology/pubs/nhleam/F-Southeast.htm",
+      "dump": "CC-MAIN-2016-40",
+      "token_count": 32585,
+      "score": 3.15625,
+      "int_score": 3,
+      "text_sha256": "3839d21dce2257643cfe6e235836af2d1034b5b1db6ec67aff2f9112c575d900",
+      "characters": 150834,
+      "lines": 162,
+      "words_whitespace": 22943,
+      "tokenizer_lengths_without_special_tokens": {
+        "llama2": 40788,
+        "llama3": 33869
+      },
+      "markdown": "32768_02_archaeology.md",
+      "raw_text": "raw/32768_02_archaeology.txt",
+      "display_roundtrip_verified": true
+    }
+  ]
+}

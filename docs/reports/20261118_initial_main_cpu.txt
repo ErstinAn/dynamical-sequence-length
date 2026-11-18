@@ -1,0 +1,42 @@
+W1118 02:33:52.239000 3 site-packages/torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W1118 02:33:52.321000 3 site-packages/torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+test_model_definition_matches_native_1b_and_data_protocol_is_fixed (tests.test_token_progress.MainEntryTest.test_model_definition_matches_native_1b_and_data_protocol_is_fixed) ... ok
+test_recovery_rejects_changed_budget_and_corrupt_counts (tests.test_token_progress.TokenCheckpointTest.test_recovery_rejects_changed_budget_and_corrupt_counts) ... /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torchdata/stateful_dataloader/stateful_dataloader.py:379: UserWarning: 'set_vital' is deprecated, please do not call
+  torch.set_vital("Dataloader", "enabled", "True")  # type: ignore[attr-defined]
+ok
+test_ten_complete_saves_and_resume_without_duplicate_milestones (tests.test_token_progress.TokenCheckpointTest.test_ten_complete_saves_and_resume_without_duplicate_milestones) ... /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/distributed/checkpoint/utils.py:488: UserWarning: torch.distributed is disabled, unavailable or uninitialized, assuming the intent is to save in a single process.
+  return func(*args, **kwargs)
+/home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/distributed/checkpoint/utils.py:488: UserWarning: torch.distributed is disabled, unavailable or uninitialized, assuming the intent is to load in a single process.
+  return func(*args, **kwargs)
+/home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/optim/lr_scheduler.py:461: UserWarning: To get the last learning rate computed by the scheduler, please use `get_last_lr()`.
+  _warn_get_lr_called_within_step(self)
+ok
+test_validation_between_logs_uses_current_total_including_masked_positions (tests.test_token_progress.TokenMetricsTest.test_validation_between_logs_uses_current_total_including_masked_positions) ... ok
+test_wandb_keeps_names_and_binds_explicit_token_axes (tests.test_token_progress.TokenMetricsTest.test_wandb_keeps_names_and_binds_explicit_token_axes) ... ok
+test_rejects_incomplete_repeated_or_colliding_milestones (tests.test_token_progress.TokenPlanTest.test_rejects_incomplete_repeated_or_colliding_milestones) ... ok
+test_rejects_retention_and_partial_recovery (tests.test_token_progress.TokenPlanTest.test_rejects_retention_and_partial_recovery) ... ok
+test_variable_steps_and_integer_thresholds (tests.test_token_progress.TokenPlanTest.test_variable_steps_and_integer_thresholds) ... ok
+test_plan_is_concrete_and_dry_run_has_no_files (tests.test_main_launch.MainLaunchTest.test_plan_is_concrete_and_dry_run_has_no_files) ... ok
+test_rejects_missing_settings_and_disabled_wandb (tests.test_main_launch.MainLaunchTest.test_rejects_missing_settings_and_disabled_wandb) ... usage: train.py [-h] [--nproc NPROC] [--index INDEX] [--list] [--list-legacy]
+                [--dry-run] [--resume-dir RESUME_DIR]
+                [config]
+train.py: error: The main experiment requires online W&B with an entity and project.
+usage: train.py [-h] [--nproc NPROC] [--index INDEX] [--list] [--list-legacy]
+                [--dry-run] [--resume-dir RESUME_DIR]
+                [config]
+train.py: error: Specify experiment settings explicitly: token_budget
+usage: train.py [-h] [--nproc NPROC] [--index INDEX] [--list] [--list-legacy]
+                [--dry-run] [--resume-dir RESUME_DIR]
+                [config]
+train.py: error: Keep all 936 fixed validation windows at length 16384.
+ok
+test_resume_preserves_directory_and_uses_new_wandb_segment (tests.test_main_launch.MainLaunchTest.test_resume_preserves_directory_and_uses_new_wandb_segment) ... usage: train.py [-h] [--nproc NPROC] [--index INDEX] [--list] [--list-legacy]
+                [--dry-run] [--resume-dir RESUME_DIR]
+                [config]
+train.py: error: Resume requires the recorded source, configuration, and DP degree.
+ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.760s
+
+OK

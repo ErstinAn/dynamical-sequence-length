@@ -1,0 +1,90 @@
+{
+  "date": "2026-11-02",
+  "torch": "2.15.0.dev20260830+cu130",
+  "torchtitan_commit": "737594746fda65a6d94dc9482ef07863a80c8588",
+  "gpu": "NVIDIA B200",
+  "gpu_count": 1,
+  "slurm_cluster": "owl",
+  "slurm_account": "jason_optai-paid",
+  "baseline_replay": {
+    "job_id": 1348605,
+    "completed_steps": 1528,
+    "failed_step": 1529,
+    "microbatch": 57,
+    "seq_len": 120,
+    "exception": "FailOnRecompileLimitHit"
+  },
+  "fixed_replay": {
+    "job_id": 1348951,
+    "status": "passed",
+    "completed_steps": 3840,
+    "validation_mode_interval": 20,
+    "scope": "One Llama block with synthetic hidden states, activation checkpoints, and FlexAttention"
+  },
+  "full_trainer": {
+    "job_id": 1348951,
+    "status": "passed",
+    "optimizer_updates": 30,
+    "selected_schedule_steps": [
+      1,
+      2,
+      8,
+      20,
+      31,
+      61,
+      100,
+      128,
+      129,
+      200,
+      240,
+      256,
+      257,
+      480,
+      512,
+      768,
+      1024,
+      1400,
+      1500,
+      1520,
+      1528,
+      1529,
+      1530,
+      1536,
+      1664,
+      1920,
+      2560,
+      3200,
+      3712,
+      3840
+    ],
+    "training_tokens": 8906496,
+    "validation_steps": [
+      20,
+      1520,
+      3840
+    ],
+    "validation_tokens_per_pass": 20971520,
+    "scope": "Full 100M model with synthetic training tokens and the configured validation artifact"
+  },
+  "cpu_tests": {
+    "passed": 33,
+    "modules": [
+      "tests.test_dynamic_compile",
+      "tests.test_dynamic_seq",
+      "tests.test_dynamic_seq_bs"
+    ]
+  },
+  "limitations": [
+    "The full Trainer test used one GPU, not the original two-GPU topology.",
+    "The full Trainer test did not restore a production checkpoint.",
+    "The tests did not resume the original W&B runs or measure convergence."
+  ],
+  "source_sha256": {
+    "torchtitan_dynamic_seq_len/dynamic_seq_bs/compile.py": "d13ea41ac412d9ef9c935f49dc23c4898ccf4d385d57e312d052a73a430a5c55",
+    "torchtitan_dynamic_seq_len/dynamic_seq_bs/trainer.py": "e317c719c96d588c976037a86fc690dfb3e5b6eb537b865d5e8dae04d6beb3d8",
+    "torchtitan_dynamic_seq_len/dynamic_seq/metrics.py": "4614fd6a974a267680d2922c017961234deb634989c823075c209cc6801c31e6",
+    "tests/test_dynamic_compile.py": "eea740dcfc4c01e6fcbf6ae5fa6a2214a3502980a7f194abed2f943fb9a09511",
+    "tests/dynamic_compile_gpu.py": "e7bdcd328d046ea5d56244970fbcb813b5a51cb81de18c589257bdd0eb03e4fa",
+    "tests/dynamic_compile_trainer_gpu.py": "962c68d3e40fb1dfb23ec66264f8c1a0659260f96ec9184fc4356a9333dd432d"
+  }
+}

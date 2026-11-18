@@ -1,28 +1,41 @@
-name: smoke
-torchtitan_config: llama3_debug
+# Replace conservative microbatches with measured values from the target GPU probe.
+# Smoke saves at steps 2, 4, 6, and 8. Formal runs retain ten token milestones.
+name: llama3-1b-sequence-smoke
+torchtitan_config: llama3_1b
 paths:
-  dump_root: ${OUTPUT_ROOT}/runs
+  dump_root: ${OUTPUT_ROOT}
 wandb:
-  enabled: false
+  enabled: true
+  entity: rotation_optimizer
+  project: debug
+  mode: online
 fixed:
-  dataloader.dataset: sequence_length_smoke
-  dataloader.dataset_path: ${PROJECT_ROOT}/tests/fixtures/text.jsonl
-  dataloader.num_workers: 0
-  dataloader.pin_memory: false
-  dataloader.persistent_workers: false
-  dataloader.infinite: true
-  training.steps: 10
-  training.seq_len: 64
-  training.local_batch_size: 2
-  training.global_batch_size: 8
+  smoke_test: true
+  token_budget: 31457280
+  training.steps: 8
+  training.seq_len: 16384
+  training.global_batch_size: 512
+  training.local_batch_size: 1
   training.dtype: float32
-  training.mixed_precision_param: float32
+  training.mixed_precision_param: bfloat16
   training.mixed_precision_reduce: float32
-  grad_var_monitor.enable: true
-  compile.enable: false
-  loss.num_chunks: 2
+  seq_len_scheduler.kind: increasing
+  seq_len_scheduler.lengths: [2048, 4096, 8192, 16384]
+  seq_len_scheduler.boundaries: [2, 4, 6]
+  batch_size_scheduler.kind: constant
+  batch_size_scheduler.batch_size: 512
+  microbatch_scheduler.kind: constant
+  microbatch_scheduler.batch_size: 1
+  # Smoke-only LR. The formal learning rate and sweep await the experiment document.
+  optimizer.learning_rate: 0.0001
+  lr_scheduler.warmup_steps: 0
+  lr_scheduler.decay_type: linear
+  lr_scheduler.min_lr_factor: 1.0
+  validator.freq: 8
+  validator.eval_local_batch_size: 1
+  metrics.log_freq: 1
+  metrics.disable_color_printing: true
   debug.seed: 42
   debug.deterministic: true
-  checkpoint.enable: false
-  validator.enable: false
-sweep: {}
+  compile.enable: false
+  comm.train_timeout_seconds: 600

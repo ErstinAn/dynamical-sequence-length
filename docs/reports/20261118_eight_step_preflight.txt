@@ -1,0 +1,38 @@
+W1118 03:02:54.047000 3 site-packages/torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W1118 03:02:54.240000 3 site-packages/torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+{
+  "token_budget": 31457280,
+  "steps": 8,
+  "actual_tokens": 31457280,
+  "checkpoints": [
+    {
+      "index": 1,
+      "step": 2,
+      "threshold": 2097152,
+      "tokens": 2097152,
+      "excess": 0
+    },
+    {
+      "index": 2,
+      "step": 4,
+      "threshold": 6291456,
+      "tokens": 6291456,
+      "excess": 0
+    },
+    {
+      "index": 3,
+      "step": 6,
+      "threshold": 14680064,
+      "tokens": 14680064,
+      "excess": 0
+    },
+    {
+      "index": 4,
+      "step": 8,
+      "threshold": 31457280,
+      "tokens": 31457280,
+      "excess": 0
+    }
+  ]
+}
+/home/kangan/.conda/envs/torchtitan-macro/bin/python -m torch.distributed.run --nproc_per_node=4 --rdzv_backend=c10d --rdzv_endpoint=localhost:0 --local-ranks-filter=0 --role=rank --tee=3 -m torchtitan.train --module torchtitan_dynamic_seq_len.experiment --config llama3_1b --smoke_test --token_budget 31457280 --training.steps 8 --training.seq_len 16384 --training.global_batch_size 512 --training.local_batch_size 1 --training.dtype float32 --training.mixed_precision_param bfloat16 --training.mixed_precision_reduce float32 --seq_len_scheduler.kind increasing --seq_len_scheduler.lengths 2048 4096 8192 16384 --seq_len_scheduler.boundaries 2 4 6 --batch_size_scheduler.kind constant --batch_size_scheduler.batch_size 512 --microbatch_scheduler.kind constant --microbatch_scheduler.batch_size 1 --optimizer.learning_rate 0.0001 --lr_scheduler.warmup_steps 0 --lr_scheduler.decay_type linear --lr_scheduler.min_lr_factor 1.0 --validator.freq 8 --validator.eval_local_batch_size 1 --metrics.log_freq 1 --metrics.disable_color_printing --debug.seed 42 --debug.deterministic --compile.no-enable --comm.train_timeout_seconds 600 --metrics.enable_wandb --dump_folder /home/kangan/titanprecond-lab/dynamic_seq_len/outputs/llama3-1b-sequence-smoke/f633bb941a77480b96d6ecc2613d2027

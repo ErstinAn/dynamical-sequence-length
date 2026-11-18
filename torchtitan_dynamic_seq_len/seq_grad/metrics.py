@@ -1,94 +1,56 @@
-"""Per-step scalar series and occasional W&B sequence-length profiles."""
+"""Log one raw distance per length at an explicit completed-update coordinate."""
 
+import sys
 from dataclasses import dataclass
 
-from torchtitan.components.metrics import BaseLogger, LoggerContainer, WandBLogger
-
-from torchtitan_dynamic_seq_len.dynamic_seq.metrics import DynamicSeqMetricsProcessor
+import torch.distributed as dist
+from torchtitan.components.metrics import BaseLogger, LoggerContainer, MetricsProcessor, WandBLogger
 
 
 class SeqGradWandBLogger(BaseLogger):
-    def __init__(self, wrapped, profile_freq, minimal=False):
+    def __init__(self, wrapped, metadata):
         self.wrapped = wrapped
-        self.profile_freq = profile_freq
-        self.minimal = minimal
+        self.last_step = -1
+        run = wrapped.wandb.run
+        run.define_metric("context_bias/step")
+        run.define_metric("context_bias/distance_s*", step_metric="context_bias/step")
+        run.config.update({"seq_grad_probe": metadata})
 
     def log(self, metrics, step):
-        prefix = "seq_grad_distance/s"
-        if self.minimal:
-            bounds = {
-                "seq_grad_distance/s": "context-truncation bound",
-                "seq_grad_distance_sq/s": "context-truncation bound sq",
-            }
-            payload = {
-                f"{name}/seq_{int(key.removeprefix(source))}": value
-                for key, value in metrics.items()
-                for source, name in bounds.items()
-                if key.startswith(source)
-            }
-            aliases = {
-                "loss_metrics/global_avg_loss": "train/loss",
-                "validation_metrics/loss": "val/loss",
-                "time_metrics/end_to_end(s)": "time/step_seconds",
-            }
-            payload.update({new: metrics[old] for old, new in aliases.items() if old in metrics})
-            if payload:
-                self.wrapped.log(payload, step)
-            return
-        payload = dict(metrics)
-        lengths = sorted(int(key.removeprefix(prefix)) for key in metrics if key.startswith(prefix))
-        if lengths and self.profile_freq > 0 and (step == 1 or step % self.profile_freq == 0):
-            for measure in ("distance", "relative_distance", "cosine"):
-                payload[f"seq_grad_profile/{measure}"] = self.wrapped.wandb.plot.line_series(
-                    xs=lengths,
-                    ys=[[metrics[f"seq_grad_{measure}/s{length:05d}"] for length in lengths]],
-                    keys=[f"step {step} (before update)"],
-                    title=f"Gradient {measure}, step {step}",
-                    xname="Sequence length",
-                )
-        # One W&B write includes scalars and profiles. TensorBoard receives only scalars.
-        self.wrapped.log(payload, step)
+        if step < self.last_step:
+            raise RuntimeError("Sequence logger cannot write an already committed step")
+        self.last_step = step
+        # Keep this step open for post-update probes and validation.
+        payload = {(k if self.wrapped.tag is None else f"{self.wrapped.tag}/{k}"): v
+                   for k, v in metrics.items()}
+        self.wrapped.wandb.log(payload, step=step, commit=False)
 
     def close(self):
+        if sys.exception() is not None:
+            self.wrapped.wandb.finish(exit_code=1)
+            return
+        if self.last_step >= 0:
+            self.wrapped.wandb.log({}, commit=True)
         self.wrapped.close()
 
 
-class SeqGradMetricsProcessor(DynamicSeqMetricsProcessor):
+class SeqGradMetricsProcessor(MetricsProcessor):
     @dataclass(kw_only=True, slots=True)
-    class Config(DynamicSeqMetricsProcessor.Config):
-        profile_freq: int = 100
-        wandb_minimal: bool = False
+    class Config(MetricsProcessor.Config):
+        pass
 
-    def _build_metric_logger(self, **kwargs):
-        logger = super()._build_metric_logger(**kwargs)
-        if isinstance(logger, LoggerContainer):
-            logger._loggers = [
-                SeqGradWandBLogger(
-                    item, kwargs["config"].profile_freq, kwargs["config"].wandb_minimal
-                )
-                if isinstance(item, WandBLogger)
-                else item
-                for item in logger._loggers
+    def configure_probe(self, metadata):
+        loggers = self.logger._loggers if isinstance(self.logger, LoggerContainer) else []
+        rank = dist.get_rank() if dist.is_initialized() else 0
+        if self.config.enable_wandb and rank == 0 and not any(
+            isinstance(item, WandBLogger) for item in loggers
+        ):
+            raise RuntimeError("Sequence monitoring requires a successfully initialized W&B run")
+        if isinstance(self.logger, LoggerContainer):
+            self.logger._loggers = [
+                SeqGradWandBLogger(item, metadata) if isinstance(item, WandBLogger) else item
+                for item in loggers
             ]
-        return logger
 
-    def reset_window(self):
-        super().reset_window()
-        self.pending = None
-
-    def queue(self, step, values):
-        if self.pending is not None:
-            raise RuntimeError("Unconsumed sequence gradient metrics")
-        self.pending = (step, values)
-
-    def log(self, step, global_avg_loss, global_max_loss, grad_norm, extra_metrics=None):
-        merged = dict(extra_metrics or {})
-        if self.pending is not None:
-            pending_step, values = self.pending
-            if pending_step != step or merged.keys() & values.keys():
-                raise RuntimeError("Sequence gradient metric step or key collision")
-            merged.update(values)
-            length = values["seq_grad/train_length"]
-            if f"seq_grad_distance/s{length:05d}" in values:
-                merged[f"seq_grad_loss/s{length:05d}"] = global_avg_loss
-        return super().log(step, global_avg_loss, global_max_loss, grad_norm, merged)
+    def emit_probe_metrics(self, payload):
+        self.logger.log(payload, payload["context_bias/step"])

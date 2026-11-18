@@ -12,8 +12,8 @@ The proposed combinations require GPU memory and throughput checks before submis
 
 ## Profiles 1 and 2
 
-- [Profile 1: cosine LR](../configs/dynamic_seq_bs/linear_bs_cyclic_seq_cosine_lr.yaml)
-- [Profile 2: constant LR](../configs/dynamic_seq_bs/linear_bs_cyclic_seq_constant_lr.yaml)
+- [Profile 1: cosine LR](../legacy/configs/dynamic_seq_bs/linear_bs_cyclic_seq_cosine_lr.yaml)
+- [Profile 2: constant LR](../legacy/configs/dynamic_seq_bs/linear_bs_cyclic_seq_constant_lr.yaml)
 
 Both profiles increase global batch linearly from 256 to 768 over the full training horizon.
 The schedule rounds batch sizes to multiples of eight.
@@ -46,7 +46,7 @@ Profile 2 uses a constant LR of 0.0005.
 
 ## Profile 3: four-stage cycle
 
-[Profile 3](../configs/dynamic_seq_bs/four_stage_cycle.yaml) repeats a 960-step cycle four times.
+[Profile 3](../legacy/configs/dynamic_seq_bs/four_stage_cycle.yaml) repeats a 960-step cycle four times.
 Each phase has 240 steps.
 
 | Steps within a cycle | Global batch | Sequence length | Action |

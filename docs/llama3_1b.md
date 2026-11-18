@@ -1,5 +1,9 @@
 # Llama3 1B with the Llama2 tokenizer
 
+This document describes a historical vocabulary adapter.
+The current experiment retains the native Llama3 vocabulary with 128,256 entries.
+Use [getting_started.md](getting_started.md) for that experiment.
+
 This experiment variant reuses TorchTitan's `llama3_configs["1B"]` constructor.
 The dependency revision is `737594746fda65a6d94dc9482ef07863a80c8588`.
 The [upstream definition](https://github.com/pytorch/torchtitan/blob/737594746fda65a6d94dc9482ef07863a80c8588/torchtitan/models/llama3/__init__.py) supplies the complete Transformer backbone.
@@ -42,21 +46,21 @@ Use `python scripts/train.py --list` to inspect all registered entries.
 
 ## Examples
 
-The [local-text smoke](../configs/examples/llama3_1b_smoke.yaml) runs ten steps at length 128.
+The [local-text smoke](../legacy/configs/examples/llama3_1b_smoke.yaml) runs ten steps at length 128.
 It uses global batch four and microbatch one. One, two, or four replicated GPUs satisfy batch divisibility.
 The example stores FP32 model parameters and uses BF16 forward parameters with FP32 gradient reductions.
 Full checkpoints are saved at steps five and ten.
 
 ```bash
-python scripts/train.py configs/examples/llama3_1b_smoke.yaml --nproc 1
+python scripts/train.py legacy/configs/examples/llama3_1b_smoke.yaml --nproc 1
 ```
 
-The [FineWeb example](../configs/examples/llama3_1b_fineweb.yaml) runs ten steps at length 1024.
+The [FineWeb example](../legacy/configs/examples/llama3_1b_fineweb.yaml) runs ten steps at length 1024.
 It evaluates the full fixed 20,971,520-token validation artifact.
 Evaluation is more expensive than the ten training updates.
 
 ```bash
-python scripts/train.py configs/examples/llama3_1b_fineweb.yaml --nproc 1
+python scripts/train.py legacy/configs/examples/llama3_1b_fineweb.yaml --nproc 1
 ```
 
 Both examples disable W&B and compilation.

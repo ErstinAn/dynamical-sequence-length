@@ -6,6 +6,15 @@ The sequence schedule selects the number of tokens in each sequence.
 The global batch schedule selects the number of sequences across all data parallel ranks for one optimizer update.
 The microbatch schedule selects the number of sequences per device for one forward and backward pass.
 
+When model compilation is enabled, this Trainer compiles transformer blocks with `dynamic=True`.
+This avoids initial batch specialization that can exhaust the compiler cache during joint schedules.
+The Trainer also adds attention head dimensions to `torch.compiler.config.static_sources` for the training process.
+This keeps `head_dim` constant under FSDP while tensor dimensions can change.
+The default compiler cache limit remains unchanged.
+These settings require the pinned PyTorch version in `pyproject.toml`.
+
+If a training or validation exception reaches Trainer cleanup, the metrics processor reports failure to W&B.
+
 The Trainer calculates the number of accumulation groups:
 
 ```text
@@ -25,7 +34,7 @@ Shared schedules are in `torchtitan_dynamic_seq_len/schedulers/`.
 ## Configuration
 
 Select `llama3_100m_llama2_adamw_dynamic_seq_bs` in the YAML `torchtitan_config` field.
-Use `configs/dynamic_seq_bs/increasing.yaml` as a complete example.
+Use `legacy/configs/dynamic_seq_bs/increasing.yaml` as a complete example.
 The existing `dynamic_seq` entry keeps its fixed batch behavior.
 
 The three configuration sections are `seq_len_scheduler`, `batch_size_scheduler`, and `microbatch_scheduler`.
@@ -81,9 +90,9 @@ These profiles change global batch size and keep 524,288 tokens per optimizer st
 
 | Profile | Global batch schedule |
 | --- | --- |
-| [Increasing](../configs/dynamic_seq_bs/fixed_tokens_bs_increasing.yaml) | 256 to 65,536 across nine stages |
-| [Decreasing](../configs/dynamic_seq_bs/fixed_tokens_bs_decreasing.yaml) | The increasing profile in reverse step order |
-| [Cyclic](../configs/dynamic_seq_bs/fixed_tokens_bs_cyclic.yaml) | 256 to 65,536 and back, with a period of 256 steps |
+| [Increasing](../legacy/configs/dynamic_seq_bs/fixed_tokens_bs_increasing.yaml) | 256 to 65,536 across nine stages |
+| [Decreasing](../legacy/configs/dynamic_seq_bs/fixed_tokens_bs_decreasing.yaml) | The increasing profile in reverse step order |
+| [Cyclic](../legacy/configs/dynamic_seq_bs/fixed_tokens_bs_cyclic.yaml) | 256 to 65,536 and back, with a period of 256 steps |
 
 Each profile uses 3,840 steps and 2,013,265,920 training tokens.
 The learning rate is constant at 0.0005, with no warmup.
@@ -169,13 +178,13 @@ No separate submission pipeline is necessary.
 2. Check the smoke command.
 
    ```bash
-   python scripts/train.py configs/dynamic_seq_bs/smoke.yaml --nproc 2 --dry-run
+   python scripts/train.py legacy/configs/dynamic_seq_bs/smoke.yaml --nproc 2 --dry-run
    ```
 
 3. Run the smoke test inside a GPU allocation.
 
    ```bash
-   python scripts/train.py configs/dynamic_seq_bs/smoke.yaml --nproc 2
+   python scripts/train.py legacy/configs/dynamic_seq_bs/smoke.yaml --nproc 2
    ```
 
 4. Prepare the fixed validation artifact before a FineWeb experiment.
@@ -209,7 +218,7 @@ They compare gradients and optimizer updates against a full batch reference.
 They also check weighted metrics and checkpoint recovery across batch changes.
 The distributed test checks unequal valid token counts and cancellation when one rank has no data.
 
-For a short GPU test, use `configs/dynamic_seq_bs/gpu_increasing_cyclic.yaml`.
+For a short GPU test, use `legacy/configs/dynamic_seq_bs/gpu_increasing_cyclic.yaml`.
 It uses the 100M model and a local text fixture for 24 optimizer steps.
 Global batch size increases from 8 to 16 to 32.
 Sequence length cycles between 128 and 512 with a period of eight steps.
@@ -219,7 +228,7 @@ The expected total is 143,360 training tokens.
 The test saves a complete checkpoint at step 24.
 
 ```bash
-python scripts/train.py configs/dynamic_seq_bs/gpu_increasing_cyclic.yaml --nproc 1
+python scripts/train.py legacy/configs/dynamic_seq_bs/gpu_increasing_cyclic.yaml --nproc 1
 ```
 
 On A30, this TorchTitan version uses A100 peak FLOPs for the MFU calculation.

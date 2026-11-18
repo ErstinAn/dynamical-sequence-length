@@ -1,0 +1,62 @@
+{
+  "reason": "Historical reports and conversation notes have no runtime imports. Preserve their contents and update active documentation links.",
+  "files": [
+    {
+      "from": "docs/compile_repair_results.json",
+      "to": "legacy/reports/compile_repair_results.json",
+      "sha256": "f4da6f66b9c51cb4552d2cbd19510561bf4f9019ed8ba6bd6c2d630178d1625f"
+    },
+    {
+      "from": "docs/delivery_results.json",
+      "to": "legacy/reports/delivery_results.json",
+      "sha256": "f5ca44edbada24cf7e51d215554737f2e627a61c285cc5cc568a8acc72f4c74d"
+    },
+    {
+      "from": "docs/gpu_refactor_results.json",
+      "to": "legacy/reports/gpu_refactor_results.json",
+      "sha256": "62e94ff6f348106e28ae71173e587b331339eae6a73420c58f8bb177df132c8e"
+    },
+    {
+      "from": "docs/loss_grad_seq_results.json",
+      "to": "legacy/reports/loss_grad_seq_results.json",
+      "sha256": "5d772d83f434545d8c483af8b5167665ff2ab026245c1e03732b004c6240ff86"
+    },
+    {
+      "from": "docs/refactor_results.json",
+      "to": "legacy/reports/refactor_results.json",
+      "sha256": "29dd8e4de2ff4be1cafef33b7175e2458149eb8981182eaa088384cd75b7326e"
+    },
+    {
+      "from": "docs/validation_results.json",
+      "to": "legacy/reports/validation_results.json",
+      "sha256": "d32c517d8c21be0fab850cbe185a164fdbc8995fe89df64d8a6bab049f0449f6"
+    },
+    {
+      "from": "docs/longseq_wandb_loss_audit_20261105.json",
+      "to": "legacy/reports/longseq_wandb_loss_audit_20261105.json",
+      "sha256": "4b02db44adfc90b8029d3599168bcc4af3c9263036205aed3dca5e778fed76a2"
+    },
+    {
+      "from": "docs/longseq_wandb_loss_audit_20261105.md",
+      "to": "legacy/reports/longseq_wandb_loss_audit_20261105.md",
+      "sha256": "874546c4717245514297aae144ab075066872d451d27c368e916a690fea9df0e"
+    },
+    {
+      "from": "docs/longseq_wandb_loss_gap_20261105.png",
+      "to": "legacy/reports/longseq_wandb_loss_gap_20261105.png",
+      "sha256": "8c0f99d6d4e4fdc62fad74d66e06f6a85d816e0adfcef42153b4b94bc38c342a"
+    },
+    {
+      "from": "docs/longseq_wandb_loss_history_20261105.csv",
+      "to": "legacy/reports/longseq_wandb_loss_history_20261105.csv",
+      "sha256": "3c25055c65fbdbc58cff233de775d2a597108aff53ed794c365231502d6e1572"
+    },
+    {
+      "from": "fineweb-longseq-chat.md",
+      "to": "local/private_archive/fineweb-longseq-chat.md",
+      "sha256": "c36efdadec9fa69ed799269dcfdadfab3549f9c01e66f80397776329d1debfbc",
+      "included_in_delivery": false,
+      "reason": "Private conversation provenance. No runtime dependency. Preserve only in the ignored local archive."
+    }
+  ]
+}

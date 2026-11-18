@@ -1,0 +1,533 @@
+[W1118 02:10:10.880975783 socket.cpp:764] [c10d] The client socket cannot be initialized to connect to [localhost.localdomain]:0 (errno: 1 - Operation not permitted).
+[W1118 02:10:10.881134633 socket.cpp:764] [c10d] The client socket cannot be initialized to connect to localhost.localdomain:0 (errno: 1 - Operation not permitted).
+[E1118 02:10:10.884786179 socket.cpp:818] [c10d] The client socket has failed to connect to any network address of (localhost, 0).
+[W1118 02:10:10.884878529 TCPStore.cpp:340] [c10d] TCP client failed to connect/validate to host localhost:0 - retrying (try=0, timeout=60000ms, delay=531ms): The client socket has failed to connect to any network address of (localhost, 0). The client socket cannot be initialized to connect to localhost.localdomain:0 (errno: 1 - Operation not permitted).
+Exception raised from run at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/socket.cpp:820 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x1554a5523e9d in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: c10::DistError::DistError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x1554a5524e72 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #2: c10::DistNetworkError::DistNetworkError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x1554a5525332 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #3: <unknown function> + 0x15f740b (0x1554c6b9a40b in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: <unknown function> + 0x68d50db (0x1554cbe780db in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: <unknown function> + 0x682f7a3 (0x1554cbdd27a3 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #6: c10d::TCPStore::TCPStore(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, c10d::TCPStoreOptions const&) + 0x41d (0x1554cbddb52d in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #7: <unknown function> + 0xf678a7 (0x1554db7378a7 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #8: <unknown function> + 0xf7d5ee (0x1554db74d5ee in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #9: <unknown function> + 0x408b62 (0x1554dabd8b62 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #10: <unknown function> + 0x21432b (0x55555576832b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #11: <unknown function> + 0x248e54 (0x55555579ce54 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #12: <unknown function> + 0x24890e (0x55555579c90e in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #13: _PyObject_Call + 0x12b (0x5555557854eb in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #14: <unknown function> + 0x22e83c (0x55555578283c in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #15: <unknown function> + 0x1f4d95 (0x555555748d95 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #16: <unknown function> + 0x40701b (0x1554dabd701b in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #17: _PyObject_MakeTpCall + 0x2bc (0x555555748a6c in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #18: _PyEval_EvalFrameDefault + 0xa45 (0x555555752d55 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #19: _PyObject_FastCallDictTstate + 0x1ce (0x55555574b6ce in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #20: _PyObject_Call_Prepend + 0x67 (0x555555782a87 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #21: <unknown function> + 0x300019 (0x555555854019 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #22: _PyObject_Call + 0xb5 (0x555555785475 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #23: _PyEval_EvalFrameDefault + 0x4a7b (0x555555756d8b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #24: PyEval_EvalCode + 0x9f (0x55555580b55f in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #25: <unknown function> + 0x2d623a (0x55555582a23a in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #26: <unknown function> + 0x21432b (0x55555576832b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #27: PyObject_Vectorcall + 0x2e (0x5555557681fe in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #28: _PyEval_EvalFrameDefault + 0xa45 (0x555555752d55 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #29: <unknown function> + 0x2e7b23 (0x55555583bb23 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #30: Py_RunMain + 0x1de (0x55555583b42e in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #31: Py_BytesMain + 0x37 (0x5555557f3737 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #32: <unknown function> + 0x2a610 (0x15555522a610 in /lib64/libc.so.6)
+frame #33: __libc_start_main + 0x80 (0x15555522a6c0 in /lib64/libc.so.6)
+frame #34: <unknown function> + 0x29f5a7 (0x5555557f35a7 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+
+[W1118 02:10:11.419326781 socket.cpp:764] [c10d] The client socket cannot be initialized to connect to [localhost.localdomain]:0 (errno: 1 - Operation not permitted).
+[W1118 02:10:11.419469722 socket.cpp:764] [c10d] The client socket cannot be initialized to connect to localhost.localdomain:0 (errno: 1 - Operation not permitted).
+[E1118 02:10:11.419477002 socket.cpp:818] [c10d] The client socket has failed to connect to any network address of (localhost, 0).
+[W1118 02:10:11.419536152 TCPStore.cpp:340] [c10d] TCP client failed to connect/validate to host localhost:0 - retrying (try=1, timeout=60000ms, delay=654ms): The client socket has failed to connect to any network address of (localhost, 0). The client socket cannot be initialized to connect to localhost.localdomain:0 (errno: 1 - Operation not permitted).
+Exception raised from run at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/socket.cpp:820 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x1554a5523e9d in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: c10::DistError::DistError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x1554a5524e72 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #2: c10::DistNetworkError::DistNetworkError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x1554a5525332 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #3: <unknown function> + 0x15f740b (0x1554c6b9a40b in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: <unknown function> + 0x68d50db (0x1554cbe780db in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: <unknown function> + 0x682f7a3 (0x1554cbdd27a3 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #6: c10d::TCPStore::TCPStore(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, c10d::TCPStoreOptions const&) + 0x41d (0x1554cbddb52d in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #7: <unknown function> + 0xf678a7 (0x1554db7378a7 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #8: <unknown function> + 0xf7d5ee (0x1554db74d5ee in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #9: <unknown function> + 0x408b62 (0x1554dabd8b62 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #10: <unknown function> + 0x21432b (0x55555576832b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #11: <unknown function> + 0x248e54 (0x55555579ce54 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #12: <unknown function> + 0x24890e (0x55555579c90e in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #13: _PyObject_Call + 0x12b (0x5555557854eb in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #14: <unknown function> + 0x22e83c (0x55555578283c in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #15: <unknown function> + 0x1f4d95 (0x555555748d95 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #16: <unknown function> + 0x40701b (0x1554dabd701b in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #17: _PyObject_MakeTpCall + 0x2bc (0x555555748a6c in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #18: _PyEval_EvalFrameDefault + 0xa45 (0x555555752d55 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #19: _PyObject_FastCallDictTstate + 0x1ce (0x55555574b6ce in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #20: _PyObject_Call_Prepend + 0x67 (0x555555782a87 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #21: <unknown function> + 0x300019 (0x555555854019 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #22: _PyObject_Call + 0xb5 (0x555555785475 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #23: _PyEval_EvalFrameDefault + 0x4a7b (0x555555756d8b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #24: PyEval_EvalCode + 0x9f (0x55555580b55f in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #25: <unknown function> + 0x2d623a (0x55555582a23a in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #26: <unknown function> + 0x21432b (0x55555576832b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #27: PyObject_Vectorcall + 0x2e (0x5555557681fe in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #28: _PyEval_EvalFrameDefault + 0xa45 (0x555555752d55 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #29: <unknown function> + 0x2e7b23 (0x55555583bb23 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #30: Py_RunMain + 0x1de (0x55555583b42e in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #31: Py_BytesMain + 0x37 (0x5555557f3737 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #32: <unknown function> + 0x2a610 (0x15555522a610 in /lib64/libc.so.6)
+frame #33: __libc_start_main + 0x80 (0x15555522a6c0 in /lib64/libc.so.6)
+frame #34: <unknown function> + 0x29f5a7 (0x5555557f35a7 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+
+[W1118 02:10:12.077255912 socket.cpp:764] [c10d] The client socket cannot be initialized to connect to [localhost.localdomain]:0 (errno: 1 - Operation not permitted).
+[W1118 02:10:12.077366962 socket.cpp:764] [c10d] The client socket cannot be initialized to connect to localhost.localdomain:0 (errno: 1 - Operation not permitted).
+[E1118 02:10:12.077375832 socket.cpp:818] [c10d] The client socket has failed to connect to any network address of (localhost, 0).
+[W1118 02:10:12.077448832 TCPStore.cpp:340] [c10d] TCP client failed to connect/validate to host localhost:0 - retrying (try=2, timeout=60000ms, delay=1362ms): The client socket has failed to connect to any network address of (localhost, 0). The client socket cannot be initialized to connect to localhost.localdomain:0 (errno: 1 - Operation not permitted).
+Exception raised from run at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/socket.cpp:820 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x1554a5523e9d in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: c10::DistError::DistError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x1554a5524e72 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #2: c10::DistNetworkError::DistNetworkError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x1554a5525332 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #3: <unknown function> + 0x15f740b (0x1554c6b9a40b in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: <unknown function> + 0x68d50db (0x1554cbe780db in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: <unknown function> + 0x682f7a3 (0x1554cbdd27a3 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #6: c10d::TCPStore::TCPStore(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, c10d::TCPStoreOptions const&) + 0x41d (0x1554cbddb52d in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #7: <unknown function> + 0xf678a7 (0x1554db7378a7 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #8: <unknown function> + 0xf7d5ee (0x1554db74d5ee in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #9: <unknown function> + 0x408b62 (0x1554dabd8b62 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #10: <unknown function> + 0x21432b (0x55555576832b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #11: <unknown function> + 0x248e54 (0x55555579ce54 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #12: <unknown function> + 0x24890e (0x55555579c90e in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #13: _PyObject_Call + 0x12b (0x5555557854eb in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #14: <unknown function> + 0x22e83c (0x55555578283c in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #15: <unknown function> + 0x1f4d95 (0x555555748d95 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #16: <unknown function> + 0x40701b (0x1554dabd701b in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #17: _PyObject_MakeTpCall + 0x2bc (0x555555748a6c in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #18: _PyEval_EvalFrameDefault + 0xa45 (0x555555752d55 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #19: _PyObject_FastCallDictTstate + 0x1ce (0x55555574b6ce in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #20: _PyObject_Call_Prepend + 0x67 (0x555555782a87 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #21: <unknown function> + 0x300019 (0x555555854019 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #22: _PyObject_Call + 0xb5 (0x555555785475 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #23: _PyEval_EvalFrameDefault + 0x4a7b (0x555555756d8b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #24: PyEval_EvalCode + 0x9f (0x55555580b55f in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #25: <unknown function> + 0x2d623a (0x55555582a23a in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #26: <unknown function> + 0x21432b (0x55555576832b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #27: PyObject_Vectorcall + 0x2e (0x5555557681fe in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #28: _PyEval_EvalFrameDefault + 0xa45 (0x555555752d55 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #29: <unknown function> + 0x2e7b23 (0x55555583bb23 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #30: Py_RunMain + 0x1de (0x55555583b42e in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #31: Py_BytesMain + 0x37 (0x5555557f3737 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #32: <unknown function> + 0x2a610 (0x15555522a610 in /lib64/libc.so.6)
+frame #33: __libc_start_main + 0x80 (0x15555522a6c0 in /lib64/libc.so.6)
+frame #34: <unknown function> + 0x29f5a7 (0x5555557f35a7 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+
+[W1118 02:10:13.443338437 socket.cpp:764] [c10d] The client socket cannot be initialized to connect to [localhost.localdomain]:0 (errno: 1 - Operation not permitted).
+[W1118 02:10:13.443504758 socket.cpp:764] [c10d] The client socket cannot be initialized to connect to localhost.localdomain:0 (errno: 1 - Operation not permitted).
+[E1118 02:10:13.443513588 socket.cpp:818] [c10d] The client socket has failed to connect to any network address of (localhost, 0).
+[W1118 02:10:13.443599588 TCPStore.cpp:340] [c10d] TCP client failed to connect/validate to host localhost:0 - retrying (try=3, timeout=60000ms, delay=1946ms): The client socket has failed to connect to any network address of (localhost, 0). The client socket cannot be initialized to connect to localhost.localdomain:0 (errno: 1 - Operation not permitted).
+Exception raised from run at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/socket.cpp:820 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x1554a5523e9d in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: c10::DistError::DistError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x1554a5524e72 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #2: c10::DistNetworkError::DistNetworkError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x1554a5525332 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #3: <unknown function> + 0x15f740b (0x1554c6b9a40b in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: <unknown function> + 0x68d50db (0x1554cbe780db in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: <unknown function> + 0x682f7a3 (0x1554cbdd27a3 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #6: c10d::TCPStore::TCPStore(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, c10d::TCPStoreOptions const&) + 0x41d (0x1554cbddb52d in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #7: <unknown function> + 0xf678a7 (0x1554db7378a7 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #8: <unknown function> + 0xf7d5ee (0x1554db74d5ee in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #9: <unknown function> + 0x408b62 (0x1554dabd8b62 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #10: <unknown function> + 0x21432b (0x55555576832b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #11: <unknown function> + 0x248e54 (0x55555579ce54 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #12: <unknown function> + 0x24890e (0x55555579c90e in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #13: _PyObject_Call + 0x12b (0x5555557854eb in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #14: <unknown function> + 0x22e83c (0x55555578283c in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #15: <unknown function> + 0x1f4d95 (0x555555748d95 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #16: <unknown function> + 0x40701b (0x1554dabd701b in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #17: _PyObject_MakeTpCall + 0x2bc (0x555555748a6c in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #18: _PyEval_EvalFrameDefault + 0xa45 (0x555555752d55 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #19: _PyObject_FastCallDictTstate + 0x1ce (0x55555574b6ce in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #20: _PyObject_Call_Prepend + 0x67 (0x555555782a87 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #21: <unknown function> + 0x300019 (0x555555854019 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #22: _PyObject_Call + 0xb5 (0x555555785475 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #23: _PyEval_EvalFrameDefault + 0x4a7b (0x555555756d8b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #24: PyEval_EvalCode + 0x9f (0x55555580b55f in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #25: <unknown function> + 0x2d623a (0x55555582a23a in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #26: <unknown function> + 0x21432b (0x55555576832b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #27: PyObject_Vectorcall + 0x2e (0x5555557681fe in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #28: _PyEval_EvalFrameDefault + 0xa45 (0x555555752d55 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #29: <unknown function> + 0x2e7b23 (0x55555583bb23 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #30: Py_RunMain + 0x1de (0x55555583b42e in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #31: Py_BytesMain + 0x37 (0x5555557f3737 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #32: <unknown function> + 0x2a610 (0x15555522a610 in /lib64/libc.so.6)
+frame #33: __libc_start_main + 0x80 (0x15555522a6c0 in /lib64/libc.so.6)
+frame #34: <unknown function> + 0x29f5a7 (0x5555557f35a7 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+
+[W1118 02:10:15.393508629 socket.cpp:764] [c10d] The client socket cannot be initialized to connect to [localhost.localdomain]:0 (errno: 1 - Operation not permitted).
+[W1118 02:10:15.393657889 socket.cpp:764] [c10d] The client socket cannot be initialized to connect to localhost.localdomain:0 (errno: 1 - Operation not permitted).
+[E1118 02:10:15.393665499 socket.cpp:818] [c10d] The client socket has failed to connect to any network address of (localhost, 0).
+[W1118 02:10:15.393754629 TCPStore.cpp:340] [c10d] TCP client failed to connect/validate to host localhost:0 - retrying (try=4, timeout=60000ms, delay=2367ms): The client socket has failed to connect to any network address of (localhost, 0). The client socket cannot be initialized to connect to localhost.localdomain:0 (errno: 1 - Operation not permitted).
+Exception raised from run at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/socket.cpp:820 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x1554a5523e9d in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: c10::DistError::DistError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x1554a5524e72 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #2: c10::DistNetworkError::DistNetworkError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x1554a5525332 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #3: <unknown function> + 0x15f740b (0x1554c6b9a40b in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: <unknown function> + 0x68d50db (0x1554cbe780db in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: <unknown function> + 0x682f7a3 (0x1554cbdd27a3 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #6: c10d::TCPStore::TCPStore(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, c10d::TCPStoreOptions const&) + 0x41d (0x1554cbddb52d in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #7: <unknown function> + 0xf678a7 (0x1554db7378a7 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #8: <unknown function> + 0xf7d5ee (0x1554db74d5ee in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #9: <unknown function> + 0x408b62 (0x1554dabd8b62 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #10: <unknown function> + 0x21432b (0x55555576832b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #11: <unknown function> + 0x248e54 (0x55555579ce54 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #12: <unknown function> + 0x24890e (0x55555579c90e in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #13: _PyObject_Call + 0x12b (0x5555557854eb in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #14: <unknown function> + 0x22e83c (0x55555578283c in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #15: <unknown function> + 0x1f4d95 (0x555555748d95 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #16: <unknown function> + 0x40701b (0x1554dabd701b in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #17: _PyObject_MakeTpCall + 0x2bc (0x555555748a6c in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #18: _PyEval_EvalFrameDefault + 0xa45 (0x555555752d55 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #19: _PyObject_FastCallDictTstate + 0x1ce (0x55555574b6ce in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #20: _PyObject_Call_Prepend + 0x67 (0x555555782a87 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #21: <unknown function> + 0x300019 (0x555555854019 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #22: _PyObject_Call + 0xb5 (0x555555785475 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #23: _PyEval_EvalFrameDefault + 0x4a7b (0x555555756d8b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #24: PyEval_EvalCode + 0x9f (0x55555580b55f in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #25: <unknown function> + 0x2d623a (0x55555582a23a in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #26: <unknown function> + 0x21432b (0x55555576832b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #27: PyObject_Vectorcall + 0x2e (0x5555557681fe in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #28: _PyEval_EvalFrameDefault + 0xa45 (0x555555752d55 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #29: <unknown function> + 0x2e7b23 (0x55555583bb23 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #30: Py_RunMain + 0x1de (0x55555583b42e in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #31: Py_BytesMain + 0x37 (0x5555557f3737 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #32: <unknown function> + 0x2a610 (0x15555522a610 in /lib64/libc.so.6)
+frame #33: __libc_start_main + 0x80 (0x15555522a6c0 in /lib64/libc.so.6)
+frame #34: <unknown function> + 0x29f5a7 (0x5555557f35a7 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+
+[W1118 02:10:17.764685750 socket.cpp:764] [c10d] The client socket cannot be initialized to connect to [localhost.localdomain]:0 (errno: 1 - Operation not permitted).
+[W1118 02:10:17.764893341 socket.cpp:764] [c10d] The client socket cannot be initialized to connect to localhost.localdomain:0 (errno: 1 - Operation not permitted).
+[E1118 02:10:17.764901371 socket.cpp:818] [c10d] The client socket has failed to connect to any network address of (localhost, 0).
+[W1118 02:10:17.765026291 TCPStore.cpp:340] [c10d] TCP client failed to connect/validate to host localhost:0 - retrying (try=5, timeout=60000ms, delay=2951ms): The client socket has failed to connect to any network address of (localhost, 0). The client socket cannot be initialized to connect to localhost.localdomain:0 (errno: 1 - Operation not permitted).
+Exception raised from run at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/socket.cpp:820 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x1554a5523e9d in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: c10::DistError::DistError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x1554a5524e72 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #2: c10::DistNetworkError::DistNetworkError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x1554a5525332 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #3: <unknown function> + 0x15f740b (0x1554c6b9a40b in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: <unknown function> + 0x68d50db (0x1554cbe780db in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: <unknown function> + 0x682f7a3 (0x1554cbdd27a3 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #6: c10d::TCPStore::TCPStore(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, c10d::TCPStoreOptions const&) + 0x41d (0x1554cbddb52d in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #7: <unknown function> + 0xf678a7 (0x1554db7378a7 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #8: <unknown function> + 0xf7d5ee (0x1554db74d5ee in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #9: <unknown function> + 0x408b62 (0x1554dabd8b62 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #10: <unknown function> + 0x21432b (0x55555576832b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #11: <unknown function> + 0x248e54 (0x55555579ce54 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #12: <unknown function> + 0x24890e (0x55555579c90e in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #13: _PyObject_Call + 0x12b (0x5555557854eb in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #14: <unknown function> + 0x22e83c (0x55555578283c in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #15: <unknown function> + 0x1f4d95 (0x555555748d95 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #16: <unknown function> + 0x40701b (0x1554dabd701b in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #17: _PyObject_MakeTpCall + 0x2bc (0x555555748a6c in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #18: _PyEval_EvalFrameDefault + 0xa45 (0x555555752d55 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #19: _PyObject_FastCallDictTstate + 0x1ce (0x55555574b6ce in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #20: _PyObject_Call_Prepend + 0x67 (0x555555782a87 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #21: <unknown function> + 0x300019 (0x555555854019 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #22: _PyObject_Call + 0xb5 (0x555555785475 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #23: _PyEval_EvalFrameDefault + 0x4a7b (0x555555756d8b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #24: PyEval_EvalCode + 0x9f (0x55555580b55f in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #25: <unknown function> + 0x2d623a (0x55555582a23a in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #26: <unknown function> + 0x21432b (0x55555576832b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #27: PyObject_Vectorcall + 0x2e (0x5555557681fe in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #28: _PyEval_EvalFrameDefault + 0xa45 (0x555555752d55 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #29: <unknown function> + 0x2e7b23 (0x55555583bb23 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #30: Py_RunMain + 0x1de (0x55555583b42e in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #31: Py_BytesMain + 0x37 (0x5555557f3737 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #32: <unknown function> + 0x2a610 (0x15555522a610 in /lib64/libc.so.6)
+frame #33: __libc_start_main + 0x80 (0x15555522a6c0 in /lib64/libc.so.6)
+frame #34: <unknown function> + 0x29f5a7 (0x5555557f35a7 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+
+[W1118 02:10:20.719609577 socket.cpp:764] [c10d] The client socket cannot be initialized to connect to [localhost.localdomain]:0 (errno: 1 - Operation not permitted).
+[W1118 02:10:20.719771078 socket.cpp:764] [c10d] The client socket cannot be initialized to connect to localhost.localdomain:0 (errno: 1 - Operation not permitted).
+[E1118 02:10:20.719779108 socket.cpp:818] [c10d] The client socket has failed to connect to any network address of (localhost, 0).
+[W1118 02:10:20.719883528 TCPStore.cpp:340] [c10d] TCP client failed to connect/validate to host localhost:0 - retrying (try=6, timeout=60000ms, delay=6558ms): The client socket has failed to connect to any network address of (localhost, 0). The client socket cannot be initialized to connect to localhost.localdomain:0 (errno: 1 - Operation not permitted).
+Exception raised from run at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/socket.cpp:820 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x1554a5523e9d in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: c10::DistError::DistError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x1554a5524e72 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #2: c10::DistNetworkError::DistNetworkError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x1554a5525332 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #3: <unknown function> + 0x15f740b (0x1554c6b9a40b in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: <unknown function> + 0x68d50db (0x1554cbe780db in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: <unknown function> + 0x682f7a3 (0x1554cbdd27a3 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #6: c10d::TCPStore::TCPStore(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, c10d::TCPStoreOptions const&) + 0x41d (0x1554cbddb52d in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #7: <unknown function> + 0xf678a7 (0x1554db7378a7 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #8: <unknown function> + 0xf7d5ee (0x1554db74d5ee in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #9: <unknown function> + 0x408b62 (0x1554dabd8b62 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #10: <unknown function> + 0x21432b (0x55555576832b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #11: <unknown function> + 0x248e54 (0x55555579ce54 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #12: <unknown function> + 0x24890e (0x55555579c90e in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #13: _PyObject_Call + 0x12b (0x5555557854eb in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #14: <unknown function> + 0x22e83c (0x55555578283c in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #15: <unknown function> + 0x1f4d95 (0x555555748d95 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #16: <unknown function> + 0x40701b (0x1554dabd701b in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #17: _PyObject_MakeTpCall + 0x2bc (0x555555748a6c in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #18: _PyEval_EvalFrameDefault + 0xa45 (0x555555752d55 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #19: _PyObject_FastCallDictTstate + 0x1ce (0x55555574b6ce in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #20: _PyObject_Call_Prepend + 0x67 (0x555555782a87 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #21: <unknown function> + 0x300019 (0x555555854019 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #22: _PyObject_Call + 0xb5 (0x555555785475 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #23: _PyEval_EvalFrameDefault + 0x4a7b (0x555555756d8b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #24: PyEval_EvalCode + 0x9f (0x55555580b55f in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #25: <unknown function> + 0x2d623a (0x55555582a23a in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #26: <unknown function> + 0x21432b (0x55555576832b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #27: PyObject_Vectorcall + 0x2e (0x5555557681fe in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #28: _PyEval_EvalFrameDefault + 0xa45 (0x555555752d55 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #29: <unknown function> + 0x2e7b23 (0x55555583bb23 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #30: Py_RunMain + 0x1de (0x55555583b42e in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #31: Py_BytesMain + 0x37 (0x5555557f3737 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #32: <unknown function> + 0x2a610 (0x15555522a610 in /lib64/libc.so.6)
+frame #33: __libc_start_main + 0x80 (0x15555522a6c0 in /lib64/libc.so.6)
+frame #34: <unknown function> + 0x29f5a7 (0x5555557f35a7 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+
+[W1118 02:10:27.281573582 socket.cpp:764] [c10d] The client socket cannot be initialized to connect to [localhost.localdomain]:0 (errno: 1 - Operation not permitted).
+[W1118 02:10:27.281714772 socket.cpp:764] [c10d] The client socket cannot be initialized to connect to localhost.localdomain:0 (errno: 1 - Operation not permitted).
+[E1118 02:10:27.281719052 socket.cpp:818] [c10d] The client socket has failed to connect to any network address of (localhost, 0).
+[W1118 02:10:27.281795482 TCPStore.cpp:340] [c10d] TCP client failed to connect/validate to host localhost:0 - retrying (try=7, timeout=60000ms, delay=6839ms): The client socket has failed to connect to any network address of (localhost, 0). The client socket cannot be initialized to connect to localhost.localdomain:0 (errno: 1 - Operation not permitted).
+Exception raised from run at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/socket.cpp:820 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x1554a5523e9d in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: c10::DistError::DistError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x1554a5524e72 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #2: c10::DistNetworkError::DistNetworkError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x1554a5525332 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #3: <unknown function> + 0x15f740b (0x1554c6b9a40b in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: <unknown function> + 0x68d50db (0x1554cbe780db in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: <unknown function> + 0x682f7a3 (0x1554cbdd27a3 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #6: c10d::TCPStore::TCPStore(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, c10d::TCPStoreOptions const&) + 0x41d (0x1554cbddb52d in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #7: <unknown function> + 0xf678a7 (0x1554db7378a7 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #8: <unknown function> + 0xf7d5ee (0x1554db74d5ee in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #9: <unknown function> + 0x408b62 (0x1554dabd8b62 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #10: <unknown function> + 0x21432b (0x55555576832b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #11: <unknown function> + 0x248e54 (0x55555579ce54 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #12: <unknown function> + 0x24890e (0x55555579c90e in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #13: _PyObject_Call + 0x12b (0x5555557854eb in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #14: <unknown function> + 0x22e83c (0x55555578283c in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #15: <unknown function> + 0x1f4d95 (0x555555748d95 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #16: <unknown function> + 0x40701b (0x1554dabd701b in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #17: _PyObject_MakeTpCall + 0x2bc (0x555555748a6c in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #18: _PyEval_EvalFrameDefault + 0xa45 (0x555555752d55 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #19: _PyObject_FastCallDictTstate + 0x1ce (0x55555574b6ce in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #20: _PyObject_Call_Prepend + 0x67 (0x555555782a87 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #21: <unknown function> + 0x300019 (0x555555854019 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #22: _PyObject_Call + 0xb5 (0x555555785475 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #23: _PyEval_EvalFrameDefault + 0x4a7b (0x555555756d8b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #24: PyEval_EvalCode + 0x9f (0x55555580b55f in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #25: <unknown function> + 0x2d623a (0x55555582a23a in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #26: <unknown function> + 0x21432b (0x55555576832b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #27: PyObject_Vectorcall + 0x2e (0x5555557681fe in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #28: _PyEval_EvalFrameDefault + 0xa45 (0x555555752d55 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #29: <unknown function> + 0x2e7b23 (0x55555583bb23 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #30: Py_RunMain + 0x1de (0x55555583b42e in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #31: Py_BytesMain + 0x37 (0x5555557f3737 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #32: <unknown function> + 0x2a610 (0x15555522a610 in /lib64/libc.so.6)
+frame #33: __libc_start_main + 0x80 (0x15555522a6c0 in /lib64/libc.so.6)
+frame #34: <unknown function> + 0x29f5a7 (0x5555557f35a7 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+
+[W1118 02:10:34.124349170 socket.cpp:764] [c10d] The client socket cannot be initialized to connect to [localhost.localdomain]:0 (errno: 1 - Operation not permitted).
+[W1118 02:10:34.124531321 socket.cpp:764] [c10d] The client socket cannot be initialized to connect to localhost.localdomain:0 (errno: 1 - Operation not permitted).
+[E1118 02:10:34.124539431 socket.cpp:818] [c10d] The client socket has failed to connect to any network address of (localhost, 0).
+[W1118 02:10:34.124654861 TCPStore.cpp:340] [c10d] TCP client failed to connect/validate to host localhost:0 - retrying (try=8, timeout=60000ms, delay=9679ms): The client socket has failed to connect to any network address of (localhost, 0). The client socket cannot be initialized to connect to localhost.localdomain:0 (errno: 1 - Operation not permitted).
+Exception raised from run at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/socket.cpp:820 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x1554a5523e9d in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: c10::DistError::DistError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x1554a5524e72 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #2: c10::DistNetworkError::DistNetworkError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x1554a5525332 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #3: <unknown function> + 0x15f740b (0x1554c6b9a40b in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: <unknown function> + 0x68d50db (0x1554cbe780db in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: <unknown function> + 0x682f7a3 (0x1554cbdd27a3 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #6: c10d::TCPStore::TCPStore(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, c10d::TCPStoreOptions const&) + 0x41d (0x1554cbddb52d in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #7: <unknown function> + 0xf678a7 (0x1554db7378a7 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #8: <unknown function> + 0xf7d5ee (0x1554db74d5ee in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #9: <unknown function> + 0x408b62 (0x1554dabd8b62 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #10: <unknown function> + 0x21432b (0x55555576832b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #11: <unknown function> + 0x248e54 (0x55555579ce54 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #12: <unknown function> + 0x24890e (0x55555579c90e in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #13: _PyObject_Call + 0x12b (0x5555557854eb in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #14: <unknown function> + 0x22e83c (0x55555578283c in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #15: <unknown function> + 0x1f4d95 (0x555555748d95 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #16: <unknown function> + 0x40701b (0x1554dabd701b in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #17: _PyObject_MakeTpCall + 0x2bc (0x555555748a6c in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #18: _PyEval_EvalFrameDefault + 0xa45 (0x555555752d55 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #19: _PyObject_FastCallDictTstate + 0x1ce (0x55555574b6ce in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #20: _PyObject_Call_Prepend + 0x67 (0x555555782a87 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #21: <unknown function> + 0x300019 (0x555555854019 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #22: _PyObject_Call + 0xb5 (0x555555785475 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #23: _PyEval_EvalFrameDefault + 0x4a7b (0x555555756d8b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #24: PyEval_EvalCode + 0x9f (0x55555580b55f in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #25: <unknown function> + 0x2d623a (0x55555582a23a in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #26: <unknown function> + 0x21432b (0x55555576832b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #27: PyObject_Vectorcall + 0x2e (0x5555557681fe in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #28: _PyEval_EvalFrameDefault + 0xa45 (0x555555752d55 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #29: <unknown function> + 0x2e7b23 (0x55555583bb23 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #30: Py_RunMain + 0x1de (0x55555583b42e in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #31: Py_BytesMain + 0x37 (0x5555557f3737 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #32: <unknown function> + 0x2a610 (0x15555522a610 in /lib64/libc.so.6)
+frame #33: __libc_start_main + 0x80 (0x15555522a6c0 in /lib64/libc.so.6)
+frame #34: <unknown function> + 0x29f5a7 (0x5555557f35a7 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+
+[W1118 02:10:43.807225862 socket.cpp:764] [c10d] The client socket cannot be initialized to connect to [localhost.localdomain]:0 (errno: 1 - Operation not permitted).
+[W1118 02:10:43.807419752 socket.cpp:764] [c10d] The client socket cannot be initialized to connect to localhost.localdomain:0 (errno: 1 - Operation not permitted).
+[E1118 02:10:43.807427722 socket.cpp:818] [c10d] The client socket has failed to connect to any network address of (localhost, 0).
+[W1118 02:10:43.807546362 TCPStore.cpp:340] [c10d] TCP client failed to connect/validate to host localhost:0 - retrying (try=9, timeout=60000ms, delay=23497ms): The client socket has failed to connect to any network address of (localhost, 0). The client socket cannot be initialized to connect to localhost.localdomain:0 (errno: 1 - Operation not permitted).
+Exception raised from run at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/socket.cpp:820 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x1554a5523e9d in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: c10::DistError::DistError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x1554a5524e72 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #2: c10::DistNetworkError::DistNetworkError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x1554a5525332 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #3: <unknown function> + 0x15f740b (0x1554c6b9a40b in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: <unknown function> + 0x68d50db (0x1554cbe780db in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: <unknown function> + 0x682f7a3 (0x1554cbdd27a3 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #6: c10d::TCPStore::TCPStore(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, c10d::TCPStoreOptions const&) + 0x41d (0x1554cbddb52d in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #7: <unknown function> + 0xf678a7 (0x1554db7378a7 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #8: <unknown function> + 0xf7d5ee (0x1554db74d5ee in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #9: <unknown function> + 0x408b62 (0x1554dabd8b62 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #10: <unknown function> + 0x21432b (0x55555576832b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #11: <unknown function> + 0x248e54 (0x55555579ce54 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #12: <unknown function> + 0x24890e (0x55555579c90e in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #13: _PyObject_Call + 0x12b (0x5555557854eb in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #14: <unknown function> + 0x22e83c (0x55555578283c in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #15: <unknown function> + 0x1f4d95 (0x555555748d95 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #16: <unknown function> + 0x40701b (0x1554dabd701b in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #17: _PyObject_MakeTpCall + 0x2bc (0x555555748a6c in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #18: _PyEval_EvalFrameDefault + 0xa45 (0x555555752d55 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #19: _PyObject_FastCallDictTstate + 0x1ce (0x55555574b6ce in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #20: _PyObject_Call_Prepend + 0x67 (0x555555782a87 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #21: <unknown function> + 0x300019 (0x555555854019 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #22: _PyObject_Call + 0xb5 (0x555555785475 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #23: _PyEval_EvalFrameDefault + 0x4a7b (0x555555756d8b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #24: PyEval_EvalCode + 0x9f (0x55555580b55f in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #25: <unknown function> + 0x2d623a (0x55555582a23a in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #26: <unknown function> + 0x21432b (0x55555576832b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #27: PyObject_Vectorcall + 0x2e (0x5555557681fe in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #28: _PyEval_EvalFrameDefault + 0xa45 (0x555555752d55 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #29: <unknown function> + 0x2e7b23 (0x55555583bb23 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #30: Py_RunMain + 0x1de (0x55555583b42e in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #31: Py_BytesMain + 0x37 (0x5555557f3737 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #32: <unknown function> + 0x2a610 (0x15555522a610 in /lib64/libc.so.6)
+frame #33: __libc_start_main + 0x80 (0x15555522a6c0 in /lib64/libc.so.6)
+frame #34: <unknown function> + 0x29f5a7 (0x5555557f35a7 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+
+[W1118 02:11:07.308274664 socket.cpp:764] [c10d] The client socket cannot be initialized to connect to [localhost.localdomain]:0 (errno: 1 - Operation not permitted).
+[W1118 02:11:07.308439144 socket.cpp:764] [c10d] The client socket cannot be initialized to connect to localhost.localdomain:0 (errno: 1 - Operation not permitted).
+[E1118 02:11:07.308448874 socket.cpp:818] [c10d] The client socket has failed to connect to any network address of (localhost, 0).
+[W1118 02:11:07.308554134 TCPStore.cpp:340] [c10d] TCP client failed to connect/validate to host localhost:0 - retrying (try=10, timeout=60000ms, delay=42393ms): The client socket has failed to connect to any network address of (localhost, 0). The client socket cannot be initialized to connect to localhost.localdomain:0 (errno: 1 - Operation not permitted).
+Exception raised from run at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/socket.cpp:820 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x1554a5523e9d in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: c10::DistError::DistError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x1554a5524e72 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #2: c10::DistNetworkError::DistNetworkError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x1554a5525332 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #3: <unknown function> + 0x15f740b (0x1554c6b9a40b in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: <unknown function> + 0x68d50db (0x1554cbe780db in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: <unknown function> + 0x682f7a3 (0x1554cbdd27a3 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #6: c10d::TCPStore::TCPStore(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, c10d::TCPStoreOptions const&) + 0x41d (0x1554cbddb52d in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #7: <unknown function> + 0xf678a7 (0x1554db7378a7 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #8: <unknown function> + 0xf7d5ee (0x1554db74d5ee in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #9: <unknown function> + 0x408b62 (0x1554dabd8b62 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #10: <unknown function> + 0x21432b (0x55555576832b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #11: <unknown function> + 0x248e54 (0x55555579ce54 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #12: <unknown function> + 0x24890e (0x55555579c90e in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #13: _PyObject_Call + 0x12b (0x5555557854eb in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #14: <unknown function> + 0x22e83c (0x55555578283c in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #15: <unknown function> + 0x1f4d95 (0x555555748d95 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #16: <unknown function> + 0x40701b (0x1554dabd701b in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #17: _PyObject_MakeTpCall + 0x2bc (0x555555748a6c in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #18: _PyEval_EvalFrameDefault + 0xa45 (0x555555752d55 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #19: _PyObject_FastCallDictTstate + 0x1ce (0x55555574b6ce in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #20: _PyObject_Call_Prepend + 0x67 (0x555555782a87 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #21: <unknown function> + 0x300019 (0x555555854019 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #22: _PyObject_Call + 0xb5 (0x555555785475 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #23: _PyEval_EvalFrameDefault + 0x4a7b (0x555555756d8b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #24: PyEval_EvalCode + 0x9f (0x55555580b55f in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #25: <unknown function> + 0x2d623a (0x55555582a23a in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #26: <unknown function> + 0x21432b (0x55555576832b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #27: PyObject_Vectorcall + 0x2e (0x5555557681fe in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #28: _PyEval_EvalFrameDefault + 0xa45 (0x555555752d55 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #29: <unknown function> + 0x2e7b23 (0x55555583bb23 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #30: Py_RunMain + 0x1de (0x55555583b42e in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #31: Py_BytesMain + 0x37 (0x5555557f3737 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #32: <unknown function> + 0x2a610 (0x15555522a610 in /lib64/libc.so.6)
+frame #33: __libc_start_main + 0x80 (0x15555522a6c0 in /lib64/libc.so.6)
+frame #34: <unknown function> + 0x29f5a7 (0x5555557f35a7 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+
+[W1118 02:11:49.705101152 socket.cpp:764] [c10d] The client socket cannot be initialized to connect to [localhost.localdomain]:0 (errno: 1 - Operation not permitted).
+[W1118 02:11:49.706564044 socket.cpp:764] [c10d] The client socket cannot be initialized to connect to localhost.localdomain:0 (errno: 1 - Operation not permitted).
+[E1118 02:11:49.706570644 socket.cpp:818] [c10d] The client socket has failed to connect to any network address of (localhost, 0).
+[E1118 02:11:49.706653294 TCPStore.cpp:328] [c10d] TCP client failed to connect/validate to host localhost:0 - timed out (try=11, timeout=60000ms): The client socket has failed to connect to any network address of (localhost, 0). The client socket cannot be initialized to connect to localhost.localdomain:0 (errno: 1 - Operation not permitted).
+Exception raised from run at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/socket.cpp:820 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x1554a5523e9d in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: c10::DistError::DistError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x1554a5524e72 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #2: c10::DistNetworkError::DistNetworkError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x1554a5525332 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #3: <unknown function> + 0x15f740b (0x1554c6b9a40b in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: <unknown function> + 0x68d50db (0x1554cbe780db in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: <unknown function> + 0x682f7a3 (0x1554cbdd27a3 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #6: c10d::TCPStore::TCPStore(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, c10d::TCPStoreOptions const&) + 0x41d (0x1554cbddb52d in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #7: <unknown function> + 0xf678a7 (0x1554db7378a7 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #8: <unknown function> + 0xf7d5ee (0x1554db74d5ee in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #9: <unknown function> + 0x408b62 (0x1554dabd8b62 in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #10: <unknown function> + 0x21432b (0x55555576832b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #11: <unknown function> + 0x248e54 (0x55555579ce54 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #12: <unknown function> + 0x24890e (0x55555579c90e in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #13: _PyObject_Call + 0x12b (0x5555557854eb in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #14: <unknown function> + 0x22e83c (0x55555578283c in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #15: <unknown function> + 0x1f4d95 (0x555555748d95 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #16: <unknown function> + 0x40701b (0x1554dabd701b in /home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #17: _PyObject_MakeTpCall + 0x2bc (0x555555748a6c in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #18: _PyEval_EvalFrameDefault + 0xa45 (0x555555752d55 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #19: _PyObject_FastCallDictTstate + 0x1ce (0x55555574b6ce in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #20: _PyObject_Call_Prepend + 0x67 (0x555555782a87 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #21: <unknown function> + 0x300019 (0x555555854019 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #22: _PyObject_Call + 0xb5 (0x555555785475 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #23: _PyEval_EvalFrameDefault + 0x4a7b (0x555555756d8b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #24: PyEval_EvalCode + 0x9f (0x55555580b55f in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #25: <unknown function> + 0x2d623a (0x55555582a23a in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #26: <unknown function> + 0x21432b (0x55555576832b in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #27: PyObject_Vectorcall + 0x2e (0x5555557681fe in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #28: _PyEval_EvalFrameDefault + 0xa45 (0x555555752d55 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #29: <unknown function> + 0x2e7b23 (0x55555583bb23 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #30: Py_RunMain + 0x1de (0x55555583b42e in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #31: Py_BytesMain + 0x37 (0x5555557f3737 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+frame #32: <unknown function> + 0x2a610 (0x15555522a610 in /lib64/libc.so.6)
+frame #33: __libc_start_main + 0x80 (0x15555522a6c0 in /lib64/libc.so.6)
+frame #34: <unknown function> + 0x29f5a7 (0x5555557f35a7 in /home/kangan/.conda/envs/torchtitan-macro/bin/python)
+
+Traceback (most recent call last):
+  File "/home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/distributed/elastic/rendezvous/c10d_rendezvous_backend.py", line 156, in _create_tcp_store
+    store = TCPStore(
+            ^^^^^^^^^
+torch.distributed.DistNetworkError: The client socket has failed to connect to any network address of (localhost, 0). The client socket cannot be initialized to connect to localhost.localdomain:0 (errno: 1 - Operation not permitted).
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/distributed/run.py", line 1142, in <module>
+    main()
+  File "/home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 384, in wrapper
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "/home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/distributed/run.py", line 1138, in main
+    run(args)
+  File "/home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/distributed/run.py", line 1129, in run
+    elastic_launch(
+  File "/home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 197, in __call__
+    return launch_agent(
+           ^^^^^^^^^^^^^
+  File "/home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 346, in launch_agent
+    rdzv_handler=rdzv_registry.get_rendezvous_handler(rdzv_parameters),
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/distributed/elastic/rendezvous/registry.py", line 96, in get_rendezvous_handler
+    return handler_registry.create_handler(params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/distributed/elastic/rendezvous/api.py", line 377, in create_handler
+    handler = creator(params)
+              ^^^^^^^^^^^^^^^
+  File "/home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/distributed/elastic/rendezvous/registry.py", line 46, in _create_c10d_handler
+    backend, store = create_backend(params)
+                     ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/distributed/elastic/rendezvous/c10d_rendezvous_backend.py", line 254, in create_backend
+    store = _create_tcp_store(params)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/torch/distributed/elastic/rendezvous/c10d_rendezvous_backend.py", line 180, in _create_tcp_store
+    raise RendezvousConnectionError(
+torch.distributed.elastic.rendezvous.api.RendezvousConnectionError: The connection to the C10d store has failed. See inner exception for details.

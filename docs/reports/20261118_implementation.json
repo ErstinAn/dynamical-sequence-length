@@ -1,0 +1,130 @@
+{
+  "recorded_utc": "2026-11-18T10:14:21.399323+00:00",
+  "status": "cpu_implementation_passed_gpu_pending",
+  "upstream_base": "91ef5297deae1d0cf96d9d22869151e68bd31142",
+  "initial_test_environment": "/home/kangan/.conda/envs/torchtitan-macro",
+  "initial_test_source": "Uncommitted working tree. A complete source hash was not captured before every initial command.",
+  "initial_full_cpu": {
+    "tests": 203,
+    "passed": 200,
+    "skipped": 3,
+    "seconds": 52.867,
+    "phase": "Before the explicit eight-step smoke additions"
+  },
+  "eight_step_cpu": {
+    "tests": 14,
+    "passed": 14,
+    "seconds": 0.838
+  },
+  "independent_corrected_snapshot": {
+    "commit": "fe7e5f69c6c38a2b727a8e509c47205c4c81e75a",
+    "bundle_sha256": "b290a34f273ba6a91f43912fdc8aff88ab3a9bcfd4e31aaf2cf2923f4652fa7b",
+    "tests": 211,
+    "passed": 206,
+    "skipped": 5,
+    "seconds": 52.418,
+    "details": "fresh_environment_20261118.json"
+  },
+  "logs": {
+    "initial_full_cpu": {
+      "path": "docs/reports/20261118_initial_full_cpu.txt",
+      "sha256": "d5c628bd4e924892d6f2fdff84fdceeecb2e689cfb7b9e71aac7983224682459",
+      "original_path": "/tmp/sequence_implementation_full_cpu.log"
+    },
+    "initial_main_cpu": {
+      "path": "docs/reports/20261118_initial_main_cpu.txt",
+      "sha256": "16eb4c02b7fdffdd2a7141bb46a6683dcc8c3c0ae452bd7ddedb6ce0a9d6a2a7",
+      "original_path": "/tmp/sequence_implementation_tests.log"
+    },
+    "initial_two_rank_cpu": {
+      "path": "docs/reports/20261118_initial_two_rank_cpu.txt",
+      "sha256": "4b38409ee8365ab1ab80b91be92e4ef9b491780832adad9a5066335dcea38491",
+      "original_path": "/tmp/sequence_implementation_dp.log"
+    },
+    "eight_step_cpu": {
+      "path": "docs/reports/20261118_eight_step_cpu.txt",
+      "sha256": "7c344cc95803a70a46d3d6f0abc96c8f265a54573421a70fc8b9ab357b07e53b",
+      "original_path": "/tmp/smoke8_cpu_tests.log"
+    },
+    "eight_step_preflight": {
+      "path": "docs/reports/20261118_eight_step_preflight.txt",
+      "sha256": "03f49abdab2ae98e4450ece6b6aeeb41997037d01f1245b0b8c96fd9a701c624",
+      "original_path": "/tmp/smoke8_preflight.log"
+    }
+  },
+  "preliminary_reused_environment_test": {
+    "test_directory": "/tmp/sequence-handoff-1bg7tt4_",
+    "checkout": "/tmp/sequence-handoff-1bg7tt4_/checkout",
+    "code_acquisition": "Copied the current uncommitted working tree. Not a Git clone.",
+    "environment_creation": "Python venv --system-site-packages",
+    "reused_existing_dependencies": true,
+    "copied_assets": false,
+    "copied_outputs": false,
+    "gpu_used": false,
+    "checks": [
+      {
+        "command": [
+          "/tmp/sequence-handoff-1bg7tt4_/venv/bin/python",
+          "-c",
+          "import torchtitan_dynamic_seq_len, torch; print(torchtitan_dynamic_seq_len.__file__); print(torch.__version__)"
+        ],
+        "exit_code": 0,
+        "log": "/tmp/sequence-handoff-1bg7tt4_/check-0.txt"
+      },
+      {
+        "command": [
+          "/tmp/sequence-handoff-1bg7tt4_/venv/bin/python",
+          "-m",
+          "pip",
+          "check"
+        ],
+        "exit_code": 0,
+        "log": "/tmp/sequence-handoff-1bg7tt4_/check-1.txt"
+      },
+      {
+        "command": [
+          "/tmp/sequence-handoff-1bg7tt4_/venv/bin/python",
+          "scripts/train.py",
+          "--list"
+        ],
+        "exit_code": 0,
+        "log": "/tmp/sequence-handoff-1bg7tt4_/check-2.txt"
+      },
+      {
+        "command": [
+          "/tmp/sequence-handoff-1bg7tt4_/venv/bin/python",
+          "scripts/restore_final_dataset.py",
+          "--help"
+        ],
+        "exit_code": 0,
+        "log": "/tmp/sequence-handoff-1bg7tt4_/check-3.txt"
+      },
+      {
+        "command": [
+          "/tmp/sequence-handoff-1bg7tt4_/venv/bin/python",
+          "scripts/rebuild_long_token_cache.py",
+          "--help"
+        ],
+        "exit_code": 0,
+        "log": "/tmp/sequence-handoff-1bg7tt4_/check-4.txt"
+      },
+      {
+        "command": [
+          "/tmp/sequence-handoff-1bg7tt4_/venv/bin/python",
+          "-m",
+          "unittest",
+          "tests.test_token_progress",
+          "tests.test_main_launch",
+          "-v"
+        ],
+        "exit_code": 0,
+        "log": "/tmp/sequence-handoff-1bg7tt4_/check-5.txt"
+      }
+    ]
+  },
+  "limits": [
+    "Initial CPU logs do not establish a new installation.",
+    "GPU execution and online W&B history acceptance remain pending.",
+    "Formal experiments are not authorized in this smoke phase."
+  ]
+}

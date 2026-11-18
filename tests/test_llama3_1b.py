@@ -63,7 +63,7 @@ class Llama3OneBTest(unittest.TestCase):
                     self.subTest(filename=filename, world=world),
                     patch.dict(os.environ, {"WORLD_SIZE": str(world)}),
                 ):
-                    yaml, _, _, args = resolve_point(ROOT / "configs/examples" / filename, 0)
+                    yaml, _, _, args = resolve_point(ROOT / "legacy/configs/examples" / filename, 0)
                     config = ConfigManager().parse_args(
                         [
                             "--module",

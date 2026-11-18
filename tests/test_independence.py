@@ -38,8 +38,9 @@ from torchtitan_dynamic_seq_len import config_registry
 from torchtitan_dynamic_seq_len.optimizer import ExperimentOptimizers
 from torchtitan_dynamic_seq_len.data.fineweb100 import validation_directory
 from torchtitan_dynamic_seq_len.data.fixed_validation import resolve_artifact_path
+from torchtitan_dynamic_seq_len.data.asset_paths import resolve_archived_asset
 
-expected_data = project / "assets/data/fineweb100_validation"
+expected_data = resolve_archived_asset(project / "assets/data/fineweb100_validation")
 assert validation_directory() == expected_data
 assert resolve_artifact_path() == expected_data.resolve()
 for name, expected_optimizer in (

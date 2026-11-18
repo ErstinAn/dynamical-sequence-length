@@ -41,7 +41,8 @@ def normalized_text_hash(text: str) -> str:
 
 
 def validation_directory(path: str | Path | None = None) -> Path:
-    return Path(path or os.environ.get("DYNAMIC_SEQ_LEN_VALIDATION_DIR") or DEFAULT_VALIDATION_DIR)
+    from torchtitan_dynamic_seq_len.data.asset_paths import resolve_archived_asset
+    return resolve_archived_asset(path or os.environ.get("DYNAMIC_SEQ_LEN_VALIDATION_DIR") or DEFAULT_VALIDATION_DIR)
 
 
 def load_manifest(path: str | Path | None = None) -> dict[str, Any]:

@@ -455,6 +455,8 @@ def main() -> None:
         "--export=ALL",
         str(SLURM_SCRIPT),
     ]
+    if resources.get("mem"):
+        cmd.insert(-1, f"--mem={resources['mem']}")
     print(
         f"{'Would submit' if args.dry_run else 'Submitting'} "
         f"{len(submission_indices)} run(s) in "

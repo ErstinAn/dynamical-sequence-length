@@ -1,0 +1,406 @@
+{
+  "checked_utc": "2026-11-18T12:26:53.336276+00:00",
+  "acceptance": "/projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/acceptance/acceptance.json",
+  "token_budget": 31457280,
+  "validation_windows": 936,
+  "validation_prediction_targets": 15335424,
+  "checkpoint_comparison": {
+    "left": "/projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/acceptance/runs/smoke-uninterrupted/baa83f28bed34c2fbd4ca05168a42570/checkpoint/step-8",
+    "right": "/projects/jason_optai/kangan/dynamic_seq_len_handoff_20261118/acceptance/runs/smoke-recovered/14773bfb9c9f483ea1fd194ca305e0d7/checkpoint/step-8",
+    "tensors_checked": 489,
+    "non_tensor_values_checked": 1379,
+    "exact_match": true,
+    "differences": []
+  },
+  "cases": {
+    "uninterrupted": [
+      {
+        "run_id": "baa83f28bed34c2fbd4ca05168a42570",
+        "url": "https://wandb.ai/rotation_optimizer/debug/runs/baa83f28bed34c2fbd4ca05168a42570",
+        "state": "finished",
+        "resume_step": 0,
+        "final_step": 8,
+        "loss_axes": {
+          "loss_metrics/global_avg_loss": "n_tokens_seen",
+          "loss_metrics/global_max_loss": "n_tokens_seen",
+          "validation_metrics/loss": "n_tokens_seen"
+        },
+        "training_rows": [
+          {
+            "loss_metrics/global_max_loss": 12.287185668945312,
+            "_step": 1,
+            "validation_metrics/evaluated_tokens": 15335424,
+            "validation_metrics/num_sequences": 936,
+            "gradient_accumulation_steps": 8,
+            "global_batch_size": 512,
+            "n_valid_tokens_seen": 1048532,
+            "loss_metrics/global_avg_loss": 12.283363342285156,
+            "valid_tokens_per_step": 1048532,
+            "microbatch_size": 32,
+            "n_tokens_seen": 1048576,
+            "validation_metrics/loss": 13.463331995866238,
+            "seq_len": 2048
+          },
+          {
+            "gradient_accumulation_steps": 8,
+            "_step": 2,
+            "loss_metrics/global_max_loss": 12.930299758911133,
+            "n_valid_tokens_seen": 2097067,
+            "loss_metrics/global_avg_loss": 12.912681579589844,
+            "seq_len": 2048,
+            "valid_tokens_per_step": 1048535,
+            "microbatch_size": 32,
+            "global_batch_size": 512,
+            "n_tokens_seen": 2097152.0
+          },
+          {
+            "_step": 3,
+            "seq_len": 4096,
+            "microbatch_size": 16,
+            "n_tokens_seen": 4194304.0,
+            "gradient_accumulation_steps": 16,
+            "loss_metrics/global_max_loss": 12.823798179626465,
+            "valid_tokens_per_step": 2097069,
+            "n_valid_tokens_seen": 4194136,
+            "loss_metrics/global_avg_loss": 12.821107864379883,
+            "global_batch_size": 512
+          },
+          {
+            "valid_tokens_per_step": 2097062,
+            "global_batch_size": 512,
+            "n_tokens_seen": 6291456.0,
+            "loss_metrics/global_avg_loss": 13.956199645996094,
+            "_step": 4,
+            "loss_metrics/global_max_loss": 14.022432327270508,
+            "microbatch_size": 16,
+            "n_valid_tokens_seen": 6291198,
+            "seq_len": 4096,
+            "gradient_accumulation_steps": 16
+          },
+          {
+            "n_tokens_seen": 10485760.0,
+            "loss_metrics/global_avg_loss": 12.15574836730957,
+            "valid_tokens_per_step": 4194120,
+            "gradient_accumulation_steps": 32,
+            "global_batch_size": 512,
+            "loss_metrics/global_max_loss": 12.180112838745117,
+            "n_valid_tokens_seen": 10485318,
+            "microbatch_size": 8,
+            "_step": 5,
+            "seq_len": 8192
+          },
+          {
+            "gradient_accumulation_steps": 32,
+            "loss_metrics/global_max_loss": 11.3485689163208,
+            "n_valid_tokens_seen": 14679435,
+            "seq_len": 8192,
+            "valid_tokens_per_step": 4194117,
+            "n_tokens_seen": 14680064.0,
+            "_step": 6,
+            "loss_metrics/global_avg_loss": 11.341306686401367,
+            "microbatch_size": 8,
+            "global_batch_size": 512
+          },
+          {
+            "microbatch_size": 4,
+            "n_tokens_seen": 23068672.0,
+            "gradient_accumulation_steps": 64,
+            "loss_metrics/global_max_loss": 10.92390251159668,
+            "loss_metrics/global_avg_loss": 10.917759895324707,
+            "n_valid_tokens_seen": 23067660,
+            "valid_tokens_per_step": 8388225,
+            "seq_len": 16384,
+            "global_batch_size": 512,
+            "_step": 7
+          },
+          {
+            "validation_metrics/num_sequences": 936,
+            "n_tokens_seen": 31457280,
+            "validation_metrics/evaluated_tokens": 15335424,
+            "microbatch_size": 4,
+            "gradient_accumulation_steps": 64,
+            "n_valid_tokens_seen": 31455900,
+            "loss_metrics/global_avg_loss": 10.598470687866211,
+            "seq_len": 16384,
+            "global_batch_size": 512,
+            "validation_metrics/loss": 10.225661943101475,
+            "_step": 8,
+            "loss_metrics/global_max_loss": 10.605973243713379,
+            "valid_tokens_per_step": 8388240
+          }
+        ],
+        "validation_rows": [
+          {
+            "loss_metrics/global_max_loss": 12.287185668945312,
+            "_step": 1,
+            "validation_metrics/evaluated_tokens": 15335424,
+            "validation_metrics/num_sequences": 936,
+            "gradient_accumulation_steps": 8,
+            "global_batch_size": 512,
+            "n_valid_tokens_seen": 1048532,
+            "loss_metrics/global_avg_loss": 12.283363342285156,
+            "valid_tokens_per_step": 1048532,
+            "microbatch_size": 32,
+            "n_tokens_seen": 1048576,
+            "validation_metrics/loss": 13.463331995866238,
+            "seq_len": 2048
+          },
+          {
+            "validation_metrics/num_sequences": 936,
+            "n_tokens_seen": 31457280,
+            "validation_metrics/evaluated_tokens": 15335424,
+            "microbatch_size": 4,
+            "gradient_accumulation_steps": 64,
+            "n_valid_tokens_seen": 31455900,
+            "loss_metrics/global_avg_loss": 10.598470687866211,
+            "seq_len": 16384,
+            "global_batch_size": 512,
+            "validation_metrics/loss": 10.225661943101475,
+            "_step": 8,
+            "loss_metrics/global_max_loss": 10.605973243713379,
+            "valid_tokens_per_step": 8388240
+          }
+        ],
+        "loss_by_step": {
+          "1": [
+            12.283363342285156,
+            12.287185668945312
+          ],
+          "2": [
+            12.912681579589844,
+            12.930299758911133
+          ],
+          "3": [
+            12.821107864379883,
+            12.823798179626465
+          ],
+          "4": [
+            13.956199645996094,
+            14.022432327270508
+          ],
+          "5": [
+            12.15574836730957,
+            12.180112838745117
+          ],
+          "6": [
+            11.341306686401367,
+            11.3485689163208
+          ],
+          "7": [
+            10.917759895324707,
+            10.92390251159668
+          ],
+          "8": [
+            10.598470687866211,
+            10.605973243713379
+          ]
+        }
+      }
+    ],
+    "recovered": [
+      {
+        "run_id": "14773bfb9c9f483ea1fd194ca305e0d7",
+        "url": "https://wandb.ai/rotation_optimizer/debug/runs/14773bfb9c9f483ea1fd194ca305e0d7",
+        "state": "finished",
+        "resume_step": 0,
+        "final_step": 4,
+        "loss_axes": {
+          "loss_metrics/global_avg_loss": "n_tokens_seen",
+          "loss_metrics/global_max_loss": "n_tokens_seen",
+          "validation_metrics/loss": "n_tokens_seen"
+        },
+        "training_rows": [
+          {
+            "n_tokens_seen": 1048576,
+            "loss_metrics/global_avg_loss": 12.283363342285156,
+            "microbatch_size": 32,
+            "validation_metrics/evaluated_tokens": 15335424,
+            "validation_metrics/loss": 13.463331995866238,
+            "validation_metrics/num_sequences": 936,
+            "_step": 1,
+            "n_valid_tokens_seen": 1048532,
+            "gradient_accumulation_steps": 8,
+            "loss_metrics/global_max_loss": 12.287185668945312,
+            "valid_tokens_per_step": 1048532,
+            "global_batch_size": 512,
+            "seq_len": 2048
+          },
+          {
+            "_step": 2,
+            "seq_len": 2048,
+            "n_valid_tokens_seen": 2097067,
+            "valid_tokens_per_step": 1048535,
+            "global_batch_size": 512,
+            "gradient_accumulation_steps": 8,
+            "microbatch_size": 32,
+            "n_tokens_seen": 2097152.0,
+            "loss_metrics/global_max_loss": 12.930299758911133,
+            "loss_metrics/global_avg_loss": 12.912681579589844
+          },
+          {
+            "loss_metrics/global_avg_loss": 12.821107864379883,
+            "seq_len": 4096,
+            "n_tokens_seen": 4194304.0,
+            "valid_tokens_per_step": 2097069,
+            "microbatch_size": 16,
+            "global_batch_size": 512,
+            "_step": 3,
+            "gradient_accumulation_steps": 16,
+            "loss_metrics/global_max_loss": 12.823798179626465,
+            "n_valid_tokens_seen": 4194136
+          },
+          {
+            "n_tokens_seen": 6291456.0,
+            "loss_metrics/global_avg_loss": 13.956199645996094,
+            "microbatch_size": 16,
+            "gradient_accumulation_steps": 16,
+            "loss_metrics/global_max_loss": 14.022432327270508,
+            "global_batch_size": 512,
+            "_step": 4,
+            "n_valid_tokens_seen": 6291198,
+            "valid_tokens_per_step": 2097062,
+            "seq_len": 4096
+          }
+        ],
+        "validation_rows": [
+          {
+            "n_tokens_seen": 1048576,
+            "loss_metrics/global_avg_loss": 12.283363342285156,
+            "microbatch_size": 32,
+            "validation_metrics/evaluated_tokens": 15335424,
+            "validation_metrics/loss": 13.463331995866238,
+            "validation_metrics/num_sequences": 936,
+            "_step": 1,
+            "n_valid_tokens_seen": 1048532,
+            "gradient_accumulation_steps": 8,
+            "loss_metrics/global_max_loss": 12.287185668945312,
+            "valid_tokens_per_step": 1048532,
+            "global_batch_size": 512,
+            "seq_len": 2048
+          }
+        ],
+        "loss_by_step": {
+          "1": [
+            12.283363342285156,
+            12.287185668945312
+          ],
+          "2": [
+            12.912681579589844,
+            12.930299758911133
+          ],
+          "3": [
+            12.821107864379883,
+            12.823798179626465
+          ],
+          "4": [
+            13.956199645996094,
+            14.022432327270508
+          ]
+        }
+      },
+      {
+        "run_id": "a8e9673e9b20417ebb944074e0720cc5",
+        "url": "https://wandb.ai/rotation_optimizer/debug/runs/a8e9673e9b20417ebb944074e0720cc5",
+        "state": "finished",
+        "resume_step": 4,
+        "final_step": 8,
+        "loss_axes": {
+          "loss_metrics/global_avg_loss": "n_tokens_seen",
+          "loss_metrics/global_max_loss": "n_tokens_seen",
+          "validation_metrics/loss": "n_tokens_seen"
+        },
+        "training_rows": [
+          {
+            "loss_metrics/global_avg_loss": 12.15574836730957,
+            "seq_len": 8192,
+            "microbatch_size": 8,
+            "_step": 5,
+            "loss_metrics/global_max_loss": 12.180112838745117,
+            "n_valid_tokens_seen": 10485318,
+            "valid_tokens_per_step": 4194120,
+            "global_batch_size": 512,
+            "n_tokens_seen": 10485760.0,
+            "gradient_accumulation_steps": 32
+          },
+          {
+            "n_tokens_seen": 14680064.0,
+            "loss_metrics/global_max_loss": 11.3485689163208,
+            "microbatch_size": 8,
+            "loss_metrics/global_avg_loss": 11.341306686401367,
+            "_step": 6,
+            "n_valid_tokens_seen": 14679435,
+            "valid_tokens_per_step": 4194117,
+            "gradient_accumulation_steps": 32,
+            "seq_len": 8192,
+            "global_batch_size": 512
+          },
+          {
+            "gradient_accumulation_steps": 64,
+            "n_valid_tokens_seen": 23067660,
+            "valid_tokens_per_step": 8388225,
+            "global_batch_size": 512,
+            "n_tokens_seen": 23068672.0,
+            "seq_len": 16384,
+            "loss_metrics/global_avg_loss": 10.917759895324707,
+            "microbatch_size": 4,
+            "_step": 7,
+            "loss_metrics/global_max_loss": 10.92390251159668
+          },
+          {
+            "global_batch_size": 512,
+            "validation_metrics/num_sequences": 936,
+            "n_valid_tokens_seen": 31455900,
+            "loss_metrics/global_avg_loss": 10.598470687866211,
+            "valid_tokens_per_step": 8388240,
+            "microbatch_size": 4,
+            "_step": 8,
+            "seq_len": 16384,
+            "validation_metrics/loss": 10.225661943101475,
+            "validation_metrics/evaluated_tokens": 15335424,
+            "gradient_accumulation_steps": 64,
+            "n_tokens_seen": 31457280,
+            "loss_metrics/global_max_loss": 10.605973243713379
+          }
+        ],
+        "validation_rows": [
+          {
+            "global_batch_size": 512,
+            "validation_metrics/num_sequences": 936,
+            "n_valid_tokens_seen": 31455900,
+            "loss_metrics/global_avg_loss": 10.598470687866211,
+            "valid_tokens_per_step": 8388240,
+            "microbatch_size": 4,
+            "_step": 8,
+            "seq_len": 16384,
+            "validation_metrics/loss": 10.225661943101475,
+            "validation_metrics/evaluated_tokens": 15335424,
+            "gradient_accumulation_steps": 64,
+            "n_tokens_seen": 31457280,
+            "loss_metrics/global_max_loss": 10.605973243713379
+          }
+        ],
+        "loss_by_step": {
+          "5": [
+            12.15574836730957,
+            12.180112838745117
+          ],
+          "6": [
+            11.341306686401367,
+            11.3485689163208
+          ],
+          "7": [
+            10.917759895324707,
+            10.92390251159668
+          ],
+          "8": [
+            10.598470687866211,
+            10.605973243713379
+          ]
+        }
+      }
+    ]
+  },
+  "training_losses_match_exactly": true,
+  "validation_losses_match_exactly": true,
+  "status": "passed"
+}

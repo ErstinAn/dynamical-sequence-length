@@ -1,5 +1,9 @@
 # VT ARC jobs
 
+For the current Llama3 1B smoke, use [the main guide](../../docs/getting_started.md#8-submit-on-vt-arc).
+Its submission example is `smoke_handoff.sbatch`.
+The workflow below describes historical YAML launchers.
+
 The Slurm tools are optional.
 Local training does not import these tools.
 The tools run one node with one Slurm task.
@@ -13,7 +17,7 @@ Torchrun creates one process for each requested GPU.
 
    ```bash
    mkdir -p outputs/launch
-   cp configs/dynamic_seq/cyclic_sweep.yaml outputs/launch/experiment.yaml
+   cp legacy/configs/dynamic_seq/cyclic_sweep.yaml outputs/launch/experiment.yaml
    ```
 
 4. Examine the `resources` block in the copied file.
@@ -47,8 +51,8 @@ The [ARC GPU page](https://www.docs.arc.vt.edu/resources/gpu.html) describes the
 
 ## Included experiments
 
-`configs/dynamic_seq/` contains six experiment configurations and a sweep for two cyclic periods.
-`configs/lr_sweep_constant.yaml` contains the sweep for five learning rates with the TorchTitan Trainer.
+`legacy/configs/dynamic_seq/` contains six experiment configurations and a sweep for two cyclic periods.
+`legacy/configs/lr_sweep_constant.yaml` contains the sweep for five learning rates with the TorchTitan Trainer.
 Both use this same submission tool and shell script.
 See the [dynamic training guide](../../docs/dynamic_seq_len.md) for the schedule definitions.
 

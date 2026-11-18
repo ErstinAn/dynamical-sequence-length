@@ -1,5 +1,8 @@
 # Cleanup and experiment record
 
+This document records an earlier cleanup of the 100M experiments.
+Use [getting_started.md](getting_started.md) for the current native-vocabulary Llama3 1B experiment.
+
 ## Unchanged behavior
 
 The cleanup keeps the 100M model and the three sequence length experiments.
@@ -40,7 +43,7 @@ The CPU comparison used seed 42 and deterministic operations.
 It ran ten steps for each optimizer on a small language model.
 All loss, gradient norm, and variance values were the same.
 All 40 model and optimizer state tensors were the same.
-The [result file](refactor_results.json) contains the measured values.
+The [result file](../legacy/reports/refactor_results.json) contains the measured values.
 
 These results do not prove convergence on the full FineWeb experiments.
 The cleanup does not change the mathematical training method.
@@ -64,12 +67,12 @@ Each case used ten training steps.
 The full model launch also completed ten steps.
 The GPU comparison found the same bytes in all model and optimizer state tensors.
 The loss, gradient norm, and variance values also had the same bytes.
-The [GPU comparison](gpu_refactor_results.json) contains the measured values.
+The [GPU comparison](../legacy/reports/gpu_refactor_results.json) contains the measured values.
 
 The wheel installation test passed with the existing runtime dependencies.
 The installed wheel loaded the data manifests and completed an optimizer update.
 The code checks and text checks passed.
-The [validation record](validation_results.json) contains the job times and test measurements.
+The [validation record](../legacy/reports/validation_results.json) contains the job times and test measurements.
 
 ## Package size
 

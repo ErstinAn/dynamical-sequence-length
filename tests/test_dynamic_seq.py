@@ -88,7 +88,7 @@ def dynamic_trainer(kind="increasing", log_freq=1):
 class SchedulesTest(unittest.TestCase):
     def test_public_profiles_preserve_training_budgets(self):
         root = Path(__file__).resolve().parents[1]
-        for path in sorted((root / "configs/dynamic_seq").glob("*.yaml")):
+        for path in sorted((root / "legacy/configs/dynamic_seq").glob("*.yaml")):
             if path.stem == "smoke":
                 continue
             raw = load_config(path)
@@ -134,7 +134,7 @@ class SchedulesTest(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         for profile, count in (("dynamic_seq/cyclic_sweep.yaml", 2), ("lr_sweep_constant.yaml", 5)):
             with self.subTest(profile=profile), tempfile.TemporaryDirectory() as folder:
-                raw = yaml.safe_load((root / "configs" / profile).read_text())
+                raw = yaml.safe_load((root / "legacy/configs" / profile).read_text())
                 raw["resources"]["account"] = "test-account"
                 path = Path(folder) / "experiment.yaml"
                 path.write_text(yaml.safe_dump(raw))
@@ -165,7 +165,7 @@ class SchedulesTest(unittest.TestCase):
             for name in (
                 "torchtitan_dynamic_seq_len",
                 "scripts",
-                "configs",
+                "legacy/configs",
                 "cluster",
                 "tests/fixtures",
             ):
@@ -181,7 +181,7 @@ os.environ['WORLD_SIZE'] = '2'
 from torchtitan.config import ConfigManager
 from torchtitan_dynamic_seq_len.run_config import resolve_point
 from torchtitan_dynamic_seq_len.dynamic_seq.trainer import DynamicSeqLenTrainer
-raw, _, _, args = resolve_point(root / 'configs/dynamic_seq/cyclic_period64.yaml', 0)
+raw, _, _, args = resolve_point(root / 'legacy/configs/dynamic_seq/cyclic_period64.yaml', 0)
 cfg = ConfigManager().parse_args(['--module', 'torchtitan_dynamic_seq_len.config_registry',
                                 '--config', raw['torchtitan_config'], *args])
 assert cfg._owner is DynamicSeqLenTrainer
@@ -201,7 +201,7 @@ for name, module in tuple(sys.modules.items()):
                 [
                     sys.executable,
                     str(checkout / "scripts/train.py"),
-                    str(checkout / "configs/dynamic_seq/cyclic_period64.yaml"),
+                    str(checkout / "legacy/configs/dynamic_seq/cyclic_period64.yaml"),
                     "--nproc",
                     "2",
                     "--dry-run",
@@ -299,7 +299,7 @@ for name, module in tuple(sys.modules.items()):
             ("dynamic_seq/cyclic.yaml", 1),
         ):
             for index in range(points):
-                raw, _, _, args = resolve_point(root / "configs" / filename, index)
+                raw, _, _, args = resolve_point(root / "legacy/configs" / filename, index)
                 with patch.dict(
                     os.environ,
                     {

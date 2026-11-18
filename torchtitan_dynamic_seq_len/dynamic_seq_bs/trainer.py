@@ -6,6 +6,7 @@ from dataclasses import asdict, dataclass, field
 
 from torchtitan_dynamic_seq_len.data.dynamic_seq_bs_loader import DynamicSeqBSDataLoader
 from torchtitan_dynamic_seq_len.dynamic_seq.trainer import DynamicSeqLenTrainer
+from torchtitan_dynamic_seq_len.dynamic_seq_bs.compile import compile_dynamic_blocks
 from torchtitan_dynamic_seq_len.dynamic_seq_bs.metrics import DynamicSeqBSMetricsProcessor
 from torchtitan_dynamic_seq_len.schedulers.batch_size import BatchSizeSchedulerConfig
 
@@ -61,6 +62,7 @@ class DynamicSeqBSTrainer(DynamicSeqLenTrainer):
         self.batch_size_scheduler = config.batch_size_scheduler.build(config.training.steps)
         self.microbatch_scheduler = config.microbatch_scheduler.build(config.training.steps)
         super().__init__(config)
+        compile_dynamic_blocks(self.model_parts, config.compile)
 
     def _set_batch_step(self, step):
         length = self.seq_len_scheduler.length_for_step(step)

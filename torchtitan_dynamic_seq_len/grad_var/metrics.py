@@ -2,7 +2,34 @@
 
 from dataclasses import dataclass
 
-from torchtitan.components.metrics import MetricsProcessor
+from torchtitan.components.metrics import BaseLogger, LoggerContainer, MetricsProcessor, WandBLogger
+
+
+class XWandBLogger(BaseLogger):
+    """Leave a model step open for training, post-update probes and validation."""
+
+    def __init__(self, wrapped, metadata):
+        self.wrapped = wrapped
+        self.last_step = -1
+        run = wrapped.wandb.run
+        run.define_metric("grad_var/step")
+        run.define_metric("grad_var/x_s*", step_metric="grad_var/step")
+        run.config.update({"x_probe": metadata})
+
+    def log(self, metrics, step):
+        if step < self.last_step:
+            raise RuntimeError("X logger cannot write an already committed step")
+        self.last_step = step
+        payload = {
+            (k if self.wrapped.tag is None else f"{self.wrapped.tag}/{k}"): v
+            for k, v in metrics.items()
+        }
+        self.wrapped.wandb.log(payload, step=step, commit=False)
+
+    def close(self):
+        if self.last_step >= 0:
+            self.wrapped.wandb.log({}, commit=True)
+        self.wrapped.close()
 
 
 class GradVarMetricsProcessor(MetricsProcessor):
@@ -16,6 +43,28 @@ class GradVarMetricsProcessor(MetricsProcessor):
 
     def clear_grad_var(self):
         self._grad_var_pending = None
+
+    def configure_x(self, metadata):
+        import torch.distributed as dist
+
+        if (
+            self.config.enable_wandb
+            and dist.get_rank() == 0
+            and (
+                not isinstance(self.logger, LoggerContainer)
+                or not any(isinstance(item, WandBLogger) for item in self.logger._loggers)
+            )
+        ):
+            raise RuntimeError("X monitoring requires a successfully initialized W&B run")
+        if not isinstance(self.logger, LoggerContainer):
+            return
+        self.logger._loggers = [
+            XWandBLogger(item, metadata) if isinstance(item, WandBLogger) else item
+            for item in self.logger._loggers
+        ]
+
+    def emit_probe_metrics(self, payload):
+        self.logger.log(payload, payload["grad_var/step"])
 
     def queue_grad_var(self, step: int, metrics: dict[str, float]):
         if self._grad_var_pending is not None:

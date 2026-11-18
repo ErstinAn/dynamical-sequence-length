@@ -1,6 +1,10 @@
 # Collaboration delivery inventory
 
-Use [instruction.md](../instruction.md) as the first-run procedure.
+This document records the earlier 100M/Llama2 delivery and its historical checks.
+Use [getting_started.md](getting_started.md) for the current native-vocabulary Llama3 1B experiment.
+The W&B defaults and data preparation instructions below do not define the current experiment.
+
+Use [instruction.md](../instruction.md) for the earlier first-run procedure.
 The collaborator must receive a fixed Git commit, not an uncommitted working directory.
 
 ## Files included in Git
@@ -8,7 +12,7 @@ The collaborator must receive a fixed Git commit, not an uncommitted working dir
 | Files | Purpose |
 | --- | --- |
 | `torchtitan_dynamic_seq_len/` | Training implementation and configuration registry |
-| `configs/` | Shared experiment protocols and portable examples |
+| `legacy/configs/` | Shared experiment protocols and portable examples |
 | `scripts/` and `run.sh` | Launch, data preparation, and checks |
 | `tests/`, including `tests/fixtures/text.jsonl` | Correctness tests and a small local training dataset |
 | `torchtitan_dynamic_seq_len/data/manifests/*.json` | Dataset identity, tokenizer source, and validation reference hashes |
@@ -57,7 +61,7 @@ The complete FineWeb training budget is not part of the handoff smoke.
 
 ## Verification on 2026-11-02
 
-The [machine-readable record](delivery_results.json) identifies the tested source commit and measurements.
+The [machine-readable record](../legacy/reports/delivery_results.json) identifies the tested source commit and measurements.
 The source-tree CPU suite ran 113 tests: 110 passed and three optional tests skipped.
 The artifact check and both optional distributed checks then passed separately.
 Two-rank dynamic sequence, dynamic batch, and sequence-gradient checks also passed.

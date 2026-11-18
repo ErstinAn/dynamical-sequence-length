@@ -22,6 +22,7 @@ import torch.distributed as dist
 from torchtitan.components.loss import IGNORE_INDEX
 from torchtitan.components.validate import Validator
 from torchtitan.tools.logging import logger
+from torchtitan_dynamic_seq_len.data.asset_paths import resolve_archived_asset
 
 ARRAY_NAMES = ("input", "labels", "positions")
 DEFAULT_ARTIFACT_PATH = Path(__file__).resolve().parents[2] / "assets/data/fineweb100_validation"
@@ -29,7 +30,7 @@ DEFAULT_ARTIFACT_PATH = Path(__file__).resolve().parents[2] / "assets/data/finew
 
 def resolve_artifact_path(artifact_path: str = "") -> Path:
     return (
-        Path(
+        resolve_archived_asset(
             artifact_path
             or os.environ.get("DYNAMIC_SEQ_LEN_VALIDATION_DIR")
             or DEFAULT_ARTIFACT_PATH
@@ -99,7 +100,7 @@ class FrozenValidationArtifact:
         sequence_length: int,
         tokenizer_path: str | Path,
     ):
-        self.path = Path(path).expanduser().resolve()
+        self.path = resolve_archived_asset(path).resolve()
         manifest_path = self.path / "manifest.json"
         if not manifest_path.is_file():
             raise FileNotFoundError(
@@ -120,7 +121,7 @@ class FrozenValidationArtifact:
             )
 
             verify_validation_identity(manifest)
-        if manifest.get("schema_version") != 1:
+        if manifest.get("schema_version") not in (1, 2):
             raise ValueError("Unsupported frozen validation manifest schema")
         if manifest.get("token_budget") != token_budget or token_budget <= 0:
             raise ValueError("Frozen validation token budget does not match config")
@@ -130,7 +131,7 @@ class FrozenValidationArtifact:
         if (
             not isinstance(self.num_sequences, int)
             or self.num_sequences <= 0
-            or self.num_sequences * sequence_length != token_budget
+            or (manifest["schema_version"] == 1 and self.num_sequences * sequence_length != token_budget)
         ):
             raise ValueError("Frozen validation sequence count cannot satisfy token budget")
 
@@ -158,12 +159,24 @@ class FrozenValidationArtifact:
                 raise ValueError(f"Validation {name} must have int64 dtype")
             if array.shape != (self.num_sequences, sequence_length):
                 raise ValueError(f"Validation {name} shape does not satisfy fixed budget")
-            if np.any(array < 0):
+            allowed_ignore = name == "labels" and manifest["schema_version"] == 2
+            if np.any((array < 0) & ((array != IGNORE_INDEX) if allowed_ignore else True)):
                 raise ValueError(
                     f"Validation {name} contains negative/ignored tokens or positions; "
                     "the frozen budget requires every label position to be valid"
                 )
             self.arrays[name] = array
+        actual = int(np.count_nonzero(self.arrays["labels"] != IGNORE_INDEX))
+        if actual != token_budget:
+            raise ValueError("Frozen validation valid label count differs from token budget")
+        if manifest["schema_version"] == 2:
+            vocab = manifest.get("vocab_size", 0)
+            if not isinstance(vocab, int) or vocab <= 0:
+                raise ValueError("Packed validation requires a positive vocabulary size")
+            if any(np.any(self.arrays[k] >= vocab) for k in ("input", "labels")):
+                raise ValueError("Packed validation token ID exceeds vocabulary")
+            if np.any(self.arrays["positions"] >= sequence_length):
+                raise ValueError("Packed validation position exceeds capacity")
         self.token_budget = token_budget
 
     def batches(

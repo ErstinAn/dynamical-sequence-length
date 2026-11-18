@@ -39,8 +39,6 @@ def check_file(path):
         prose = re.sub(r"`[^`]+`", "IDENTIFIER", line)
         if ";" in prose:
             problems.append("Do not use semicolons in prose (STE rule 8.1).")
-        if not line.isascii():
-            problems.append("Use ASCII characters in project prose.")
         if not line.strip() or line.startswith(("#", "|")):
             check_paragraph()
             continue

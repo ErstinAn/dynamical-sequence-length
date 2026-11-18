@@ -33,7 +33,7 @@ from torchtitan_dynamic_seq_len.grad_var.trainer import GradVarTrainer
 from torchtitan_dynamic_seq_len.run_config import load_config
 
 ROOT = Path(__file__).resolve().parents[1]
-YAML_PATH = ROOT / "configs/seq512.yaml"
+YAML_PATH = ROOT / "legacy/configs/seq512.yaml"
 YAML_PATHS = [YAML_PATH, *(YAML_PATH.with_name(f"seq{length}.yaml") for length in (1024, 2048))]
 
 

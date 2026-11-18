@@ -1,0 +1,12 @@
+{
+  "shape": [
+    936,
+    16384
+  ],
+  "valid_targets": 15335424,
+  "ignored_labels": 0,
+  "labels_sha256": "021418f5fd4bcd765e2d67eee3eae1b596be7b9472d5fcd9eee9b3c9ffa9300b",
+  "manifest_sha256": "eb2faf62a36e324d07e08da73170e1268182cdfea1f38352362b86232f47155b",
+  "reused_local_arrays": true,
+  "executed_model_validation": false
+}

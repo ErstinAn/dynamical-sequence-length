@@ -1,0 +1,205 @@
+{
+  "recorded_utc": "2026-11-18T07:16:22.601789+00:00",
+  "scope": "Read current implementation, run CPU audits, and update requirements and verification records. No training implementation changes.",
+  "cwd": "/home/kangan/titanprecond-lab/dynamic_seq_len",
+  "git_head": "91ef5297deae1d0cf96d9d22869151e68bd31142",
+  "worktree_is_uncommitted": true,
+  "source_sha256": {
+    "torchtitan_dynamic_seq_len/dynamic_seq/trainer.py": "c6dc71d36e9c3f9cde722561a25f8437f15b22bf7650a25dbc03f0261a959cdb",
+    "torchtitan_dynamic_seq_len/dynamic_seq/metrics.py": "4614fd6a974a267680d2922c017961234deb634989c823075c209cc6801c31e6",
+    "torchtitan_dynamic_seq_len/dynamic_seq_bs/trainer.py": "e317c719c96d588c976037a86fc690dfb3e5b6eb537b865d5e8dae04d6beb3d8",
+    "torchtitan_dynamic_seq_len/dynamic_seq_bs/metrics.py": "2511d5e3a01c29b26c80afb950ed6efd28210ffe3bf42ff269839a5f08266a0c",
+    "torchtitan_dynamic_seq_len/data/fixed_validation.py": "17926e03cec7af219e5363a0c4914d5a606b625d0b1c32a42c26e1f132993110",
+    "torchtitan_dynamic_seq_len/config_registry.py": "34301a390451afb449f5f8c369149aa7c11b48c512587e3def0601b156ca44c4",
+    "torchtitan_dynamic_seq_len/loss_grad_seq/trainer.py": "8b1a56521c5f7c316465c45db6cfb3711d7b1f56814ae27c958fc29c9d3f0eea",
+    "torchtitan_dynamic_seq_len/loss_grad_seq/metrics.py": "4416e5f8c1cf750888f481fcaef49533cdd569da9bce2d69e3fab5bcec258946",
+    "scripts/prepare_longseq_joint_configs.py": "d791ad7fd4aadd7a118177c8a05a0ccc1ee2b680246204a10c9db1014c3d4ae2",
+    "tests/test_dynamic_seq.py": "b1f12b2d504dc58de6d62d1bc076d18d47b59818bf5e42f18ee6a94120037c83",
+    "tests/test_dynamic_seq_bs.py": "84a967a8e2809ecbd77d3127bf6b571da12cb4f85549231589e37f205c54fc75",
+    "tests/dynamic_seq_bs_distributed.py": "dd4f83af007461dd163448dd7b7af10e7584569d7ab03b88315a115ea7c2a3e1",
+    "tests/test_fixed_validation.py": "b313f9d862f3589cb40b8d3f07e58d030ed93a376c811c90b30776468e83c67f",
+    "tests/test_fixed_document_order.py": "4dd0e4c7d8216aa7e61204d96cf1f42dd8a7b5087fd54a85f008d469e9124d7d",
+    "tests/test_grad_var_trainer.py": "f0374b21f67892ec609791eac2729ef26bee6420db469cc05600eb0b2ba86248",
+    "/home/kangan/titanprecond-lab/torchtitan-main-lastest/torchtitan/trainer.py": "7debdd72db5d885b112055b9d6d2552e64319625d45208ac0680b9aeb2c47d5e",
+    "/home/kangan/titanprecond-lab/torchtitan-main-lastest/torchtitan/components/metrics.py": "2d5e50d705f84ab31d5004e11daf876f17836d51c403c68fb7930ee4b0bf6de8",
+    "/home/kangan/titanprecond-lab/torchtitan-main-lastest/torchtitan/components/validate.py": "1acdb64266af494d8f7e586a84abd89501fbfaa4de55cab13afbe98dcf787410",
+    "/home/kangan/.conda/envs/torchtitan-macro/lib/python3.12/site-packages/wandb/sdk/wandb_run.py": "5fec2e36555a8ce61640cee5071af322205c7086d758401026fdc58cfef9fc7a"
+  },
+  "environment": {
+    "python_executable": "/home/kangan/.conda/envs/torchtitan-macro/bin/python",
+    "python_version": "3.12.14 | packaged by conda-forge | (main, Aug 21 2026, 22:48:28) [GCC 14.4.0]",
+    "packages": {
+      "torch": "2.15.0.dev20260830+cu130",
+      "torchtitan": "0.2.2",
+      "wandb": "0.29.0",
+      "numpy": "2.5.2",
+      "datasets": "4.7.0",
+      "torchdata": "0.11.0"
+    },
+    "torchtitan_revision": "737594746fda65a6d94dc9482ef07863a80c8588",
+    "reused_existing_environment": true,
+    "reused_external_editable_torchtitan": true,
+    "reused_local_validation_arrays": true,
+    "fresh_environment_installation": false,
+    "new_dataset_download": false,
+    "gpu_used": false
+  },
+  "required_metrics": {
+    "axis": "n_tokens_seen",
+    "losses": [
+      "loss_metrics/global_avg_loss",
+      "loss_metrics/global_max_loss",
+      "validation_metrics/loss"
+    ],
+    "preserve_existing_names_and_calculations": true,
+    "implemented": false
+  },
+  "nominal_token_formula": "sum(global_batch_t * actual_training_sequence_length_t for completed optimizer steps)",
+  "checks": {
+    "cpu": {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:cluster/vt_arc OMP_NUM_THREADS=1 /home/kangan/.conda/envs/torchtitan-macro/bin/python -m unittest tests.test_dynamic_seq.TrainerTest tests.test_dynamic_seq_bs.TrainerTest tests.test_dynamic_seq_bs.SchedulerTest tests.test_fixed_validation tests.test_fixed_document_order -v",
+      "exit_code": 0,
+      "total": 33,
+      "passed": 32,
+      "skipped": 1,
+      "seconds": 1.453,
+      "artifact": "cpu.txt"
+    },
+    "dp_first_attempt": {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. OMP_NUM_THREADS=1 /home/kangan/.conda/envs/torchtitan-macro/bin/python -m torch.distributed.run --standalone --nproc_per_node=2 -m tests.dynamic_seq_bs_distributed",
+      "exit_code": 1,
+      "result": "Sandbox blocked localhost sockets before test execution.",
+      "artifact": "dp_sandbox_blocked.txt"
+    },
+    "dp_retry": {
+      "command": "timeout 60s env PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. OMP_NUM_THREADS=1 /home/kangan/.conda/envs/torchtitan-macro/bin/python -m torch.distributed.run --standalone --nproc_per_node=2 -m tests.dynamic_seq_bs_distributed",
+      "exit_code": 0,
+      "local_sockets_enabled": true,
+      "artifact": "dp.txt"
+    },
+    "validation_dp": {
+      "command": "timeout 45s env PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. OMP_NUM_THREADS=1 FIXED_VALIDATION_GLOO_TEST=1 /home/kangan/.conda/envs/torchtitan-macro/bin/python -m unittest tests.test_fixed_validation.FixedBudgetValidationTest.test_real_two_rank_reduction_and_partial_batches -v",
+      "exit_code": 0,
+      "total": 1,
+      "passed": 1,
+      "seconds": 0.11,
+      "local_sockets_enabled": true,
+      "artifact": "validation_dp.txt"
+    },
+    "probe": {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. OMP_NUM_THREADS=1 /home/kangan/.conda/envs/torchtitan-macro/bin/python /tmp/dynamic_seq_token_audit_probe_20261118.py",
+      "exit_code": 0,
+      "artifact": "probe.txt",
+      "source": "probe.py",
+      "result": "probe.json"
+    },
+    "fixed_arrays": {
+      "shape": [
+        936,
+        16384
+      ],
+      "valid_targets": 15335424,
+      "ignored_labels": 0,
+      "labels_sha256": "021418f5fd4bcd765e2d67eee3eae1b596be7b9472d5fcd9eee9b3c9ffa9300b",
+      "manifest_sha256": "eb2faf62a36e324d07e08da73170e1268182cdfea1f38352362b86232f47155b",
+      "reused_local_arrays": true,
+      "executed_model_validation": false
+    }
+  },
+  "artifacts": {
+    "cpu.txt": {
+      "path": "docs/reports/20261118_token_metrics_audit/cpu.txt",
+      "sha256": "c1b509bd61e694e0073f9438ee4fa6e2f2ef8467051ad399e2cc5f736832933a"
+    },
+    "dp_sandbox_blocked.txt": {
+      "path": "docs/reports/20261118_token_metrics_audit/dp_sandbox_blocked.txt",
+      "sha256": "faf6c3da700ff8b03866751d3110354bf1fe802ad126cf1cf11156d562009017"
+    },
+    "dp.txt": {
+      "path": "docs/reports/20261118_token_metrics_audit/dp.txt",
+      "sha256": "d783b0cee845452ec408e40d398f05aab5ecf2dd672fba5d806bd5843389477e"
+    },
+    "validation_dp.txt": {
+      "path": "docs/reports/20261118_token_metrics_audit/validation_dp.txt",
+      "sha256": "9d6da0c0f468f1d7d0cf5fb802d258e086e968948d2c8acb4070da6e4c0e2921"
+    },
+    "probe.py": {
+      "path": "docs/reports/20261118_token_metrics_audit/probe.py",
+      "sha256": "a08180d4531bac41fd83e9e836bd723237f5d532023135cce303560e715bda30"
+    },
+    "probe.txt": {
+      "path": "docs/reports/20261118_token_metrics_audit/probe.txt",
+      "sha256": "364870995653bbb9e1806aacd72786c83cb2dbd3b435ce7038fde92ff5a45fe2"
+    },
+    "probe.json": {
+      "path": "docs/reports/20261118_token_metrics_audit/probe.json",
+      "sha256": "ed97a836d90dccaacfed0a86ec316e63c9fd06fa292e1a4a040519127e5bf0cd"
+    },
+    "fixed_arrays.json": {
+      "path": "docs/reports/20261118_token_metrics_audit/fixed_arrays.json",
+      "sha256": "778834681eedd414b2cbafc2dcb78e2fe59b33febe1b5ed701f0e291e638b804"
+    }
+  },
+  "unexecuted": [
+    "1B GPU smoke",
+    "real W&B upload and chart inspection",
+    "independent environment installation",
+    "full dataset download and cache rebuild",
+    "ten-checkpoint token threshold integration and recovery",
+    "formal training"
+  ],
+  "documentation_checks": {
+    "ste_lint": {
+      "violations": [],
+      "count": 0,
+      "hard_count": 0,
+      "baseline": 0,
+      "words": 4272,
+      "per_100_words": 0.0
+    },
+    "text_checks": "passed",
+    "relative_links": "passed",
+    "git_diff_check": "passed",
+    "source_and_artifact_hashes": "matched after clarification edits",
+    "document_sha256": {
+      "README.md": "42cdc2009d0f0fb58233fb8a3d0a85101928ffd02a52a8c262c8f4bba7851ceb",
+      "docs/getting_started.md": "865c54947ab58eb20c3ad04a4bf2a92192c66f05192a68eccbfcd43469c345b4",
+      "docs/reports/handoff_progress.md": "35db4d631ac9278c7afacd3283b413ca449cbf14490d0a074dd9a26d8085336e",
+      "docs/reports/20261118_token_metrics_audit.md": "600577ce35dd766ce83aaf49c0f0abbb2213c333cc3b39cd48193fa78b793ba1"
+    }
+  },
+  "requirement_clarifications": [
+    {
+      "recorded_utc": "2026-11-18T07:21:55.948310+00:00",
+      "instruction": "Keep existing global average, global maximum, and validation loss metrics. Change only their W&B horizontal axis to cumulative nominal training tokens.",
+      "nominal_counter": "n_tokens_seen",
+      "valid_target_counter": "n_valid_tokens_seen",
+      "raw_probe_note": "The original raw probe mentions old loss keys as a gap. The user clarified that these keys must remain. Only the token-axis gap remains relevant.",
+      "training_source_unchanged": true,
+      "raw_execution_records_unchanged": true,
+      "runtime_tests_repeated": false
+    }
+  ],
+  "previous_documentation_checks": [
+    {
+      "ste_lint": {
+        "violations": [],
+        "count": 0,
+        "hard_count": 0,
+        "baseline": 0,
+        "words": 4157,
+        "per_100_words": 0.0
+      },
+      "text_checks": "passed",
+      "relative_links": "passed",
+      "git_diff_check": "passed",
+      "source_and_artifact_hashes": "matched after documentation edits",
+      "document_sha256": {
+        "README.md": "ad4e88774d7e06a0d867d183434d82a2ceb3ba87a65f8c17caabbc4c59707d43",
+        "docs/getting_started.md": "a495b2c29282f8d5a594ea1783dd7a9a4c2f984800b6010b3f671efe406522f3",
+        "docs/reports/handoff_progress.md": "0e25de808bfe057449261e6887a98f4c46d278658fd02faa5092b049c5636c36",
+        "docs/reports/20261118_token_metrics_audit.md": "e38d6ce3a7d1cab1c8f4128e8aaa9073e0ac313a75f55b4f8829ca09008f4890"
+      }
+    }
+  ]
+}

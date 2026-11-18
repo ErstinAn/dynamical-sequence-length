@@ -1,0 +1,77 @@
+{
+  "training": [
+    {
+      "step": 1,
+      "global_batch": 4,
+      "seq_len": 2,
+      "microbatch": 2,
+      "nominal_tokens": 8,
+      "valid_targets": 7,
+      "emitted_loss_keys": [
+        "loss_metrics/global_avg_loss",
+        "loss_metrics/global_max_loss"
+      ],
+      "loss_matches_current_step": true
+    },
+    {
+      "step": 2,
+      "global_batch": 4,
+      "seq_len": 2,
+      "microbatch": 2,
+      "nominal_tokens": 16,
+      "valid_targets": 14
+    },
+    {
+      "step": 3,
+      "global_batch": 4,
+      "seq_len": 4,
+      "microbatch": 2,
+      "nominal_tokens": 32,
+      "valid_targets": 29
+    },
+    {
+      "step": 4,
+      "global_batch": 8,
+      "seq_len": 4,
+      "microbatch": 1,
+      "nominal_tokens": 64,
+      "valid_targets": 60,
+      "emitted_loss_keys": [
+        "loss_metrics/global_avg_loss",
+        "loss_metrics/global_max_loss"
+      ],
+      "loss_matches_current_step": true
+    },
+    {
+      "step": 5,
+      "global_batch": 8,
+      "seq_len": 4,
+      "microbatch": 1,
+      "nominal_tokens": 96,
+      "valid_targets": 91
+    },
+    {
+      "step": 6,
+      "global_batch": 8,
+      "seq_len": 4,
+      "microbatch": 1,
+      "nominal_tokens": 128,
+      "valid_targets": 122
+    }
+  ],
+  "environment_reused": true,
+  "gpu_used": false,
+  "validation_on_nonlogging_step": {
+    "step": 2,
+    "training_nominal_tokens": 16,
+    "training_counters_unchanged": true,
+    "evaluated_targets": 96,
+    "emitted_loss_keys": [
+      "validation_metrics/loss"
+    ],
+    "has_training_token_axis": false
+  },
+  "failure_before_optimizer_update_preserves_counters": true,
+  "logging_contract_complete": false,
+  "scope": "CPU fixtures execute production training and validation methods. No 1B GPU run or W&B upload."
+}
