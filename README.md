@@ -7,8 +7,7 @@ The experiment document will specify the exact budget and schedules.
 The experiment requires W&B.
 
 Read the [main run guide](docs/getting_started.md) first.
-The collaborator source branch is `collab/llama3-1b-handoff`.
-The verified delivery tag is `handoff-20261118-h200-verified`.
+The delivered code is on the default `main` branch.
 
 | Document | Reader and purpose |
 |---|---|

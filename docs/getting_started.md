@@ -136,15 +136,12 @@ If these commands fail, check the allocation and driver before installing anothe
 ## 3. Obtain the code and create the environment
 
 The repository URL is `https://github.com/ErstinAn/dynamical-sequence-length.git`.
-The delivery branch is `collab/llama3-1b-handoff`.
-The fixed delivery tag is `handoff-20261118-h200-verified`.
-The default `main` branch does not identify this delivery.
+Use the default `main` branch.
 
 Run these commands from the repository's parent directory:
 
 ```bash
-git clone --branch handoff-20261118-h200-verified \
-  https://github.com/ErstinAn/dynamical-sequence-length.git
+git clone https://github.com/ErstinAn/dynamical-sequence-length.git
 cd dynamical-sequence-length
 git rev-parse HEAD
 git status --short
@@ -155,22 +152,7 @@ Use a GitHub account with repository access.
 For an authentication failure, check that access before repeating the clone.
 Require a clean working tree.
 Record the resolved commit with each experiment.
-The tag selects a fixed source version, so Git can report a detached HEAD.
-
-For a separately supplied backup Git bundle, use this form instead:
-
-```bash
-sha256sum <DELIVERY_BUNDLE>
-git clone <DELIVERY_BUNDLE> dynamical-sequence-length
-cd dynamical-sequence-length
-git rev-parse HEAD
-```
-
-Compare the bundle hash and commit with the delivery record.
-Stop if either differs.
-Never place credentials or large datasets in the source bundle.
-The local backup bundle predates the GitHub documentation update.
-Its training code matches the tested runtime.
+Use that recorded commit when resuming or reproducing an experiment.
 
 Use [environment_bootstrap.md](environment_bootstrap.md) to install Python when Python 3.12 is absent.
 That document specifies a user-owned Miniforge installation.

@@ -74,7 +74,7 @@ The agents did not upload an initial bundle.
 
 The local backup files are `source-final.bundle` and `source_snapshot-final.json` under the handoff directory.
 Their receipt records the completed packaging checks before GitHub publication.
-The GitHub delivery uses branch `collab/llama3-1b-handoff` and tag `handoff-20261118-h200-verified`.
+The GitHub delivery uses the default `main` branch.
 It preserves the existing remote history and the tested runtime source.
 The GitHub documentation update identifies the document audiences and direct clone commands.
 Formal training remains unexecuted.

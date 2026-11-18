@@ -7,14 +7,14 @@ Give the collaborator this prompt and the repository URL.
 ```text
 Prepare this repository for the agreed Llama3 1B sequence length experiment.
 Repository: https://github.com/ErstinAn/dynamical-sequence-length.git
-Delivery tag: handoff-20261118-h200-verified
+Branch: main
 Experiment document: [DOCUMENT_PATH_AND_VERSION]
 Target server launch example: [LAUNCH_EXAMPLE_PATH]
 W&B smoke entity and project: rotation_optimizer / debug
 
 Read docs/getting_started.md, docs/environment_bootstrap.md, and docs/repository.md.
 Read the latest verification reports before claiming that a procedure passed.
-Clone the repository at the delivery tag.
+Clone the default main branch.
 Record the resolved Git commit before creating the environment.
 Use the source acquisition commands in docs/getting_started.md.
 Use English for documents. Follow ASD-STE100 writing principles.
