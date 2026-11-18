@@ -148,10 +148,11 @@ These short runs check execution and recovery.
 They do not establish convergence or compare formal schedules.
 The fixed validation set primarily measures long-document performance.
 
-Run the independent online check from the delivery repository root:
+To check this historical run, use its original W&B project. Run this command from the repository root.
 
 ```bash
 "$TEST_ROOT/environment/conda/bin/python" docs/reports/check_smoke_wandb.py \
+  --entity rotation_optimizer --project debug \
   --acceptance "$TEST_ROOT/acceptance/acceptance.json" \
   --output /tmp/smoke-wandb-check.json
 ```

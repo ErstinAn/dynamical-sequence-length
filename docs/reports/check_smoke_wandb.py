@@ -160,7 +160,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--acceptance", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--entity", default="rotation_optimizer")
+    parser.add_argument("--entity", default="dynamic_seq_length")
     parser.add_argument("--project", default="debug")
     args = parser.parse_args()
     import wandb

@@ -6,7 +6,7 @@ paths:
   dump_root: ${OUTPUT_ROOT}
 wandb:
   enabled: true
-  entity: rotation_optimizer
+  entity: dynamic_seq_length
   project: debug
   mode: online
 fixed:

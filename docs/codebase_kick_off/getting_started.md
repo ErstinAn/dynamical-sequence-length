@@ -144,7 +144,7 @@ If the site uses a YAML submission tool, use its own submit and status commands.
 |---|---|
 | Model | Native dense Llama 3 1B, random initialization |
 | Training | Lengths 2048, 4096, 8192, 16384 for two steps each. Global batch size 512. |
-| W&B smoke destination | Entity `rotation_optimizer`, project `debug`, online mode |
+| W&B smoke destination | Entity `dynamic_seq_length`, project `debug`, online mode |
 | Checkpoints | Full saves at steps 2, 4, 6, 8. Resume from the step 4 checkpoint. |
 | Validation | Steps 1 and 8. Each pass uses the same 936 single-document windows of length 16,384. |
 

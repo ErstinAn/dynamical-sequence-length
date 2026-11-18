@@ -10,7 +10,7 @@ Use the native TorchTitan Llama3 1B model with random initialization.
 Use sequence lengths 2048, 4096, 8192, and 16384. Train two optimizer steps at each length.
 Keep the global batch size at 512 sequences. The complete smoke consumes 31,457,280 nominal training tokens.
 Use all 936 fixed validation windows at length 16384. Validation contains 15,335,424 prediction targets.
-Send training metrics to the online W&B project `rotation_optimizer/debug`.
+This run sent training metrics to the W&B project `rotation_optimizer/debug`.
 
 The smoke saves complete checkpoints at steps 2, 4, 6, and 8.
 The formal experiment saves ten checkpoints at successive 10% token milestones.

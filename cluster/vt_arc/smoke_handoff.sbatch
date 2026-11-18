@@ -43,7 +43,7 @@ unset PYTHONHOME PYTHONPATH
 export TOKENIZERS_PARALLELISM=false
 export OMP_NUM_THREADS="${OMP_NUM_THREADS:-8}"
 export DYNAMIC_SEQ_LEN_OUTPUT="${DYNAMIC_SEQ_LEN_OUTPUT:-$HANDOFF_ROOT/runs}"
-export WANDB_ENTITY=rotation_optimizer
+export WANDB_ENTITY=dynamic_seq_length
 export WANDB_PROJECT=debug
 export WANDB_MODE=online
 export WANDB_DIR="$HANDOFF_ROOT/wandb"

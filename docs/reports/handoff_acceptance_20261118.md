@@ -45,7 +45,7 @@ The nominal training total is 31,457,280 tokens per run.
 
 Use the fixed 936 validation windows of length 16,384.
 Each complete validation contains 15,335,424 valid targets.
-Use online W&B in `rotation_optimizer/debug`.
+This run used the W&B project `rotation_optimizer/debug`.
 Preserve the original global average, global maximum, and validation loss metrics.
 Use cumulative nominal tokens for all three horizontal axes.
 
