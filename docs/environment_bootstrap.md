@@ -53,12 +53,12 @@ See the [NVIDIA compatibility guide](https://docs.nvidia.com/deploy/cuda-compati
 
 ## 2. Select storage
 
-Replace `/absolute/path/to/project-storage` with a writable directory.
+Use the writable `RUN_STORAGE` directory from the startup prompt.
 Use shared storage if compute nodes must use the environment.
 Do not select a login-node-only temporary directory.
 
 ```bash
-export RUN_ROOT=/absolute/path/to/project-storage
+export RUN_ROOT="${RUN_STORAGE:?Set RUN_STORAGE to the path from the startup prompt}"
 export ENV_ROOT="$RUN_ROOT/environment"
 mkdir -p "$ENV_ROOT/bootstrap" "$ENV_ROOT/logs" "$ENV_ROOT/pip-cache" "$ENV_ROOT/conda-pkgs"
 df -h "$RUN_ROOT"
@@ -120,7 +120,7 @@ CONDA_PKGS_DIRS="$ENV_ROOT/conda-pkgs" "$ENV_ROOT/miniforge/bin/conda" create \
 
 Require exit code 0.
 Read `python-bootstrap.log` if the package download or installation fails.
-The independent Python creation test took three minutes and thirty seconds on one ARC CPU.
+The independent Python creation test took three minutes and thirty seconds on one CPU.
 That measurement included fresh package downloads and installation on shared storage.
 Network speed and filesystem performance can change this time.
 Use the explicit interpreter path for all later commands:
@@ -232,17 +232,4 @@ If the check fails, compare the driver with the CUDA runtime requirement.
 Check Slurm GPU allocation and `CUDA_VISIBLE_DEVICES` next.
 Do not run training on a login node.
 
-## VT ARC and verification limits
-
-VT ARC also provides Miniforge modules.
-Its [Python documentation](https://www.docs.arc.vt.edu/software/python.html) describes module and isolated-environment workflows.
-The standalone installer above also works without ARC modules.
-
-The independent test used a fresh Python prefix and fresh package downloads.
-The first Python creation command used the ARC Miniforge manager.
-The test also downloaded, checked, and installed the standalone Miniforge manager.
-The separate Python creation check with that new manager also passed.
-That check used another empty package cache and a new Python prefix.
-The test kept the existing fresh Torch prefix for GPU acceptance.
-
-See [the actual verification record](reports/fresh_environment_20261118.md) for exact results and limitations.
+The [environment verification record](reports/fresh_environment_20261118.md) lists the tested versions, commands, and installation times.

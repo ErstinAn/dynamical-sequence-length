@@ -19,7 +19,7 @@ All 67 passed.
 A separate two-rank CPU run passed nominal token counting, ten complete saves, exact recovery, and the validation token axis.
 The two-GPU smoke dry run returned 31,457,280 tokens and save steps 2, 4, 6, and 8.
 The ARC submission script passed `bash -n`.
-See section 6 of the [run guide](../codebase_kick_off/getting_started.md#6-run-automatic-checks) for the CPU commands.
+See the [automatic checks](../codebase_kick_off/getting_started.md#run-automatic-checks) for the CPU commands.
 
 The remaining sections record the earlier hardware run.
 The cleanup did not repeat GPU training.

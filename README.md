@@ -9,7 +9,7 @@ The experiment document will specify the exact budget and schedules.
 The experiment requires W&B.
 
 For a meeting, open the [smoke startup prompt](docs/codebase_kick_off/collaborator_prompt.md).
-Enter the site job example and persistent storage path. Paste the prompt into the agent on the target server.
+Replace the two quoted paths. Paste the block into Codex or Claude Code on the target server.
 The delivered code is on the default `main` branch.
 
 | Document | Reader and purpose |
@@ -59,7 +59,6 @@ See the [dataset description](docs/final_dataset.md) for identities and evaluati
 | `scripts/download_dataset.py`, `scripts/rebuild_long_token_cache.py` | Pinned downloads and checked token reconstruction |
 | `scripts/gpu_smoke.py` | GPU microbatch measurement, complete smoke, and recovery comparison |
 | `tests/` | Data, gradient, dynamic schedule, and recovery checks |
-| `cluster/vt_arc/smoke_handoff.sbatch` | VT ARC submission example |
 | `cluster/<site>/run.sbatch` | Create this file from the target server’s working Slurm example |
 | `assets/tokenizer/` | Original tokenizer, provenance, license, and attribution |
 | `assets/data/`, `assets/hf/`, `outputs/` | Local data, installed assets, and run outputs |

@@ -92,7 +92,7 @@ The main validator reads the fixed arrays directly.
 Keep `validator.eval_seq_len: 16384` and `validator.token_budget: 15335424`.
 
 Use `configs/smoke.yaml` for the eight-step smoke.
-Use section 6 of [the run guide](codebase_kick_off/getting_started.md#6-run-automatic-checks) to check the plan.
+Use the [GPU smoke procedure](codebase_kick_off/getting_started.md#submit-on-the-target-server) to check the plan.
 
 To reproduce the fixed sample in a new output directory:
 
@@ -119,7 +119,7 @@ The Git checkout supplies the tokenizer in `assets/tokenizer/`.
 
 Use `scripts/download_dataset.py` from the delivered repository to download the pinned revision.
 Use `scripts/rebuild_long_token_cache.py` to reconstruct the token cache.
-Follow the complete commands and success checks in [the main guide](codebase_kick_off/getting_started.md#5-download-and-rebuild-the-dataset).
+Follow the complete commands and success checks in [the main guide](codebase_kick_off/getting_started.md#download-and-rebuild-the-dataset).
 The current dataset revision is `b6ea2fde77bab36dff963aba5e6f482477959933`.
 Preserve its exact document orders and fixed validation arrays.
 
