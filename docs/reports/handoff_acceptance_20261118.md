@@ -2,7 +2,7 @@
 
 This record is optional evidence for the owner and reviewers.
 Its local paths describe the original verification server.
-The collaborator must follow [the main run guide](../getting_started.md).
+The collaborator must follow [the main run guide](../codebase_kick_off/getting_started.md).
 
 Status: smoke acceptance passed.
 The fresh environment, complete token reconstruction, and real 1B training passed.
@@ -19,7 +19,7 @@ All 67 passed.
 A separate two-rank CPU run passed nominal token counting, ten complete saves, exact recovery, and the validation token axis.
 The two-GPU smoke dry run returned 31,457,280 tokens and save steps 2, 4, 6, and 8.
 The ARC submission script passed `bash -n`.
-See section 6 of the [run guide](../getting_started.md#6-run-automatic-checks) for the CPU commands.
+See section 6 of the [run guide](../codebase_kick_off/getting_started.md#6-run-automatic-checks) for the CPU commands.
 
 The remaining sections record the earlier hardware run.
 The cleanup did not repeat GPU training.
@@ -72,7 +72,7 @@ Formal sequence schedules and learning rate sweeps remain outside this execution
 | GPU memory probe and eight-step training | Passed on two H200 GPUs | [GPU report](fresh_smoke_20261118.md) |
 | GPU checkpoint recovery and exact comparison | All 489 tensors and 1,379 other state values matched exactly | [Online acceptance result](fresh_smoke_wandb_20261118.json) |
 | Uploaded W&B metrics and axes | All three runs finished, original loss names and token axes passed | [Online acceptance result](fresh_smoke_wandb_20261118.json) |
-| Main documentation links and text checks | Passed | [Run guide](../getting_started.md) |
+| Main documentation links and text checks | Passed | [Run guide](../codebase_kick_off/getting_started.md) |
 | Historical file preservation | All 76 configurations and 11 archived files retained their recorded bytes | [Archive inventory](https://github.com/ErstinAn/dynamical-sequence-length/blob/427d321c40e8b82444d2f5c07082e6155c0f914e/legacy/report_checksums.json) |
 
 The five skipped tests concern opt-in checks and unused historical artifacts.
@@ -196,5 +196,5 @@ The collaborator must supply the target server's Slurm example and persistent pa
 H100, other GPU models, different DP degrees, and multi-node execution remain untested.
 The target server must run its own memory probe and smoke before formal training.
 
-Use [getting_started.md](../getting_started.md) for all execution commands.
-Use [collaborator_prompt.md](../collaborator_prompt.md) for the next agent's startup instructions.
+Use [getting_started.md](../codebase_kick_off/getting_started.md) for all execution commands.
+Use [collaborator_prompt.md](../codebase_kick_off/collaborator_prompt.md) for the next agent's startup instructions.

@@ -1,11 +1,12 @@
 # Run guide: Llama3 1B sequence length experiments
 
 Use this guide from the delivered repository root.
-Share this guide with the collaborator as the main execution procedure.
+For a meeting, give the collaborator the [startup prompt](collaborator_prompt.md).
+The agent follows this guide after it receives the job example and the storage path.
 Use English for new run records.
 Keep one action in each instruction.
 
-The [acceptance record](reports/handoff_acceptance_20261118.md) contains the actual verification results.
+The [acceptance record](../reports/handoff_acceptance_20261118.md) contains the actual verification results.
 A new environment, complete data reconstruction, and the two-H200 smoke passed.
 Checkpoint recovery produced exactly the same final state as uninterrupted training.
 Independent W&B checks passed for the uploaded losses and token axes.
@@ -154,7 +155,7 @@ Require a clean working tree.
 Record the resolved commit with each experiment.
 Use that recorded commit when resuming or reproducing an experiment.
 
-Use [environment_bootstrap.md](environment_bootstrap.md) to install Python when Python 3.12 is absent.
+Use [environment_bootstrap.md](../environment_bootstrap.md) to install Python when Python 3.12 is absent.
 That document specifies a user-owned Miniforge installation.
 It does not require an existing Python environment.
 
@@ -238,7 +239,7 @@ Another server must supply its own path.
 
 Use your own credentials.
 Your Hugging Face account needs read access to the private dataset.
-The Git checkout supplies the tokenizer under its [Meta license](../assets/tokenizer/LICENSE).
+The Git checkout supplies the tokenizer under its [Meta license](../../assets/tokenizer/LICENSE).
 Your W&B account needs write access to `rotation_optimizer/debug`, or another explicitly agreed destination.
 Keep credentials out of commands, YAML, logs, and Git.
 The validation record must identify any reused authentication files.
@@ -375,7 +376,7 @@ The complete rebuild took 5,295.83 seconds, or 88.26 minutes, with four processe
 The continuation job checked the completed cache in 107.20 seconds without encoding more tokens.
 These measurements exclude queue time and the full text download.
 Use a longer time request when the target CPU or storage is slower.
-See the [data record](reports/fresh_data_20261118.md) for exact jobs, timings, and cache reuse.
+See the [data record](../reports/fresh_data_20261118.md) for exact jobs, timings, and cache reuse.
 
 The fixed validation arrays contain 936 windows of length 16,384.
 Every target is valid, for 15,335,424 targets per complete validation.

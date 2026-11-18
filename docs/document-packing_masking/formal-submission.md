@@ -2,7 +2,7 @@
 
 This historical submission record does not define the current 1B experiment.
 Its status observations apply to the date below.
-Use [the main guide](../getting_started.md) for the current procedure.
+Use [the main guide](../codebase_kick_off/getting_started.md) for the current procedure.
 
 Date: 2026-11-13.
 Status: six jobs submitted. All six jobs are pending in the latest snapshot.

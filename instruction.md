@@ -1,6 +1,6 @@
 # Run instructions
 
-The main procedure is [docs/getting_started.md](docs/getting_started.md).
+The main procedure is [the run guide](docs/codebase_kick_off/getting_started.md).
 Start with that document.
 
 The current experiment uses a dense 1B model with the native Llama3 vocabulary and the custom dataset of long documents.

@@ -118,5 +118,5 @@ The preparation tool now honors `DYNAMIC_SEQ_LEN_ASSETS`.
 It reads the same checked provenance from the downloaded package when the old local provenance file is absent.
 The updated standalone source passed all available CPU checks without directory links.
 
-The [run guide](../getting_started.md) contains the implemented launch and recovery commands.
-The [collaborator prompt](../collaborator_prompt.md) identifies the next required actions.
+The [run guide](../codebase_kick_off/getting_started.md) contains the implemented launch and recovery commands.
+The [collaborator prompt](../codebase_kick_off/collaborator_prompt.md) identifies the next required actions.

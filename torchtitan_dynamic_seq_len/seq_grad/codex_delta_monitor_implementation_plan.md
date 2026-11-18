@@ -2,7 +2,7 @@
 
 This historical plan predates the current fixed validation artifact.
 Its 22,256-token validation settings do not define the current dataset.
-Use [the main guide](../../docs/getting_started.md) for the 1B experiment and 16,384-token validation.
+Use [the main guide](../../docs/codebase_kick_off/getting_started.md) for the 1B experiment and 16,384-token validation.
 
 ## Experiment
 

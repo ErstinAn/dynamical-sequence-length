@@ -72,7 +72,7 @@ Its pip cache used 2.2 GiB.
 The reserve also covers Miniforge, Conda packages, temporary files, and logs.
 
 Dataset files and checkpoints need additional space.
-See [the main guide](getting_started.md) for those files.
+See [the main guide](codebase_kick_off/getting_started.md) for those files.
 
 ## 3. Install Miniforge
 
@@ -140,7 +140,7 @@ Do not use `--system-site-packages`.
 
 ## 5. Install the locked runtime
 
-First obtain the exact delivery source version from [the main guide](getting_started.md).
+First obtain the exact delivery source version from [the main guide](codebase_kick_off/getting_started.md).
 Run these commands from that repository root:
 
 ```bash

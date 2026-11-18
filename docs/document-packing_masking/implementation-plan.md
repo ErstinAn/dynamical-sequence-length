@@ -1,6 +1,6 @@
 # Document packing and optional masking
 
-Use [the main guide](../getting_started.md) for the current 1B experiment and 16,384-token fixed validation.
+Use [the main guide](../codebase_kick_off/getting_started.md) for the current 1B experiment and 16,384-token fixed validation.
 
 Status: historical implementation plan.
 Read the [implementation report](implementation-report.md) for completed changes and check results.

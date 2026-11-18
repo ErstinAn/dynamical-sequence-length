@@ -1,7 +1,7 @@
 # Document packing and masking implementation
 
 This historical report uses an earlier packed validation artifact.
-Use [the main guide](../getting_started.md) for the current 1B experiment and single-document validation.
+Use [the main guide](../codebase_kick_off/getting_started.md) for the current 1B experiment and single-document validation.
 
 Date: 2026-11-13.
 Status: implementation complete. CPU and GPU checks passed.

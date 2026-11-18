@@ -3,7 +3,7 @@
 Use the [historical revision](https://github.com/ErstinAn/dynamical-sequence-length/tree/427d321c40e8b82444d2f5c07082e6155c0f914e) for the commands on this page.
 
 This document records historical monitor experiments.
-Use [the main guide](../../docs/getting_started.md) for the current 1B schedule experiment.
+Use [the main guide](../../docs/codebase_kick_off/getting_started.md) for the current 1B schedule experiment.
 Historical commands require their original assets and server settings.
 
 `GradVarTrainer` supports `grad_var_monitor.mode: x`. The legacy accumulation

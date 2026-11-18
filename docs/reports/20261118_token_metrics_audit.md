@@ -4,7 +4,7 @@ Audit date: 2026-11-18.
 This audit records existing behavior and the required changes.
 It does not change training source code, loss calculations, schedules, or checkpoint formats.
 It does not submit a training job.
-The [run guide](../getting_started.md) defines the required interface.
+The [run guide](../codebase_kick_off/getting_started.md) defines the required interface.
 
 ## Required behavior
 

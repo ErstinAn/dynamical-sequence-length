@@ -1,6 +1,6 @@
 # Repository map
 
-Use [getting_started.md](getting_started.md) for the current experiment.
+Use [getting_started.md](codebase_kick_off/getting_started.md) for the current experiment.
 `python scripts/train.py --list` displays its single entry, `llama3_1b`.
 Historical builders remain available through `--list-legacy`.
 

@@ -2,7 +2,7 @@
 
 This plan predates the current fixed validation artifact.
 Its 22,256-token validation settings do not define the current dataset.
-Use [the main guide](../../docs/getting_started.md) for the 1B experiment and 16,384-token validation.
+Use [the main guide](../../docs/codebase_kick_off/getting_started.md) for the 1B experiment and 16,384-token validation.
 
 Settings for 2026-11-17. Use `legacy/configs/grad_var/x_monitor_train4096_shuffled.yaml`.
 

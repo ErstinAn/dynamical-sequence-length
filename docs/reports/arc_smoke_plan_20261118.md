@@ -2,7 +2,7 @@
 
 Date: 2026-11-18. All observation times below use UTC unless a row says otherwise.
 This record covers cluster preparation and the completed GPU smoke.
-For a new installation, use the [main guide](../getting_started.md).
+For a new installation, use the [main guide](../codebase_kick_off/getting_started.md).
 
 ## Scope
 

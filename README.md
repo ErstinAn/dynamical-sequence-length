@@ -8,13 +8,14 @@ The planned budget is approximately 20 billion nominal tokens.
 The experiment document will specify the exact budget and schedules.
 The experiment requires W&B.
 
-Read the [main run guide](docs/getting_started.md) first.
+For a meeting, open the [smoke startup prompt](docs/codebase_kick_off/collaborator_prompt.md).
+Enter the site job example and persistent storage path. Paste the prompt into the agent on the target server.
 The delivered code is on the default `main` branch.
 
 | Document | Reader and purpose |
 |---|---|
-| [Run guide](docs/getting_started.md) | Share this first. The collaborator follows it from environment creation through smoke acceptance. |
-| [Agent startup prompt](docs/collaborator_prompt.md) | Share this when the collaborator uses Codex or Claude Code. |
+| [Run guide](docs/codebase_kick_off/getting_started.md) | The agent follows these steps from environment creation through smoke acceptance. |
+| [Agent startup prompt](docs/codebase_kick_off/collaborator_prompt.md) | Share this at the meeting. The collaborator fills in two fields. |
 | [Local verification record](docs/reports/handoff_acceptance_20261118.md) | Optional evidence for the owner and reviewers. Its recorded paths describe the original test server. |
 
 The run guide links to the environment instructions and required check scripts.
@@ -65,5 +66,5 @@ See the [dataset description](docs/final_dataset.md) for identities and evaluati
 
 The [environment record](docs/reports/fresh_environment_20261118.md) and [data record](docs/reports/fresh_data_20261118.md) identify verified steps and reuse.
 The [repository map](docs/repository.md) explains retained dependencies and entry points.
-The [collaborator prompt](docs/collaborator_prompt.md) identifies setup steps and required inputs.
+The [collaborator prompt](docs/codebase_kick_off/collaborator_prompt.md) identifies setup steps and required inputs.
 See [LICENSE](LICENSE) and [NOTICE.md](NOTICE.md) for licensing and source attribution.

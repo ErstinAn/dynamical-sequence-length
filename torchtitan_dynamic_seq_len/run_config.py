@@ -25,7 +25,7 @@ def load_config(path: Path) -> dict[str, Any]:
         raise ValueError(
             f"{path}: this configuration is a placeholder. "
             "Complete the experiment settings and server launch example described in "
-            "docs/getting_started.md before removing status: draft."
+            "docs/codebase_kick_off/getting_started.md before removing status: draft."
         )
     for required in ("name", "torchtitan_config", "paths"):
         if required not in data:

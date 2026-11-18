@@ -82,4 +82,4 @@ Target server storage, resource requests, and submission commands remain unspeci
 Obtain the experiment document, target server launch example, and W&B entity and project.
 Check the environment and data procedure in a new test directory.
 The final delivery commit and complete execution of the run guide remain unfinished.
-The [collaborator prompt](../collaborator_prompt.md) identifies pending inputs and acceptance checks.
+The [collaborator prompt](../codebase_kick_off/collaborator_prompt.md) identifies pending inputs and acceptance checks.
