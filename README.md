@@ -22,14 +22,14 @@ The run guide links to the environment instructions and required check scripts.
 Keep those supporting files in the cloned repository.
 
 The new environment and complete data reconstruction passed their checks.
-The previous real-data smoke passed on one node with two H200 GPUs.
+The previous real-data smoke used a global batch of 512 and passed on one node with two H200 GPUs.
 Recovered training matched every final checkpoint value from uninterrupted training.
 The uploaded W&B losses use cumulative nominal tokens as their horizontal axes.
 
 The default for smoke and each formal run is two nodes with eight H200 GPUs each (16 GPUs total).
 The current launcher and fixed validator block this layout. See the [target-server checks](docs/codebase_kick_off/getting_started.md#check-the-launch-support-and-the-slurm-cluster).
 
-`configs/smoke.yaml` defines the agreed eight-step smoke with global batch size 512.
+`configs/smoke.yaml` defines the eight-step smoke with global batch size 256 and 15,728,640 nominal tokens.
 Measure microbatches on the allocated GPU before execution.
 
 Use the [experiment launch prompt](docs/sl_schedule_docs/experiment_launch_prompt.md) with the agreed formal specification.
@@ -55,7 +55,7 @@ See the [dataset description](docs/final_dataset.md) for identities and evaluati
 
 | Path | Purpose |
 |---|---|
-| `configs/smoke.yaml` | Eight-step smoke, lengths 2048 through 16384, global batch size 512 |
+| `configs/smoke.yaml` | Eight-step smoke, lengths 2048 through 16384, global batch size 256 |
 | `torchtitan_dynamic_seq_len/` | Trainers, model registration, data readers, and schedules |
 | `torchtitan_dynamic_seq_len/experiment.py` | Main native-vocabulary 1B entry, named `llama3_1b` |
 | `scripts/train.py` | Training launcher for one node |

@@ -4,7 +4,10 @@ import argparse
 import json
 import math
 from datetime import datetime, timezone
+from itertools import accumulate
 from pathlib import Path
+
+import yaml
 
 LOSS_KEYS = (
     "loss_metrics/global_avg_loss",
@@ -12,9 +15,6 @@ LOSS_KEYS = (
     "validation_metrics/loss",
 )
 LENGTHS = [2048, 2048, 4096, 4096, 8192, 8192, 16384, 16384]
-TOKENS = []
-for length in LENGTHS:
-    TOKENS.append((TOKENS[-1] if TOKENS else 0) + 512 * length)
 
 
 def require(condition, message):
@@ -46,7 +46,8 @@ def metric_axes(raw_config):
     return axes
 
 
-def check_run(api, entity, project, segment, final_step, nproc):
+def check_run(api, entity, project, segment, final_step, nproc, global_batch):
+    tokens = list(accumulate(global_batch * length for length in LENGTHS))
     run_id = segment["wandb_run_id"]
     run = api.run(f"{entity}/{project}/{run_id}")
     require(run.state == "finished", f"W&B run {run_id} is {run.state}.")
@@ -89,21 +90,21 @@ def check_run(api, entity, project, segment, final_step, nproc):
     losses = {}
     previous_valid = -1
     for step, row in zip(expected, train):
-        require(row.get(token_key) == TOKENS[step - 1], f"Incorrect nominal tokens at step {step}.")
+        require(row.get(token_key) == tokens[step - 1], f"Incorrect nominal tokens at step {step}.")
         require(row.get("_step") == step, f"Incorrect uploaded optimizer step in {run_id}.")
         require(
             row.get(prefix + "seq_len") == LENGTHS[step - 1],
             f"Incorrect sequence length at step {step}.",
         )
         require(
-            row.get(prefix + "global_batch_size") == 512, f"Incorrect global batch at step {step}."
+            row.get(prefix + "global_batch_size") == global_batch, f"Incorrect global batch at step {step}."
         )
         micro = row.get(prefix + "microbatch_size")
         accumulation = row.get(prefix + "gradient_accumulation_steps")
         require(isinstance(micro, (int, float)) and micro >= 1, "Missing or invalid microbatch.")
         require(
-            micro * nproc * accumulation == 512,
-            "Microbatch accumulation does not preserve global batch 512.",
+            micro * nproc * accumulation == global_batch,
+            f"Microbatch accumulation does not preserve the global batch of {global_batch}.",
         )
         values = [row.get(name) for name in loss_names[:2]]
         require(
@@ -114,11 +115,11 @@ def check_run(api, entity, project, segment, final_step, nproc):
         valid = row.get(prefix + "n_valid_tokens_seen")
         per_step = row.get(prefix + "valid_tokens_per_step")
         require(
-            isinstance(valid, (int, float)) and previous_valid < valid <= TOKENS[step - 1],
+            isinstance(valid, (int, float)) and previous_valid < valid <= tokens[step - 1],
             f"Invalid cumulative prediction target count at step {step}.",
         )
         require(
-            isinstance(per_step, (int, float)) and 0 < per_step <= 512 * LENGTHS[step - 1],
+            isinstance(per_step, (int, float)) and 0 < per_step <= global_batch * LENGTHS[step - 1],
             f"Invalid prediction target count at step {step}.",
         )
         previous_valid = valid
@@ -131,7 +132,7 @@ def check_run(api, entity, project, segment, final_step, nproc):
     for step, row in zip(validation_steps, validation):
         require(row.get("_step") == step, f"Incorrect validation step in {run_id}.")
         require(
-            row.get(token_key) == TOKENS[step - 1],
+            row.get(token_key) == tokens[step - 1],
             "Validation does not use the current cumulative nominal tokens.",
         )
         require(
@@ -167,7 +168,11 @@ def main():
 
     acceptance = json.loads(args.acceptance.read_text())
     require(acceptance.get("completed_utc"), "The GPU acceptance driver did not complete.")
-    require(acceptance.get("token_budget") == 31457280, "Incorrect smoke token budget.")
+    reference_dir = Path(acceptance["runs"]["uninterrupted"])
+    fixed = yaml.safe_load((reference_dir / "experiment.yaml").read_text())["fixed"]
+    global_batch = fixed["training.global_batch_size"]
+    token_budget = global_batch * sum(LENGTHS)
+    require(acceptance.get("token_budget") == token_budget, "Incorrect smoke token budget.")
     comparison = acceptance["checkpoint_comparison"]
     require(comparison.get("exact_match") is True, "Final checkpoints differ.")
     require(
@@ -179,7 +184,7 @@ def main():
     result = {
         "checked_utc": datetime.now(timezone.utc).isoformat(),
         "acceptance": str(args.acceptance.resolve()),
-        "token_budget": 31457280,
+        "token_budget": token_budget,
         "validation_windows": 936,
         "validation_prediction_targets": 15335424,
         "checkpoint_comparison": comparison,
@@ -200,7 +205,7 @@ def main():
         for index, segment in enumerate(segments):
             end = segments[index + 1]["resume_step"] if index + 1 < len(segments) else 8
             records.append(
-                check_run(api, args.entity, args.project, segment, end, acceptance["nproc"])
+                check_run(api, args.entity, args.project, segment, end, acceptance["nproc"], global_batch)
             )
         result["cases"][case] = records
     reference = result["cases"]["uninterrupted"][0]["loss_by_step"]

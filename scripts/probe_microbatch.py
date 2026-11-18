@@ -155,9 +155,12 @@ def worker(args):
 
 
 def measure(args):
-    if 512 % args.dp_degree:
-        raise ValueError("The data-parallel degree must divide the global batch size of 512.")
-    rank_batch = 512 // args.dp_degree
+    from torchtitan_dynamic_seq_len.run_config import load_config
+
+    global_batch = load_config(args.config)["fixed"]["training.global_batch_size"]
+    if global_batch % args.dp_degree:
+        raise ValueError(f"The data-parallel degree must divide the global batch size of {global_batch}.")
+    rank_batch = global_batch // args.dp_degree
     candidates = []
     microbatch = 1
     while microbatch <= min(rank_batch, args.max_microbatch):
@@ -169,7 +172,7 @@ def measure(args):
     details.mkdir(parents=True, exist_ok=True)
     report = dict(status="running", timestamp_utc=datetime.now(timezone.utc).isoformat(),
                   config=str(args.config.resolve()), target_dp_degree=args.dp_degree,
-                  global_batch_size=512, headroom_fraction=args.headroom,
+                  global_batch_size=global_batch, headroom_fraction=args.headroom,
                   measurements=[], microbatches={},
                   limitation="Single-GPU memory estimate. Confirm values with the distributed training smoke.")
     env = dict(os.environ)

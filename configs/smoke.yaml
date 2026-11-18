@@ -11,10 +11,10 @@ wandb:
   mode: online
 fixed:
   smoke_test: true
-  token_budget: 31457280
+  token_budget: 15728640
   training.steps: 8
   training.seq_len: 16384
-  training.global_batch_size: 512
+  training.global_batch_size: 256
   training.local_batch_size: 1
   training.dtype: float32
   training.mixed_precision_param: bfloat16
@@ -23,7 +23,7 @@ fixed:
   seq_len_scheduler.lengths: [2048, 4096, 8192, 16384]
   seq_len_scheduler.boundaries: [2, 4, 6]
   batch_size_scheduler.kind: constant
-  batch_size_scheduler.batch_size: 512
+  batch_size_scheduler.batch_size: 256
   microbatch_scheduler.kind: constant
   microbatch_scheduler.batch_size: 1
   # Smoke-only LR. The formal learning rate and sweep await the experiment document.

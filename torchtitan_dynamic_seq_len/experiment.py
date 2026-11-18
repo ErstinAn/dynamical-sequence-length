@@ -90,9 +90,10 @@ class SequenceExperimentTrainer(DynamicSeqBSTrainer):
                 actual_lengths = [lengths.length_for_step(s) for s in range(1, self.training.steps + 1)]
                 if actual_lengths != [2048, 2048, 4096, 4096, 8192, 8192, 16384, 16384]:
                     raise ValueError("Smoke lengths must be 2048, 4096, 8192, 16384, each for two steps.")
-                if any(batches.value_for_step(s) != 512 for s in range(1, 9)):
-                    raise ValueError("Smoke global batch size must remain 512.")
-                return TokenPlan.smoke((512 * length for length in actual_lengths), self.token_budget)
+                global_batch = self.training.global_batch_size
+                if global_batch != 256 or any(batches.value_for_step(s) != global_batch for s in range(1, 9)):
+                    raise ValueError("Each smoke update requires a global batch size of 256.")
+                return TokenPlan.smoke((global_batch * length for length in actual_lengths), self.token_budget)
             return TokenPlan.build(
                 (lengths.length_for_step(step) * batches.value_for_step(step)
                  for step in range(1, self.training.steps + 1)),

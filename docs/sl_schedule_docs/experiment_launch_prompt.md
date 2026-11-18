@@ -41,6 +41,11 @@ Set `smoke_test: false` in the formal settings.
 Use `validator.token_intervals` for equally spaced token targets. Use `validator.freq` for a step interval.
 Keep the reference model, initialization, data order, loss, and optimizer unless the specification explicitly changes them.
 
+Check each LR curve against the pinned TorchTitan scheduler before submission.
+Compare the LR used for the first update, the peak, the first decrease, and the final update.
+Record the LR after the final update separately. Use the same endpoint convention across the sweep.
+If the specification and scheduler differ, report the first difference before changing either one.
+
 ## 3. Measure microbatches and check each config
 
 Reuse matching measurements from the target server. Measure missing settings with complete optimizer updates.

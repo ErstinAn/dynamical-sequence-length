@@ -68,7 +68,7 @@ Do not substitute their identities for the current Llama3 tokenizer or validatio
 
 ## Remaining portability limits
 
-The smoke configuration contains the agreed eight-step schedule and global batch size 512.
+The smoke configuration contains the agreed eight-step schedule and global batch size 256.
 The target GPU probe supplies measured microbatches.
 The target server must provide the launch example and persistent storage paths.
 Local `data/` and `tokens/` links are not portable assets.

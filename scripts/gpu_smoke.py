@@ -40,12 +40,14 @@ def main():
              "--config", str(args.config.resolve()), "--dp-degree", str(args.nproc),
              "--output", str(args.profile.resolve())], args.output / "microbatch-probe.txt", env)
     profile = json.loads(args.profile.read_text())
-    if profile.get("status") != "passed" or profile.get("target_dp_degree") != args.nproc:
-        raise ValueError("Use a passed GPU profile for the requested DP degree.")
-    microbatches = [int(profile["microbatches"][str(length)]) for length in (2048, 4096, 8192, 16384)]
-    if any(micro < 1 or 512 % (args.nproc * micro) for micro in microbatches):
-        raise ValueError("Each microbatch times GPU count must divide global batch512.")
     original = yaml.safe_load(args.config.read_text())
+    global_batch = original["fixed"]["training.global_batch_size"]
+    if (profile.get("status") != "passed" or profile.get("target_dp_degree") != args.nproc
+            or profile.get("global_batch_size") != global_batch):
+        raise ValueError("Use a passed GPU profile for the requested DP degree and global batch size.")
+    microbatches = [int(profile["microbatches"][str(length)]) for length in (2048, 4096, 8192, 16384)]
+    if any(micro < 1 or global_batch % (args.nproc * micro) for micro in microbatches):
+        raise ValueError(f"Each microbatch times GPU count must divide the global batch of {global_batch}.")
     original["fixed"].update({
         "training.local_batch_size": microbatches[0],
         "microbatch_scheduler.kind": "piecewise_linear",
@@ -55,7 +57,7 @@ def main():
     original["paths"]["dump_root"] = str(args.output / "runs")
     record = {"started_utc": datetime.now(timezone.utc).isoformat(),
               "profile": profile, "microbatches": microbatches, "nproc": args.nproc,
-              "token_budget": 31457280, "runs": {}}
+              "token_budget": original["fixed"]["token_budget"], "runs": {}}
     (args.output / "acceptance.json").write_text(json.dumps(record, indent=2) + "\n")
     directories = {}
     for case in ("uninterrupted", "recovered"):

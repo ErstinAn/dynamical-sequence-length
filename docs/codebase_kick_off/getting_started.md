@@ -17,7 +17,7 @@ If the existing implementation fails, report the error and its log.
 
 Check the target revision before reserving GPUs. This revision has two limits.
 
-- The [training launcher](../../scripts/train.py) starts workers on one host. The [smoke driver](../../scripts/gpu_smoke.py) uses that launcher for training and recovery.
+- The [training launcher](../../scripts/train.py) treats `--nproc` as workers per host and uses a local rendezvous. The [smoke driver](../../scripts/gpu_smoke.py) uses that launcher for training and recovery.
 - The [fixed validator](../../torchtitan_dynamic_seq_len/data/fixed_validation.py) requires equal window counts on all data-parallel ranks. Dividing 936 windows among 16 ranks leaves eight windows.
 
 These limits block the default smoke on this revision. Report them before GPU submission.
@@ -133,7 +133,7 @@ Choose a new attempt directory under `RUN_STORAGE` for each smoke submission.
 
 Use the two-node launch command supported by the checked revision.
 Launch one distributed training run with one worker per GPU.
-Check the eight-step plan for 31,457,280 nominal tokens.
+Check the eight-step plan for 15,728,640 nominal tokens. You can run this configuration check on the login node without GPUs.
 Measure microbatches on the target hardware. Use the same layout for uninterrupted training and recovery.
 
 For a Slurm Bash job, set `JOB_FILE` to the new job file. Use the site's request check when available.
@@ -154,13 +154,17 @@ For a pending job, inspect the pending reason. For a rejected request, correct t
 Use `sacct -j "$JOB_ID" --format=JobID,State,ExitCode,Elapsed` to check the outcome.
 If the site requires a submission tool, use its equivalent commands.
 
-Record the worker hostname, global rank, local rank, GPU model, and world size in the job log.
-Require two distinct hosts, eight H200 workers per host, and global ranks 0 through 15 in one `WORLD_SIZE=16` group.
+Record each worker's hostname, global rank, local rank, GPU model, device UUID, and world size.
+Require eight distinct H200 device UUIDs on each of two hosts and global ranks 0 through 15 in one group.
+Check that every worker reports `WORLD_SIZE=16`. Slurm can bind each worker to one visible GPU.
+
+Check GPU visibility inside the Slurm allocation on the compute nodes. Visibility on the login node is irrelevant.
+Check communication in the training group. An NCCL sum of one from each worker must return 16 on every worker.
 
 ### Single-node override
 
 Use this command only if the user explicitly requests a single node.
-The GPU count on that node must divide 936 validation windows and the global batch of 512.
+The GPU count on that node must divide 936 validation windows and the global batch of 256.
 Run from the checkout inside that allocation with the environment and asset paths set above.
 Set `ATTEMPT` to a new directory under `RUN_STORAGE`.
 
@@ -179,7 +183,7 @@ Record the approved layout in the smoke results.
 |---|---|
 | Allocation | Two nodes, eight H200 GPUs per node, 16 training workers by default |
 | Model | Native dense Llama 3 1B, random initialization |
-| Training | Lengths 2048, 4096, 8192, 16384 for two steps each. Global batch size 512. |
+| Training | Lengths 2048, 4096, 8192, 16384 for two steps each. Global batch size 256. |
 | W&B smoke destination | Entity `dynamic_seq_length`, project `debug`, online mode |
 | Checkpoints | Full saves at steps 2, 4, 6, 8. Resume from the step 4 checkpoint. |
 | Validation | Steps 1 and 8. Each pass uses all 936 fixed windows exactly once and counts 15,335,424 prediction targets. |

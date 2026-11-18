@@ -51,12 +51,12 @@ def checkpoint_manager(trainer, root):
 class TokenPlanTest(unittest.TestCase):
     def test_eight_step_smoke_uses_phase_checkpoints_without_changing_formal_policy(self):
         lengths = [2048, 2048, 4096, 4096, 8192, 8192, 16384, 16384]
-        plan = TokenPlan.smoke([512 * length for length in lengths], 31457280)
+        plan = TokenPlan.smoke([256 * length for length in lengths], 15728640)
         self.assertEqual([item.step for item in plan.milestones], [2, 4, 6, 8])
-        self.assertEqual(plan.cumulative[4], 6291456)
-        self.assertEqual(plan.cumulative[-1], 31457280)
+        self.assertEqual(plan.cumulative[4], 3145728)
+        self.assertEqual(plan.cumulative[-1], 15728640)
         with self.assertRaisesRegex(ValueError, "multiple checkpoint"):
-            TokenPlan.build([512 * length for length in lengths], 31457280)
+            TokenPlan.build([256 * length for length in lengths], 15728640)
 
     def test_variable_steps_and_integer_thresholds(self):
         plan = TokenPlan.build([8, 8, 16] + [32] * 17, 570)

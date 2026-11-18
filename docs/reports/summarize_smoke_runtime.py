@@ -4,6 +4,8 @@ import argparse
 import json
 from pathlib import Path
 
+import yaml
+
 
 def summarize(directory):
     steps = {}
@@ -27,6 +29,7 @@ def summarize(directory):
     if set(steps) != set(range(1, 9)):
         raise ValueError("Expected all eight complete optimizer steps.")
     lengths = (2048, 2048, 4096, 4096, 8192, 8192, 16384, 16384)
+    fixed = yaml.safe_load((directory / "experiment.yaml").read_text())["fixed"]
     timings = []
     for step, events in sorted(steps.items()):
         begin = events["step_start"]["time_us"]
@@ -34,7 +37,7 @@ def summarize(directory):
         save_end = events["checkpoint_save_end"]["time_us"]
         end = events["step_end"]["time_us"]
         training = (save_begin - begin) / 1e6
-        nominal = 512 * lengths[step - 1]
+        nominal = fixed["training.global_batch_size"] * lengths[step - 1]
         timings.append(
             {
                 "step": step,
@@ -87,7 +90,7 @@ def main():
             "training": "step_start to checkpoint_save_start, including garbage collection",
             "checkpoint": "checkpoint_save_end span value, milliseconds converted to seconds",
             "validation": "checkpoint_save_end to step_end, including loop/profiler overhead",
-            "limitation": "Eight-step measurements on two H200 GPUs. Do not extrapolate to another GPU count without a new measurement.",
+            "limitation": f"Eight-step measurements on {acceptance['nproc']} GPUs. Measure again for another GPU count.",
         },
         "cases": {name: summarize(Path(path)) for name, path in acceptance["runs"].items()},
     }
