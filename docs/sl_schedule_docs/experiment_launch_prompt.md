@@ -21,6 +21,9 @@ Obtain explicit permission before changing shared code.
 ## 1. Read the specification and the smoke record
 
 Use the checkout, environment, data, and tokenizer from the successful smoke on this server.
+The verified data and tokenizer need no Hugging Face login. If data is missing, restore the pinned public dataset.
+Use the anonymous download for `Erstin/fineweb-edu-long-30b`. [Data recovery procedure](../codebase_kick_off/getting_started.md#download-and-rebuild-the-dataset)
+
 Use 2 nodes with 8 NVIDIA H200 GPUs per node (16 total) for each run by default.
 Use a different layout only when the user requests it. Check the smoke record for the requested layout.
 For the default, verify two hostnames and 16 ranks in one training group.
@@ -79,7 +82,16 @@ Copy the specified project name to `wandb.project`. Set `wandb.entity` to the te
 Set the top-level YAML field `name` from the specification's `wandb_run_name` template.
 Substitute only its placeholders. Preserve the spelling, case, and punctuation in the resulting name.
 
-Check access to the formal project with the account from smoke. Keep W&B online.
+Formal training requires online W&B. Load the approved credentials as in smoke. [W&B credential setup](../codebase_kick_off/getting_started.md#verify-wb-access)
+Set `ENTITY` and `PROJECT` to the formal values from the generated YAML.
+Run this check before submission and once inside each allocation before starting workers.
+
+```bash
+python scripts/check_wandb_access.py "$ENTITY" "$PROJECT"
+```
+
+Require `W&B login OK` for that exact destination. If the check fails, stop and follow the linked credential setup.
+Keep the specified project and run names.
 
 From the repository root, run this command for each generated YAML.
 Set `CONFIG` to the YAML path. Set `GPU_COUNT` to the total GPU count per run (default 16).

@@ -114,7 +114,7 @@ The main guide includes additional space for checkpoints, environments, and down
 Clone the default GitHub branch and record its commit.
 Install the runtime with `requirements-portable.txt`.
 The original lock alone cannot resolve every historical nightly wheel.
-Each collaborator needs Hugging Face access to the private dataset.
+The public dataset supports anonymous downloads.
 The Git checkout supplies the tokenizer in `assets/tokenizer/`.
 
 Use `scripts/download_dataset.py` from the delivered repository to download the pinned revision.
@@ -123,7 +123,7 @@ Follow the complete commands and success checks in [the main guide](codebase_kic
 The current dataset revision is `b6ea2fde77bab36dff963aba5e6f482477959933`.
 Preserve its exact document orders and fixed validation arrays.
 
-The private Hub repository is `long-sequence-length-dataset/fineweb-edu-long-30b`.
+The public Hub repository is `Erstin/fineweb-edu-long-30b`.
 It supplies text, metadata, document orders, validation arrays, and supporting code.
 It does not supply the training token cache.
 The delivered repository contains the tested preparation and training code.

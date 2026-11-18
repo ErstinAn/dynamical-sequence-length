@@ -16,6 +16,7 @@ This test used the same cluster service, not another physical server service.
 The cleanup used a separate checkout and the existing handoff Python environment.
 The unit suite ran 67 tests with distributed validation enabled.
 All 67 passed.
+
 A separate two-rank CPU run passed nominal token counting, ten complete saves, exact recovery, and the validation token axis.
 The two-GPU smoke dry run returned 31,457,280 tokens and save steps 2, 4, 6, and 8.
 The ARC submission script passed `bash -n`.
@@ -32,6 +33,7 @@ The dataset downloader ran with `--metadata-only` in a new directory with an emp
 It used the existing Python environment and private dataset credentials.
 It downloaded the pinned dataset metadata and installed the tokenizer from the checkout.
 All three tokenizer file hashes matched the dataset manifest.
+
 The tokenizer reported 128,256 entries and passed an English and Chinese encoding round trip.
 This check covered tokenizer delivery. The GPU results below come from the earlier smoke run.
 
@@ -198,3 +200,15 @@ The target server must run its own memory probe and smoke before formal training
 
 Use [getting_started.md](../codebase_kick_off/getting_started.md) for all execution commands.
 Use [collaborator_prompt.md](../codebase_kick_off/collaborator_prompt.md) for the next agent's startup instructions.
+
+## Public dataset and W&B access check
+
+On 2026-11-18, the Hub reported public, ungated access to `Erstin/fineweb-edu-long-30b` at commit `b6ea2fde77bab36dff963aba5e6f482477959933`.
+The metadata download used the existing handoff Python environment, empty download directories, and anonymous Hub access.
+The dataset, training, and validation manifests passed their SHA-256 checks.
+The document orders, fixed validation files, and bundled tokenizer passed their checks.
+One text shard, `data/train-00234.parquet` (78,478,326 bytes), matched the manifest.
+
+The W&B SDK verified the owner's login. The W&B API reported write access to both projects under `dynamic_seq_length`.
+The projects were `debug` and `Llama3-1B-20B-LongSeq_Fineweb-edu`.
+These checks used the login node. They created no W&B run or GPU job.

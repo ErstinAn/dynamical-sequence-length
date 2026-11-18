@@ -13,7 +13,7 @@ import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 
-REPO_ID = "long-sequence-length-dataset/fineweb-edu-long-30b"
+REPO_ID = "Erstin/fineweb-edu-long-30b"
 BUNDLED_TOKENIZER = Path(__file__).resolve().parents[1] / "assets/tokenizer"
 DATASET_MANIFEST_SHA256 = "7e284ce4fc90a93e5bdcee160a60051dc29ed17775b8ecb261feafd93f047d80"
 TRAINING_MANIFEST_SHA256 = "4bf6946f7b7f7cbad0799746519baaa9ef2518f974d2239a8df2f184db004806"
@@ -98,7 +98,7 @@ def check_metadata(dataset, tokenizer):
 
 
 def download(dataset_dir, tokenizer_dir, *, revision, cache_dir, metadata_only=False,
-             max_workers=4):
+             max_workers=4, authenticated=False):
     dataset, tokenizer = standalone_paths(dataset_dir, tokenizer_dir)
     cache = Path(cache_dir).expanduser().absolute()
     # Isolate both Hub downloads and Xet chunks from earlier machine caches.
@@ -107,19 +107,19 @@ def download(dataset_dir, tokenizer_dir, *, revision, cache_dir, metadata_only=F
 
     previous_path = dataset / "download_receipt.json"
     previous = json.loads(previous_path.read_text()) if previous_path.exists() else None
-    resolved = HfApi().dataset_info(REPO_ID, revision=revision).sha
+    resolved = HfApi().dataset_info(REPO_ID, revision=revision, token=authenticated).sha
     if previous and previous["revision"] != resolved:
         raise ValueError("The existing download uses another revision. Use a new destination directory.")
     cache_preexisting = cache.exists()
     dataset_preexisting = dataset.exists()
     dataset.mkdir(parents=True, exist_ok=True)
     remote = hf_hub_download(repo_id=REPO_ID, repo_type="dataset", revision=resolved,
-                             filename="dataset_manifest.json", cache_dir=cache)
+                             filename="dataset_manifest.json", cache_dir=cache, token=authenticated)
     require_hash(remote, DATASET_MANIFEST_SHA256)
     excluded = ["data/*", "training_code.tar.gz", "training_code.tar.gz.sha256"]
     snapshot_download(repo_id=REPO_ID, repo_type="dataset", revision=resolved,
                       local_dir=dataset, cache_dir=cache, ignore_patterns=excluded,
-                      max_workers=max_workers)
+                      max_workers=max_workers, token=authenticated)
     install_bundled_tokenizer(tokenizer, json.loads(Path(remote).read_text())["tokenizer"])
     shared, provenance = check_metadata(dataset, tokenizer)
     text_files = []
@@ -127,7 +127,7 @@ def download(dataset_dir, tokenizer_dir, *, revision, cache_dir, metadata_only=F
         snapshot_download(repo_id=REPO_ID, repo_type="dataset", revision=resolved,
                           local_dir=dataset, cache_dir=cache,
                           allow_patterns=[entry["text"]["path"] for entry in shared["files"]],
-                          max_workers=max_workers)
+                          max_workers=max_workers, token=authenticated)
         for entry in shared["files"]:
             text = entry["text"]
             require_hash(dataset / text["path"], text["sha256"])
@@ -159,13 +159,15 @@ def main():
     parser.add_argument("--cache-dir", type=Path, required=True)
     parser.add_argument("--revision", required=True, help="Fixed dataset commit SHA from Hugging Face.")
     parser.add_argument("--metadata-only", action="store_true")
+    parser.add_argument("--authenticated", action="store_true",
+                        help="Use an HF token for this download. The default is anonymous access.")
     parser.add_argument("--max-workers", type=int, default=4)
     args = parser.parse_args()
     if args.max_workers < 1:
         parser.error("--max-workers must be positive.")
     download(args.dataset_dir, args.tokenizer_dir, revision=args.revision,
              cache_dir=args.cache_dir, metadata_only=args.metadata_only,
-             max_workers=args.max_workers)
+             max_workers=args.max_workers, authenticated=args.authenticated)
 
 
 if __name__ == "__main__":

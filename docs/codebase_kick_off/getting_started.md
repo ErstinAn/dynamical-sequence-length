@@ -72,18 +72,49 @@ export PATH="$RUN_STORAGE/environment/conda/bin:$PATH"
 export DYNAMIC_SEQ_LEN_ASSETS="$RUN_STORAGE/assets"
 export DATASET_DIR="$DYNAMIC_SEQ_LEN_ASSETS/data/fineweb_edu_long_30b_shuffled_v1"
 export TOKENIZER_DIR="$DYNAMIC_SEQ_LEN_ASSETS/hf/llama3-tokenizer"
-hf auth whoami
 ```
 
-Use `hf auth login` if the account needs authentication. The account needs read access to the private dataset.
-Use `wandb login` if needed. The GPU job needs online write access to the configured project.
-Enter credentials on the server.
+## Verify W&B access
+
+Smoke requires online write access to `dynamic_seq_length/debug`. Formal runs use the project in the experiment specification.
+Use the site's secret store to supply `WANDB_API_KEY`, or use an existing W&B login in your private `.netrc`.
+
+You can also use the owner's `docs/API-KEYS.md` in a private checkout.
+If the file is elsewhere, set `API_KEYS_FILE` to its absolute path on shared storage.
+Give only the job owner read access to the file (`chmod 600`).
+
+Run this block in Bash from the repository root. Use the same credential setup in the job before starting workers.
+Keep keys out of prompts, job files, and logs.
+
+```bash
+set +x
+export WANDB_BASE_URL=https://api.wandb.ai WANDB_MODE=online
+key_file="${API_KEYS_FILE:-docs/API-KEYS.md}"
+if [[ -z "${WANDB_API_KEY:-}" && -r "$key_file" ]]; then
+  WANDB_API_KEY=$(awk '$1 ~ /^wandb_/ {print $1; exit}' "$key_file")
+  export WANDB_API_KEY
+fi
+python scripts/check_wandb_access.py dynamic_seq_length debug
+```
+
+Require `W&B login OK` before submission. Run the same check once inside the allocation before training.
+Stop the job if the check fails. Use the same credentials when you verify the uploaded smoke history.
+
+| Result | Next action |
+|---|---|
+| Login fails | Check that this shell or job received the key. Ask the owner for a valid key if needed. |
+| Project access fails | Check the exact entity and project. Ask the owner for write access. |
+| Network error or timeout | Check the node's route or approved proxy to `api.wandb.ai`. |
+
+Retry after you correct the reported cause. Keep W&B online.
 
 ## Download and rebuild the dataset
 
 Run the download on a node with network access.
 Run tokenization in a CPU allocation.
-The tokenizer ships in `assets/tokenizer/`.
+
+Download the public dataset anonymously. The command pins the dataset commit and verifies its checksums.
+The tokenizer ships in `assets/tokenizer/`. Both steps work without a Hugging Face login. [Pinned dataset](https://huggingface.co/datasets/Erstin/fineweb-edu-long-30b/tree/b6ea2fde77bab36dff963aba5e6f482477959933)
 
 ```bash
 python scripts/download_dataset.py \
@@ -93,6 +124,32 @@ python scripts/download_dataset.py \
 ```
 
 Require `text_download_complete: true` in `$DATASET_DIR/download_receipt.json`.
+Check that the receipt names `Erstin/fineweb-edu-long-30b` and the commit from the command.
+After an interrupted download, repeat the command with the same directories.
+
+For HTTP 401, 403, or 404, check the repository name, commit, and Hub endpoint first.
+For HTTP 429, wait for the retry time specified by the Hub.
+If authentication is necessary, use a read token for one retry. Run the following block from the same shell.
+For a checksum failure, inspect the named file before reuse.
+
+```bash
+(
+  set +x
+  export HF_ENDPOINT=https://huggingface.co
+  key_file="${API_KEYS_FILE:-docs/API-KEYS.md}"
+  if [[ -z "${HF_TOKEN:-}" && -r "$key_file" ]]; then
+    HF_TOKEN=$(awk '$1 ~ /^hf_/ {print $1; exit}' "$key_file")
+    export HF_TOKEN
+  fi
+  python scripts/download_dataset.py --authenticated \
+    --revision b6ea2fde77bab36dff963aba5e6f482477959933 \
+    --dataset-dir "$DATASET_DIR" --tokenizer-dir "$TOKENIZER_DIR" \
+    --cache-dir "$RUN_STORAGE/download-cache"
+)
+```
+
+If the retry fails, report the repository, revision, and error. Omit credentials from the report.
+
 For 32 allocated CPUs, use four workers with eight tokenizer threads each.
 For fewer CPUs, reduce the worker and thread counts to fit the allocation.
 The measured 32-CPU rebuild took 88 minutes, excluding the download.

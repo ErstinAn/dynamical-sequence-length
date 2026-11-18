@@ -11,7 +11,8 @@ Do not submit a formal run from the smoke settings.
 Store generated configurations in `local/generated_configs/`.
 Keep only `configs/smoke.yaml` under `configs/`.
 Use `torchtitan_config: llama3_1b` and `smoke_test: false` for formal runs.
-Require online W&B.
+Verify online W&B access to the formal project before submission and inside the job. [Credential setup](codebase_kick_off/getting_started.md#verify-wb-access)
+Reuse the verified smoke data and tokenizer. Formal training with these files needs no Hugging Face login.
 
 Specify these settings explicitly:
 

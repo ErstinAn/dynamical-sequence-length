@@ -34,7 +34,7 @@ Get all other training settings from the reference config. Select the micro-batc
 |---|---|---|
 | `max_concurrent_runs` | `null` | Optional limit across this batch. Omitted or null means no user limit. |
 | `wandb_project` | **Llama3-1B-20B-LongSeq_Fineweb-edu** | Formal W&B project name. |
-| `wandb_run_name` | **{sl}-cons_lr-cons_bs-lr+{x}** | Replace `{sl}` with the schedule ID and `{x}` with the LR as written in `lr_sweep`. |
+| `wandb_run_name` | **{sl}-cons_lr-cons_bs-lr_{x}** | Replace `{sl}` with the schedule ID and `{x}` with the LR as written in `lr_sweep`. |
 
 To limit the batch, replace `null` with a positive integer. For example, `2` allows two runs to train at once.
 Pending jobs do not count toward this limit. Slurm site limits still apply.

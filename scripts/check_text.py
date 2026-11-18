@@ -54,7 +54,7 @@ def check_file(path):
 
 def main():
     files = [ROOT / "README.md", ROOT / "NOTICE.md", ROOT / "instruction.md"]
-    files += list((ROOT / "docs").glob("*.md"))
+    files += [path for path in (ROOT / "docs").glob("*.md") if path.name != "API-KEYS.md"]
     files += list((ROOT / "docs/codebase_kick_off").glob("*.md"))
     files += list((ROOT / "cluster").rglob("*.md"))
     failures = []

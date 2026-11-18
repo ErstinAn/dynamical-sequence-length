@@ -1,8 +1,11 @@
 """Check standalone download safeguards and fixed metadata verification."""
 
 import json
+import os
 import tempfile
 import unittest
+from contextlib import redirect_stdout
+from io import StringIO
 from pathlib import Path
 from unittest.mock import patch
 
@@ -83,6 +86,32 @@ class DownloadDatasetTest(unittest.TestCase):
             download.install_bundled_tokenizer(self.tokenizer, reference)
         with self.assertRaisesRegex(ValueError, "provenance"):
             download.install_bundled_tokenizer(self.tokenizer, {**reference, "revision": "other"})
+
+    def test_hub_calls_use_anonymous_access_unless_requested(self):
+        identities = self.fixture()
+        repo = "Erstin/fineweb-edu-long-30b"
+        with (
+            patch.multiple(download, **identities),
+            patch.dict(os.environ, {"HF_TOKEN": "unused-test-value"}),
+            patch("huggingface_hub.HfApi.dataset_info") as info,
+            patch("huggingface_hub.hf_hub_download", return_value=self.dataset / "dataset_manifest.json") as manifest,
+            patch("huggingface_hub.snapshot_download") as snapshots,
+            patch.object(download, "install_bundled_tokenizer"),
+            redirect_stdout(StringIO()),
+        ):
+            info.return_value.sha = "pinned"
+            for options in ({}, {"authenticated": True}):
+                with self.subTest(options=options):
+                    token = options.get("authenticated", False)
+                    download.download(self.dataset, self.tokenizer, revision="pinned",
+                                      cache_dir=self.root / "cache", **options)
+                    info.assert_called_with(repo, revision="pinned", token=token)
+                    self.assertEqual(snapshots.call_count, 2)
+                    for call in [manifest.call_args, *snapshots.call_args_list]:
+                        self.assertEqual(call.kwargs["repo_id"], repo)
+                        self.assertEqual(call.kwargs["revision"], "pinned")
+                        self.assertIs(call.kwargs["token"], token)
+                    snapshots.reset_mock()
 
     def test_refuses_original_data_and_token_links(self):
         for name in ("data", "tokens"):

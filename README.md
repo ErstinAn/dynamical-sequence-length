@@ -6,7 +6,7 @@ This repository compares sequence length schedules on a custom FineWeb-Edu datas
 The dense 1B model uses the native Llama3 vocabulary and random initialization.
 The planned budget is approximately 20 billion nominal tokens.
 The experiment document will specify the exact budget and schedules.
-The experiment requires W&B.
+Smoke and formal training require online W&B access. The public dataset and bundled tokenizer need no Hugging Face login.
 
 For a meeting, open the [smoke startup prompt](docs/codebase_kick_off/collaborator_prompt.md).
 Replace the two quoted paths. Paste the block into Codex or Claude Code on the target server.
