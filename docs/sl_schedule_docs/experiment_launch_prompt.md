@@ -37,13 +37,35 @@ Create a local schedule template for each schedule in the specification.
 Derive optimizer steps, cumulative nominal tokens, validation targets, and checkpoint targets.
 Check every stage boundary and the exact total against the specification.
 
-Set `smoke_test: false` in the formal settings.
-Use `validator.token_intervals` for equally spaced token targets. Use `validator.freq` for a step interval.
 Keep the reference model, initialization, data order, loss, and optimizer unless the specification explicitly changes them.
 
-Check each LR curve against the pinned TorchTitan scheduler before submission.
-Compare the LR used for the first update, the peak, the first decrease, and the final update.
-Record the LR after the final update separately. Use the same endpoint convention across the sweep.
+Apply these overrides under `fixed` in each formal YAML. Remove the smoke setting `validator.freq` from that YAML.
+
+```yaml
+fixed:
+  smoke_test: false
+  validator.token_intervals: 50
+```
+
+Run 51 validations. Evaluate once before training, at 49 intermediate targets, and once after the final update.
+Use cumulative nominal training tokens for the targets. Evaluate after the first complete update that reaches each target.
+Keep all ten complete checkpoints at 10% increments of the token budget, including the final state.
+
+Use the pinned TorchTitan LR scheduler. For the three Phase 1 experiments, set `lr_scheduler.decay_type` to `linear`.
+Set `optimizer.learning_rate` to the LR candidate for that run. Prefix each field below with `lr_scheduler.` in `fixed`.
+
+| Specification | `warmup_steps` | `decay_ratio` | `min_lr_factor` |
+|---|---:|---:|---:|
+| `constant_lr-constant-bs` | 0 | Omit | 1.0 |
+| `warmup5_linear95_lr-constant-bs` | 5% of optimizer updates | 0.95 | 0.0 |
+| `wsd5_75_20_lr-constant-bs` | 5% of optimizer updates | 0.20 | 0.0 |
+
+For 5% warmup, write 960 for 19,200 optimizer updates and 240 for 4,800 optimizer updates.
+Use TorchTitan's native behavior at each phase boundary. Both decay schedules reach zero after the final optimizer update.
+
+For each decay schedule, check the first update, peak LR, first decrease, and final update.
+For constant LR, check that every update uses the candidate LR.
+Record the LR after the final update separately.
 If the specification and scheduler differ, report the first difference before changing either one.
 
 ## 3. Measure microbatches and check each config
@@ -53,7 +75,10 @@ Check peak memory and tokens per second at the requested GPU count.
 Check that replicas × microbatch × accumulation equals the specified global batch at every stage.
 
 Generate one runnable YAML for each approved schedule, LR, and seed combination.
-Set `wandb.entity` and `wandb.project` from the formal destination. Set `name` to the unique display name for that combination.
+Copy the specified project name to `wandb.project`. Set `wandb.entity` to the team confirmed for the formal runs.
+Set the top-level YAML field `name` from the specification's `wandb_run_name` template.
+Substitute only its placeholders. Preserve the spelling, case, and punctuation in the resulting name.
+
 Check access to the formal project with the account from smoke. Keep W&B online.
 
 From the repository root, run this command for each generated YAML.
