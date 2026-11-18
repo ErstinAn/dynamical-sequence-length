@@ -16,26 +16,27 @@ from torchtitan.models.llama3 import model_registry
 
 from tests.test_dynamic_seq_bs import bs_trainer
 from tests.test_fixed_validation import _Model, _validator, _write_artifact
-from torchtitan_dynamic_seq_len.experiment import SequenceExperimentTrainer, llama3_1b
+from torchtitan_dynamic_seq_len.experiment import ExperimentValidator, SequenceExperimentTrainer, llama3_1b
 from torchtitan_dynamic_seq_len.optimizer import ExperimentOptimizers
 from torchtitan_dynamic_seq_len.token_metrics import LOSS_KEYS, TokenMetricsProcessor, define_token_axes
 from torchtitan_dynamic_seq_len.token_progress import TokenCheckpointManager, TokenPlan
 
 
-def token_trainer(log_freq=4):
+def token_trainer(log_freq=4, steps=20, budget=570, validation_intervals=0):
     trainer = bs_trainer(log_freq=log_freq)
     trainer.__class__ = SequenceExperimentTrainer
-    trainer.config.training.steps = 20
-    trainer.seq_len_scheduler = trainer.config.seq_len_scheduler.build(20)
-    trainer.batch_size_scheduler = trainer.config.batch_size_scheduler.build(20)
-    trainer.microbatch_scheduler = trainer.config.microbatch_scheduler.build(20)
-    trainer.token_plan = TokenPlan.build([8, 8, 16] + [32] * 17, 570)
+    trainer.config.training.steps = steps
+    trainer.seq_len_scheduler = trainer.config.seq_len_scheduler.build(steps)
+    trainer.batch_size_scheduler = trainer.config.batch_size_scheduler.build(steps)
+    trainer.microbatch_scheduler = trainer.config.microbatch_scheduler.build(steps)
+    trainer.token_plan = TokenPlan.build([8, 8, 16] + [32] * (steps - 3), budget, validation_intervals)
+    trainer.validation_by_step = {point.step: point for point in trainer.token_plan.validations}
     trainer.metrics_processor.__class__ = TokenMetricsProcessor
     trainer.metrics_processor.set_training_tokens(0)
     trainer.optimizers = ExperimentOptimizers.Config(learning_rate=0.03).build(
         model_parts=trainer.model_parts)
     trainer.lr_schedulers = LRSchedulersContainer.Config(warmup_steps=0).build(
-        optimizers=trainer.optimizers, training_steps=20)
+        optimizers=trainer.optimizers, training_steps=steps)
     return trainer
 
 
@@ -72,6 +73,8 @@ class TokenPlanTest(unittest.TestCase):
                                    ([1] * 10, 0), ([0] * 10, 10), ([True] * 10, 10)]:
             with self.subTest(increments=increments, budget=budget), self.assertRaises(ValueError):
                 TokenPlan.build(increments, budget)
+        with self.assertRaisesRegex(ValueError, "multiple validation"):
+            TokenPlan.build([1] * 90 + [9] * 10, 180, validation_intervals=50)
 
     def test_rejects_retention_and_partial_recovery(self):
         for key, value in [("keep_latest_k", 10), ("enable", False),
@@ -128,6 +131,59 @@ class TokenMetricsTest(unittest.TestCase):
 
 
 class TokenCheckpointTest(unittest.TestCase):
+    def test_validation_from_initial_model_to_final_step_across_recovery(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            _write_artifact(root)
+
+            def build():
+                trainer = token_trainer(steps=60, budget=1856, validation_intervals=50)
+                trainer.config.dump_folder = folder
+                trainer.validator = _validator(root, validator_class=ExperimentValidator, token_intervals=50)
+                trainer.validator.metrics_processor = trainer.metrics_processor
+                trainer.validator.loss_fn = lambda pred, labels: ((pred - labels).square().sum(), {})
+                trainer.checkpointer = checkpoint_manager(trainer, root)
+                self.addCleanup(trainer.checkpointer.close)
+                return trainer
+
+            def run(trainer, first, last):
+                iterator = trainer.batch_generator(trainer.dataloader)
+                for step in range(first, last + 1):
+                    trainer.step = step
+                    trainer.train_step(iterator)
+                    self.assertFalse(trainer.validator.should_validate(step))
+                    trainer.checkpointer.save(step, last_step=step == 60)
+
+            original = build()
+            expected_initial = original.model_parts[0].weight.detach().item()
+            first_save = original.token_plan.milestones[0].step
+            run(original, 1, first_save + 2)
+            baseline = json.loads((root / "validation/point-000.json").read_text())
+            inputs = torch.arange(96).double() % 7
+            expected_loss = ((inputs * expected_initial - (inputs + 1) % 7) ** 2).mean().item()
+            self.assertAlmostEqual(baseline["loss"], expected_loss)
+
+            resumed = build()
+            self.assertTrue(resumed.checkpointer.load())
+            self.assertEqual(resumed.step, first_save)
+            run(resumed, resumed.step + 1, 60)
+            logs = [call.args[0] for trainer in (original, resumed)
+                    for call in trainer.metrics_processor.logger.log.call_args_list]
+            points = [row for row in logs if "validation_metrics/index" in row]
+            plan = original.token_plan
+            self.assertEqual([row["validation_metrics/index"] for row in points], list(range(51)))
+            self.assertEqual([p.step for p in plan.validations[5::5]], [m.step for m in plan.milestones])
+            for row, point in zip(points, plan.validations, strict=True):
+                self.assertEqual(row["n_tokens_seen"], point.tokens)
+                self.assertEqual(row["validation_metrics/completed_updates"], point.step)
+                self.assertEqual(row["validation_metrics/target_tokens"], (plan.budget * point.index + 49) // 50)
+                self.assertEqual(row["validation_metrics/evaluated_tokens"], 96)
+                receipt = json.loads((root / f"validation/point-{point.index:03d}.json").read_text())
+                self.assertEqual(receipt["step"], point.step)
+                self.assertEqual(receipt["loss"], row["validation_metrics/loss"])
+            self.assertEqual(resumed.nominal_tokens_seen, plan.budget)
+            self.assertEqual(len(list((root / "checkpoint").glob("step-*"))), 10)
+
     def test_ten_complete_saves_and_resume_without_duplicate_milestones(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)

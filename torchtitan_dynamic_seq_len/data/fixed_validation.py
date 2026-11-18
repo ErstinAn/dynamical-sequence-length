@@ -289,13 +289,13 @@ class FixedBudgetValidator(Validator):
         )
 
     @torch.no_grad()
-    def validate(self, model_parts: list[torch.nn.Module], step: int) -> None:
+    def validate(self, model_parts: list[torch.nn.Module], step: int, **kwargs) -> None:
         metrics = getattr(self, "metrics_processor", None)
         scope = getattr(type(metrics), "validation_scope", None)
         with scope(metrics) if scope else nullcontext():
-            return self._validate(model_parts, step)
+            return self._validate(model_parts, step, **kwargs)
 
-    def _validate(self, model_parts: list[torch.nn.Module], step: int) -> None:
+    def _validate(self, model_parts: list[torch.nn.Module], step: int, *, extra_metrics=None) -> None:
         if self.config.token_budget == 0:
             return super().validate(model_parts, step)
         if len(model_parts) != 1:
@@ -365,6 +365,7 @@ class FixedBudgetValidator(Validator):
                 loss=loss,
                 step=step,
                 extra_metrics={
+                    **(extra_metrics or {}),
                     "validation_metrics/evaluated_tokens": actual_tokens,
                     "validation_metrics/num_sequences": self.artifact.num_sequences,
                     "validation_metrics/forwards_per_rank": forwards,

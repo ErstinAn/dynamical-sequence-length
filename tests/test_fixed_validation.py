@@ -25,6 +25,8 @@ from torchtitan_dynamic_seq_len.data.fixed_validation import (
     file_sha256,
     sequence_batches,
 )
+from torchtitan_dynamic_seq_len.experiment import ExperimentValidator
+from torchtitan_dynamic_seq_len.token_progress import TokenMilestone
 
 
 def _write_artifact(root: Path, n: int = 24, length: int = 4) -> dict:
@@ -88,9 +90,10 @@ def _dims(dp_size=1, mesh=None):
     )
 
 
-def _validator(root: Path, local_batch=7, dp_size=1, dp_rank=0, mesh=None, **config):
+def _validator(root: Path, local_batch=7, dp_size=1, dp_rank=0, mesh=None,
+               validator_class=FixedBudgetValidator, **config):
     manifest = json.loads((root / "manifest.json").read_text())
-    return FixedBudgetValidator.Config(
+    return validator_class.Config(
         token_budget=manifest["token_budget"],
         artifact_path=str(root),
         eval_local_batch_size=local_batch,
@@ -122,6 +125,15 @@ def _gloo_worker(rank, world_size, root, rendezvous):
             Path(root, f"result-{rank}-{local_batch}.json").write_text(
                 json.dumps(validator.last_result)
             )
+        point = TokenMilestone(index=1, step=3, threshold=100, tokens=108, excess=8)
+        for expected_calls in (1, 0):
+            validator = _validator(Path(root), dp_size=world_size, dp_rank=rank, mesh=mesh,
+                                   validator_class=ExperimentValidator, token_intervals=50)
+            validator.validate_milestone([_Model()], point, root)
+            assert validator.metrics_processor.log_validation.call_count == expected_calls
+        if rank == 0:
+            receipt = json.loads(Path(root, "validation/point-001.json").read_text())
+            assert receipt["evaluated_tokens"] == 96 and receipt["tokens"] == 108
     finally:
         dist.destroy_process_group()
 

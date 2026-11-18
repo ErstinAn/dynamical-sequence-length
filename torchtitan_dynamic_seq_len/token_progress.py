@@ -23,6 +23,7 @@ class TokenPlan:
     budget: int
     cumulative: tuple[int, ...]
     milestones: tuple[TokenMilestone, ...]
+    validations: tuple[TokenMilestone, ...] = ()
 
     @classmethod
     def smoke(cls, increments, budget):
@@ -39,7 +40,7 @@ class TokenPlan:
         return cls(budget, tuple(cumulative), milestones)
 
     @classmethod
-    def build(cls, increments, budget):
+    def build(cls, increments, budget, validation_intervals=0):
         if type(budget) is not int or budget < 10:
             raise ValueError("Set token_budget to an integer of at least 10 nominal tokens.")
         cumulative = [0]
@@ -49,20 +50,31 @@ class TokenPlan:
             cumulative.append(cumulative[-1] + value)
         if len(cumulative) < 2 or not cumulative[-2] < budget <= cumulative[-1]:
             raise ValueError("training.steps must end at the first complete step reaching token_budget.")
-        milestones = []
-        for index in range(1, 11):
-            threshold = (budget * index + 9) // 10
+        if type(validation_intervals) is not int or not 0 <= validation_intervals < len(cumulative):
+            raise ValueError("Validation intervals must be between zero and the number of optimizer updates.")
+
+        def milestone(index, intervals):
+            threshold = (budget * index + intervals - 1) // intervals
             step = bisect_left(cumulative, threshold)
-            milestones.append(TokenMilestone(index, step, threshold, cumulative[step],
-                                             cumulative[step] - threshold))
+            return TokenMilestone(index, step, threshold, cumulative[step], cumulative[step] - threshold)
+
+        milestones = tuple(milestone(i, 10) for i in range(1, 11))
         if len({item.step for item in milestones}) != 10:
             raise ValueError("One step crosses multiple checkpoint thresholds. Use ten distinct save steps.")
-        return cls(budget, tuple(cumulative), tuple(milestones))
+        validations = ()
+        if validation_intervals:
+            validations = tuple(milestone(i, validation_intervals) for i in range(validation_intervals + 1))
+            if len({item.step for item in validations}) != len(validations):
+                raise ValueError("One update crosses multiple validation targets. Use fewer validation intervals.")
+        return cls(budget, tuple(cumulative), milestones, validations)
 
     def to_dict(self):
-        return {"token_budget": self.budget, "steps": len(self.cumulative) - 1,
+        plan = {"token_budget": self.budget, "steps": len(self.cumulative) - 1,
                 "actual_tokens": self.cumulative[-1],
                 "checkpoints": [asdict(item) for item in self.milestones]}
+        if self.validations:
+            plan["validations"] = [asdict(item) for item in self.validations]
+        return plan
 
 
 class TokenCheckpointManager(CheckpointManager):

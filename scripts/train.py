@@ -39,9 +39,11 @@ def main_preflight(config, arguments, nproc):
                 "seq_len_scheduler.kind", "batch_size_scheduler.kind",
                 "microbatch_scheduler.kind", "optimizer.learning_rate",
                 "lr_scheduler.warmup_steps", "lr_scheduler.decay_type",
-                "lr_scheduler.min_lr_factor", "validator.freq")
+                "lr_scheduler.min_lr_factor")
     explicit = set(config.get("fixed", {})) | set(config.get("sweep", {}))
     missing = sorted(set(required) - explicit)
+    if not ({"validator.freq", "validator.token_intervals"} & explicit):
+        missing.append("validator.freq or validator.token_intervals")
     if missing:
         raise ValueError("Specify experiment settings explicitly: " + ", ".join(missing))
     wandb = config.get("wandb", {})
@@ -54,6 +56,9 @@ def main_preflight(config, arguments, nproc):
         parsed = ConfigManager().parse_args(
             ["--module", MAIN_MODULE, "--config", MAIN_BUILDER, *arguments])
         parsed.validate_dynamic()
+        if not parsed.validator.token_intervals and (
+                "validator.freq" not in explicit or parsed.validator.freq < 1):
+            raise ValueError("Step-based validation requires a positive explicit validator.freq.")
     finally:
         if previous_world is None:
             os.environ.pop("WORLD_SIZE", None)

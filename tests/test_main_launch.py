@@ -58,6 +58,16 @@ class MainLaunchTest(unittest.TestCase):
         self.assertIn("--module torchtitan_dynamic_seq_len.experiment", output)
         self.assertFalse((self.root / "runs").exists())
 
+    def test_token_validation_in_the_formal_launch_plan(self):
+        fixed = self.config["fixed"]
+        del fixed["validator.freq"]
+        fixed.update({"training.steps": 100, "token_budget": 6400, "validator.token_intervals": 50})
+        self.write_config()
+        plan, _ = json.JSONDecoder().raw_decode(self.invoke([self.path, "--dry-run"]))
+        self.assertEqual([p["step"] for p in plan["validations"]], list(range(0, 101, 2)))
+        self.assertEqual([p["step"] for p in plan["checkpoints"]], list(range(10, 101, 10)))
+        self.assertFalse((self.root / "runs").exists())
+
     def test_rejects_missing_settings_and_disabled_wandb(self):
         for change in ("wandb", "budget", "validation"):
             self.config = configuration(self.root)
