@@ -2,6 +2,7 @@
 # Smoke saves at steps 2, 4, 6, and 8. Formal runs retain ten token milestones.
 name: llama3-1b-sequence-smoke
 torchtitan_config: llama3_1b
+num_gpus: 8
 paths:
   dump_root: ${OUTPUT_ROOT}
 wandb:

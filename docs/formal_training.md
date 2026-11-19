@@ -1,7 +1,7 @@
 # Prepare and resume a formal run
 
 Use this procedure after the [target-server smoke test](codebase_kick_off/getting_started.md) passes on the requested layout.
-Smoke and each formal run use two nodes with eight H200 GPUs each by default (16 GPUs total).
+Smoke and each formal run use one node with eight H200 GPUs by default.
 Work from the repository root with the same Python environment.
 Keep the tracked code and configuration files unchanged.
 
@@ -45,7 +45,7 @@ Run this command from the repository root:
 
 ```bash
 python scripts/train.py local/generated_configs/experiment.yaml \
-  --nproc <GPU_COUNT> --dry-run
+  --nproc 8 --dry-run
 ```
 
 Require ten distinct save steps at nominal thresholds 10%, 20%, through 100%.
@@ -61,7 +61,7 @@ Multiply measured seconds per step by the planned steps for that setting.
 Add all phase times, complete validation events, checkpoint saves, and process initialization.
 Treat estimates from two steps per length as preliminary.
 
-After agreement, use the distributed launch command verified during smoke.
+After agreement, run the same command inside the eight-GPU job and remove `--dry-run`.
 The dry run checks configuration settings only. The current launcher starts its workers on a single host.
 Append `--index <INDEX>` to select a point from an agreed YAML sweep.
 

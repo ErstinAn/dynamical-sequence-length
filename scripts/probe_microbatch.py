@@ -227,7 +227,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=Path, default=ROOT / "configs/smoke.yaml")
     parser.add_argument("--output", type=Path, default=Path("microbatch_probe.json"))
-    parser.add_argument("--dp-degree", type=int, default=4)
+    parser.add_argument("--dp-degree", type=int, help="Override the GPU count from the experiment YAML.")
     parser.add_argument("--headroom", type=float, default=0.20)
     parser.add_argument("--max-microbatch", type=int, default=32)
     parser.add_argument("--repeats", type=int, default=2)
@@ -237,6 +237,10 @@ def main():
     parser.add_argument("--microbatch", type=int, help=argparse.SUPPRESS)
     parser.add_argument("--worker-output", type=Path, help=argparse.SUPPRESS)
     args = parser.parse_args()
+    if args.dp_degree is None:
+        from torchtitan_dynamic_seq_len.run_config import load_config
+
+        args.dp_degree = load_config(args.config).get("num_gpus", 4)
     if args.dp_degree < 1 or args.max_microbatch < 1 or args.repeats < 2 or args.timeout_seconds < 1:
         parser.error("Use positive sizes and at least two accumulation groups.")
     if not 0.10 <= args.headroom < 0.75:

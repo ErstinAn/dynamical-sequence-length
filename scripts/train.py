@@ -83,7 +83,7 @@ def latest_complete_step(folder):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("config", nargs="?", default="configs/smoke.yaml")
-    parser.add_argument("--nproc", type=int)
+    parser.add_argument("--nproc", type=int, help="Override the GPU count from the YAML for a new run.")
     parser.add_argument("--index", type=int, default=0)
     parser.add_argument("--list", action="store_true")
     parser.add_argument("--list-legacy", action="store_true")
@@ -110,9 +110,7 @@ def main():
         args.config = str(args.resume_dir / "experiment.yaml")
         if args.nproc is None:
             args.nproc = resume["nproc"]
-    if args.nproc is None:
-        args.nproc = 1
-    if args.nproc < 1:
+    if args.nproc is not None and args.nproc < 1:
         parser.error("Set --nproc to a positive integer.")
     env = dict(os.environ)
     env["PYTHONPATH"] = os.pathsep.join([str(ROOT), env.get("PYTHONPATH", "")])
@@ -176,6 +174,8 @@ def main():
         builder = args.config
     if builder not in builders():
         parser.error("Unknown configuration. Use --list to show the names.")
+    if args.nproc is None:
+        args.nproc = (config or {}).get("num_gpus", 1)
     module = MAIN_MODULE if builder == MAIN_BUILDER else "torchtitan_dynamic_seq_len.config_registry"
     plan = None
     if builder == MAIN_BUILDER:

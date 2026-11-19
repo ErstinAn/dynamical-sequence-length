@@ -27,11 +27,16 @@ def main():
                         help="JSON with microbatches mapping sequence length to measured microbatch.")
     parser.add_argument("--assets", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--nproc", type=int, required=True)
+    parser.add_argument("--nproc", type=int, help="Override the GPU count from the smoke YAML.")
     parser.add_argument("--probe", action="store_true",
                         help="Measure microbatches in this allocation before the smoke runs.")
     parser.add_argument("--config", type=Path, default=ROOT / "configs/smoke.yaml")
     args = parser.parse_args()
+    original = yaml.safe_load(args.config.read_text())
+    if args.nproc is None:
+        args.nproc = original.get("num_gpus")
+    if type(args.nproc) is not int or args.nproc < 1:
+        parser.error("Set num_gpus in the smoke YAML or pass a positive --nproc.")
     args.output.mkdir(parents=True, exist_ok=False)
     env = {**os.environ, "DYNAMIC_SEQ_LEN_ASSETS": str(args.assets.resolve()),
            "PYTHONDONTWRITEBYTECODE": "1"}
@@ -40,7 +45,6 @@ def main():
              "--config", str(args.config.resolve()), "--dp-degree", str(args.nproc),
              "--output", str(args.profile.resolve())], args.output / "microbatch-probe.txt", env)
     profile = json.loads(args.profile.read_text())
-    original = yaml.safe_load(args.config.read_text())
     global_batch = original["fixed"]["training.global_batch_size"]
     if (profile.get("status") != "passed" or profile.get("target_dp_degree") != args.nproc
             or profile.get("global_batch_size") != global_batch):

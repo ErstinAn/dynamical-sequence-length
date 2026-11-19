@@ -10,7 +10,7 @@ Smoke and formal training require online W&B access. The public dataset and bund
 
 For a meeting, open the [smoke startup prompt](docs/codebase_kick_off/collaborator_prompt.md).
 Replace the two quoted paths. Paste the block into Codex or Claude Code on the target server.
-The delivered code is on the default `main` branch.
+The delivered code is on the default `main` branch. Use your own W&B credentials. [Local key setup](docs/codebase_kick_off/getting_started.md#verify-wb-access)
 
 | Document | Reader and purpose |
 |---|---|
@@ -26,8 +26,8 @@ The previous real-data smoke used a global batch of 512 and passed on one node w
 Recovered training matched every final checkpoint value from uninterrupted training.
 The uploaded W&B losses use cumulative nominal tokens as their horizontal axes.
 
-The default for smoke and each formal run is two nodes with eight H200 GPUs each (16 GPUs total).
-The current launcher and fixed validator block this layout. See the [target-server checks](docs/codebase_kick_off/getting_started.md#check-the-launch-support-and-the-slurm-cluster).
+Smoke and each formal run use one node with eight H200 GPUs by default. Each worker validates 117 of the 936 fixed windows.
+See the [target-server checks](docs/codebase_kick_off/getting_started.md#check-the-launch-support-and-the-slurm-cluster).
 
 `configs/smoke.yaml` defines the eight-step smoke with global batch size 256 and 15,728,640 nominal tokens.
 Measure microbatches on the allocated GPU before execution.

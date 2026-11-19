@@ -21,6 +21,8 @@ def load_yaml_mapping(path: Path, description: str) -> dict[str, Any]:
 
 def load_config(path: Path) -> dict[str, Any]:
     data = load_yaml_mapping(path, "config")
+    if "num_gpus" in data and (type(data["num_gpus"]) is not int or data["num_gpus"] < 1):
+        raise ValueError(f"{path}: num_gpus must be a positive integer")
     if data.get("status") == "draft":
         raise ValueError(
             f"{path}: this configuration is a placeholder. "

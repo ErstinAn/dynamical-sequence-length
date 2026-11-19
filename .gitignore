@@ -14,3 +14,4 @@ wandb/
 *.distcp
 /assets/data
 /assets/hf
+/docs/API-KEYS.md

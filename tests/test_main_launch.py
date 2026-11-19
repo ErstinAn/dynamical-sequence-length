@@ -97,7 +97,9 @@ class MainLaunchTest(unittest.TestCase):
 
     def test_agreed_smoke_and_controlled_stop_parse_without_launch(self):
         path = train.ROOT / "configs/smoke.yaml"
+        self.assertIn("--nproc_per_node=8", self.invoke([path, "--dry-run"]))
         output = self.invoke([path, "--nproc", "4", "--stop-after-checkpoint", "4", "--dry-run"])
+        self.assertIn("--nproc_per_node=4", output)
         self.assertIn('"actual_tokens": 15728640', output)
         self.assertIn("--smoke_test", output)
 

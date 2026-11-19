@@ -1,7 +1,7 @@
 # Run the smoke test on the target server
 
 The collaborator fills in two paths in the [meeting prompt](collaborator_prompt.md). The agent performs the steps below.
-The default for smoke and each formal run is **2 Slurm nodes with 8 NVIDIA H200 GPUs each (16 GPUs total)**.
+The default for smoke and each formal run is **one Slurm node with eight NVIDIA H200 GPUs**.
 Use another layout only when the user requests it.
 
 | Input | Use |
@@ -15,14 +15,8 @@ If the existing implementation fails, report the error and its log.
 
 ## Check the launch support and the Slurm cluster
 
-Check the target revision before reserving GPUs. This revision has two limits.
-
-- The [training launcher](../../scripts/train.py) treats `--nproc` as workers per host and uses a local rendezvous. The [smoke driver](../../scripts/gpu_smoke.py) uses that launcher for training and recovery.
-- The [fixed validator](../../torchtitan_dynamic_seq_len/data/fixed_validation.py) requires equal window counts on all data-parallel ranks. Dividing 936 windows among 16 ranks leaves eight windows.
-
-These limits block the default smoke on this revision. Report them before GPU submission.
-Resume the GPU procedure when the checkout supports both nodes and all 936 windows with 16 ranks.
-Get permission before changing shared code or using another allocation.
+The [training launcher](../../scripts/train.py) starts eight workers on the host when you pass `--nproc 8`.
+Each worker evaluates 117 of the 936 fixed windows. Together they count 15,335,424 prediction targets.
 
 Use the login node for Slurm discovery. Read the target site's current submission instructions and the supplied job example.
 For a standard Slurm installation, these read-only commands show partitions and account associations.
@@ -79,9 +73,18 @@ export TOKENIZER_DIR="$DYNAMIC_SEQ_LEN_ASSETS/hf/llama3-tokenizer"
 Smoke requires online write access to `dynamic_seq_length/debug`. Formal runs use the project in the experiment specification.
 Use the site's secret store to supply `WANDB_API_KEY`, or use an existing W&B login in your private `.netrc`.
 
-You can also use the owner's `docs/API-KEYS.md` in a private checkout.
-If the file is elsewhere, set `API_KEYS_FILE` to its absolute path on shared storage.
-Give only the job owner read access to the file (`chmod 600`).
+To use a local key file, run the following commands from the repository root.
+The copy uses owner-only permissions and preserves an existing file.
+
+```bash
+(umask 077 && cp -n docs/API-KEYS.example.md docs/API-KEYS.md)
+chmod 600 docs/API-KEYS.md
+git check-ignore -- docs/API-KEYS.md
+```
+
+Require the last command to print `docs/API-KEYS.md`. Open that local file in your editor.
+Enter your own W&B key in the second column of the `WANDB_API_KEY` row. Leave `HF_TOKEN` empty for anonymous downloads.
+If your private file is elsewhere, set `API_KEYS_FILE` to its absolute path.
 
 Run this block in Bash from the repository root. Use the same credential setup in the job before starting workers.
 Keep keys out of prompts, job files, and logs.
@@ -91,7 +94,7 @@ set +x
 export WANDB_BASE_URL=https://api.wandb.ai WANDB_MODE=online
 key_file="${API_KEYS_FILE:-docs/API-KEYS.md}"
 if [[ -z "${WANDB_API_KEY:-}" && -r "$key_file" ]]; then
-  WANDB_API_KEY=$(awk '$1 ~ /^wandb_/ {print $1; exit}' "$key_file")
+  WANDB_API_KEY=$(awk -F'|' '$2 ~ /^ *WANDB_API_KEY *$/ {gsub(/[[:space:]]/, "", $3); print $3; exit}' "$key_file")
   export WANDB_API_KEY
 fi
 python scripts/check_wandb_access.py dynamic_seq_length debug
@@ -102,7 +105,7 @@ Stop the job if the check fails. Use the same credentials when you verify the up
 
 | Result | Next action |
 |---|---|
-| Login fails | Check that this shell or job received the key. Ask the owner for a valid key if needed. |
+| Login fails | Check that this shell or job received your current W&B key. |
 | Project access fails | Check the exact entity and project. Ask the owner for write access. |
 | Network error or timeout | Check the node's route or approved proxy to `api.wandb.ai`. |
 
@@ -138,7 +141,7 @@ For a checksum failure, inspect the named file before reuse.
   export HF_ENDPOINT=https://huggingface.co
   key_file="${API_KEYS_FILE:-docs/API-KEYS.md}"
   if [[ -z "${HF_TOKEN:-}" && -r "$key_file" ]]; then
-    HF_TOKEN=$(awk '$1 ~ /^hf_/ {print $1; exit}' "$key_file")
+    HF_TOKEN=$(awk -F'|' '$2 ~ /^ *HF_TOKEN *$/ {gsub(/[[:space:]]/, "", $3); print $3; exit}' "$key_file")
     export HF_TOKEN
   fi
   python scripts/download_dataset.py --authenticated \
@@ -183,15 +186,31 @@ They check validation across ranks and recovery from full checkpoints.
 
 Use this procedure after the support checks above pass.
 Adapt `JOB_EXAMPLE` in a new file under `cluster/<site>/`. Set `<site>` to the target site's name.
-Request two H200 nodes with eight GPUs per node. Use the account, QoS, walltime, and submission command verified on this cluster.
+Request one node with eight H200 GPUs. Use the account, QoS, walltime, and submission command verified on this cluster.
 
-Use the same shared checkout, environment, assets, and attempt directory on both nodes.
-Choose a new attempt directory under `RUN_STORAGE` for each smoke submission.
+Run one driver with all eight GPUs visible. The driver starts one training worker per GPU.
+Use this command on the login node to check the plan. Require eight steps and 15,728,640 nominal tokens.
 
-Use the two-node launch command supported by the checked revision.
-Launch one distributed training run with one worker per GPU.
-Check the eight-step plan for 15,728,640 nominal tokens. You can run this configuration check on the login node without GPUs.
-Measure microbatches on the target hardware. Use the same layout for uninterrupted training and recovery.
+```bash
+python scripts/train.py configs/smoke.yaml --nproc 8 --dry-run
+```
+
+### Run the eight-GPU smoke
+
+Put the following block in the job file. Run it once inside the GPU allocation from the repository root.
+Load the environment and asset paths above. Set `ATTEMPT` to a new path under `RUN_STORAGE` for each submission.
+
+```bash
+set -eu
+python -c 'import torch; assert torch.cuda.device_count() == 8 and all("H200" in torch.cuda.get_device_name(i) for i in range(8)), "Expected eight visible H200 GPUs"'
+python scripts/gpu_smoke.py --probe --nproc 8 \
+  --assets "$DYNAMIC_SEQ_LEN_ASSETS" --output "$ATTEMPT" \
+  --profile "$ATTEMPT/microbatches.json"
+```
+
+The driver measures microbatches and checks uninterrupted and resumed training on the same allocation.
+
+### Submit the job
 
 For a Slurm Bash job, set `JOB_FILE` to the new job file. Use the site's request check when available.
 
@@ -212,33 +231,14 @@ Use `sacct -j "$JOB_ID" --format=JobID,State,ExitCode,Elapsed` to check the outc
 If the site requires a submission tool, use its equivalent commands.
 
 Record each worker's hostname, global rank, local rank, GPU model, device UUID, and world size.
-Require eight distinct H200 device UUIDs on each of two hosts and global ranks 0 through 15 in one group.
-Check that every worker reports `WORLD_SIZE=16`. Slurm can bind each worker to one visible GPU.
-
-Check GPU visibility inside the Slurm allocation on the compute nodes. Visibility on the login node is irrelevant.
-Check communication in the training group. An NCCL sum of one from each worker must return 16 on every worker.
-
-### Single-node override
-
-Use this command only if the user explicitly requests a single node.
-The GPU count on that node must divide 936 validation windows and the global batch of 256.
-Run from the checkout inside that allocation with the environment and asset paths set above.
-Set `ATTEMPT` to a new directory under `RUN_STORAGE`.
-
-```bash
-GPU_COUNT=$(python -c 'import torch; print(torch.cuda.device_count())')
-python scripts/gpu_smoke.py --probe --nproc "$GPU_COUNT" \
-  --assets "$DYNAMIC_SEQ_LEN_ASSETS" --output "$ATTEMPT" \
-  --profile "$ATTEMPT/microbatches.json"
-```
-
-Record the approved layout in the smoke results.
+Require one hostname, eight distinct H200 devices, and global ranks 0 through 7 in one group.
+Check that every worker reports `WORLD_SIZE=8`. An NCCL sum of one from each worker must return eight on every worker.
 
 ## Accept the result
 
 | Setting | Smoke value |
 |---|---|
-| Allocation | Two nodes, eight H200 GPUs per node, 16 training workers by default |
+| Allocation | One node, eight H200 GPUs, eight training workers |
 | Model | Native dense Llama 3 1B, random initialization |
 | Training | Lengths 2048, 4096, 8192, 16384 for two steps each. Global batch size 256. |
 | W&B smoke destination | Entity `dynamic_seq_length`, project `debug`, online mode |

@@ -20,9 +20,9 @@ For phase 1, compare only `staged_5` and `fixed_16384`. Use the same supplied 1B
 Use the same allocation for smoke and each formal run. Change it only at the user's request.
 
 ```yaml
-num_nodes: 2
+num_nodes: 1
 gpus_per_node: 8
-num_gpus: 16
+num_gpus: 8
 gpu_type: H200
 ```
 

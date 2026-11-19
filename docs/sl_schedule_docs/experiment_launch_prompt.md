@@ -24,9 +24,9 @@ Use the checkout, environment, data, and tokenizer from the successful smoke on 
 The verified data and tokenizer need no Hugging Face login. If data is missing, restore the pinned public dataset.
 Use the anonymous download for `Erstin/fineweb-edu-long-30b`. [Data recovery procedure](../codebase_kick_off/getting_started.md#download-and-rebuild-the-dataset)
 
-Use 2 nodes with 8 NVIDIA H200 GPUs per node (16 total) for each run by default.
+Use one node with eight NVIDIA H200 GPUs for each run by default.
 Use a different layout only when the user requests it. Check the smoke record for the requested layout.
-For the default, verify two hostnames and 16 ranks in one training group.
+For the default, verify one hostname and eight ranks in one training group.
 If the matching smoke record is missing, follow the [target-server smoke guide](../codebase_kick_off/getting_started.md) before submission.
 
 Recover the working job file, submission command, Slurm settings, and shared storage path from that smoke.
@@ -78,6 +78,7 @@ Check peak memory and tokens per second at the requested GPU count.
 Check that replicas × microbatch × accumulation equals the specified global batch at every stage.
 
 Generate one runnable YAML for each approved schedule, LR, and seed combination.
+Copy the top-level `num_gpus: 8` from the smoke config for the default allocation.
 Copy the specified project name to `wandb.project`. Set `wandb.entity` to the team confirmed for the formal runs.
 Set the top-level YAML field `name` from the specification's `wandb_run_name` template.
 Substitute only its placeholders. Preserve the spelling, case, and punctuation in the resulting name.
@@ -94,10 +95,10 @@ Require `W&B login OK` for that exact destination. If the check fails, stop and 
 Keep the specified project and run names.
 
 From the repository root, run this command for each generated YAML.
-Set `CONFIG` to the YAML path. Set `GPU_COUNT` to the total GPU count per run (default 16).
+Set `CONFIG` to the YAML path. The default allocation uses eight GPUs.
 
 ```bash
-python scripts/train.py "$CONFIG" --nproc "$GPU_COUNT" --dry-run
+python scripts/train.py "$CONFIG" --nproc 8 --dry-run
 ```
 
 Compare the printed token plan with the specification.
@@ -106,7 +107,8 @@ Estimate run time and storage from the measured settings and the number of runs.
 
 ## 4. Submit the agreed runs
 
-Use the two-node launch command verified during smoke for the default layout.
+Run the checked command inside the smoke job allocation layout. Remove `--dry-run` to start training.
+Start one driver on the host with access to all eight GPUs.
 The dry run above checks the plan. Use the matching smoke job file for distributed execution.
 Check the site's current submission limits. Use shared storage for logs and checkpoints.
 

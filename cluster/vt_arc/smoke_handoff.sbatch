@@ -6,7 +6,7 @@
 #SBATCH --qos=tc_h200_normal_base
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --gpus-per-node=4
+#SBATCH --gpus-per-node=8
 #SBATCH --cpus-per-task=32
 #SBATCH --mem=256G
 #SBATCH --time=04:00:00

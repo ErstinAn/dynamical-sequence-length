@@ -15,9 +15,9 @@ Use the 1B model, initial weights, tokenizer, data, optimizer, precision, proces
 Use the same allocation for smoke and each formal run. Change it only at the user's request.
 
 ```yaml
-num_nodes: 2
+num_nodes: 1
 gpus_per_node: 8
-num_gpus: 16
+num_gpus: 8
 gpu_type: H200
 ```
 
@@ -36,7 +36,7 @@ Pending jobs do not count toward this limit. Slurm site limits still apply.
 
 ## Run settings
 
-Use two nodes with eight NVIDIA H200 GPUs per node. Use a global batch size of **256 sequences per optimizer update**. Each run uses **20,132,659,200 non-padding input tokens**.
+Use one node with eight NVIDIA H200 GPUs. Use a global batch size of **256 sequences per optimizer update**. Each run uses **20,132,659,200 non-padding input tokens**.
 
 | Schedule ID | Total updates (`T`) | Warmup updates | Stable updates | Decay updates | Mean sequence length |
 |---|---:|---:|---:|---:|---:|
