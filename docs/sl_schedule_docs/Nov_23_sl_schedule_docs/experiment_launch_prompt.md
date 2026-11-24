@@ -20,7 +20,16 @@ Obtain explicit permission before changing shared code.
 
 ## 1. Read the specification and the smoke record
 
-Use the checkout, environment, data, and tokenizer from the successful smoke on this server.
+Use the checkout and environment from the successful smoke on this server.
+
+**If the specification names a W&B reference run, that run is the authority for the model, initialization, training data, tokenizer, and validation data.**
+Read its config with the W&B API. Use its dataset paths and require that both manifest SHA-256 values match it.
+Do not use the smoke data or tokenizer when they differ from the reference run, and report the difference.
+If the reference data are missing on this server or a hash differs, stop and ask the user.
+Do not restore or rebuild the public dataset unless the user asks for it.
+Confirm the resolved data with the user as the specification requires before measuring micro-batches or submitting runs.
+
+Only when the specification names no W&B reference run, use the data and tokenizer from the successful smoke on this server.
 The verified data and tokenizer need no Hugging Face login. If data is missing, restore the pinned public dataset.
 Use the anonymous download for `Erstin/fineweb-edu-long-30b`. [Data recovery procedure](../codebase_kick_off/getting_started.md#download-and-rebuild-the-dataset)
 
@@ -30,8 +39,9 @@ For the default, verify one hostname and eight ranks in one training group.
 If the matching smoke record is missing, follow the [target-server smoke guide](../codebase_kick_off/getting_started.md) before submission.
 
 Recover the working job file, submission command, Slurm settings, and shared storage path from that smoke.
-Read the reference config and the experiment overrides.
-Read the LR candidates, formal W&B destination, and run naming pattern from the specification.
+Read the reference config and the experiment overrides. The reference config is either a repository config path or a W&B reference run.
+A W&B config is a resolved record; map each field to the repository's YAML format instead of copying object representations.
+Read the learning rate (one value or a list of candidates), formal W&B destination, and run naming pattern from the specification.
 Ask for all missing inputs in one message. Keep pending values open during preparation.
 
 ## 2. Translate the schedule into launch settings
@@ -53,9 +63,10 @@ fixed:
 Run 51 validations. Evaluate once before training, at 49 intermediate targets, and once after the final update.
 Use cumulative nominal training tokens for the targets. Evaluate after the first complete update that reaches each target.
 Keep all ten complete checkpoints at 10% increments of the token budget, including the final state.
+When the specification lists the update count of each checkpoint, check the generated plan against that table.
 
-Use the pinned TorchTitan LR scheduler. For the three Phase 1 experiments, set `lr_scheduler.decay_type` to `linear`.
-Set `optimizer.learning_rate` to the LR candidate for that run. Prefix each field below with `lr_scheduler.` in `fixed`.
+Use the pinned TorchTitan LR scheduler. For the three LR-schedule specifications below, set `lr_scheduler.decay_type` to `linear`.
+Set `optimizer.learning_rate` to the specified LR for that run. Prefix each field below with `lr_scheduler.` in `fixed`.
 
 | Specification | `warmup_steps` | `decay_ratio` | `min_lr_factor` |
 |---|---:|---:|---:|
@@ -63,7 +74,8 @@ Set `optimizer.learning_rate` to the LR candidate for that run. Prefix each fiel
 | `warmup5_linear95_lr-constant-bs` | 5% of optimizer updates | 0.95 | 0.0 |
 | `wsd5_75_20_lr-constant-bs` | 5% of optimizer updates | 0.20 | 0.0 |
 
-For 5% warmup, write 960 for 19,200 optimizer updates and 240 for 4,800 optimizer updates.
+Compute 5% warmup from each run's own update count. For example, write 960 for 19,200 updates, 240 for 4,800, 1,920 for 38,400, and 7,358 for 147,160.
+Use the warmup and decay counts in the specification's run table when it gives them.
 Use TorchTitan's native behavior at each phase boundary. Both decay schedules reach zero after the final optimizer update.
 
 For each decay schedule, check the first update, peak LR, first decrease, and final update.
@@ -73,7 +85,8 @@ If the specification and scheduler differ, report the first difference before ch
 
 ## 3. Measure microbatches and check each config
 
-Reuse matching measurements from the target server. Measure missing settings with complete optimizer updates.
+If the specification gives micro-batch starting values from its reference run, start from those values and follow its tests and activation-checkpointing setting.
+Otherwise, reuse matching measurements from the target server. Measure missing settings with complete optimizer updates.
 Check peak memory and tokens per second at the requested GPU count.
 Check that replicas × microbatch × accumulation equals the specified global batch at every stage.
 
