@@ -8,40 +8,43 @@ description: Generate local training configurations from a sequence schedule spe
 Give the agent one experiment file. For example, send this message from the repository root.
 
 ```text
-Use @docs/sl_schedule_docs/constant_lr-constant-bs.md and its linked launch prompt.
+Use @docs/sl_schedule_docs/Nov_25_sl_schedule_moe/5stages-constant_lr-constant-bs.md and its linked launch prompt.
 Prepare the configurations. Launch the runs that we agreed to submit.
 ```
 
 Use the named file as the experiment specification. For a new experiment, replace that one path.
-Keep shared experiment changes in Markdown under `docs/sl_schedule_docs/`.
+Keep shared experiment changes in Markdown under `docs/sl_schedule_docs/Nov_25_sl_schedule_moe/`, next to this prompt.
 Generate machine-specific YAML and job files under the ignored directory `local/generated_configs/<experiment>/`.
 If the existing code cannot express a requirement, identify the gap and its effect.
 Obtain explicit permission before changing shared code.
 
 ## 1. Read the specification and the smoke record
 
-Use the checkout and environment from the successful smoke on this server.
+Use the checkout and environment from the successful smoke on this server. Take only the software environment, job file, submission command, Slurm settings, shared storage path, and W&B credentials from the smoke; the smoke data and tokenizer play no role here.
 
-**If the specification names a W&B reference run, that run is the authority for the model, initialization, training data, tokenizer, and validation data.**
+**If the specification names a W&B reference run, that run is the authority for the model, initialization, training data, tokenizer, and validation data.** The specification can still change the validation sequence length (section 2).
+Exception: when the specification says that a model config is supplied at launch (for example an MoE model), that config is the authority for the model architecture and initializer. The W&B run stays the authority for the data, tokenizer, validation data, optimizer, and precision.
 Read its config with the W&B API. Use its dataset paths and require that both manifest SHA-256 values match it.
-Do not use the smoke data or tokenizer when they differ from the reference run, and report the difference.
+If the smoke config uses other data or another tokenizer, ignore them and report the difference.
 If the reference data are missing on this server or a hash differs, stop and ask the user.
 Do not restore or rebuild the public dataset unless the user asks for it.
 Confirm the resolved data with the user as the specification requires before measuring micro-batches or submitting runs.
+When a model config is supplied, confirm it in the same message: path, file SHA-256, total and active parameter counts, required parallelism, and tokenizer and `vocab_size` compatibility with the reference data.
 
-Only when the specification names no W&B reference run, use the data and tokenizer from the successful smoke on this server.
-The verified data and tokenizer need no Hugging Face login. If data is missing, restore the pinned public dataset.
-Use the anonymous download for `Erstin/fineweb-edu-long-30b`. [Data recovery procedure](../codebase_kick_off/getting_started.md#download-and-rebuild-the-dataset)
+Every specification for this prompt names a W&B reference run. Never take the training data, validation data, or tokenizer from the smoke record or a smoke config. If a specification names no W&B reference run, stop and ask the user for the data source.
 
 Use one node with eight NVIDIA H200 GPUs for each run by default.
 Use a different layout only when the user requests it. Check the smoke record for the requested layout.
 For the default, verify one hostname and eight ranks in one training group.
-If the matching smoke record is missing, follow the [target-server smoke guide](../codebase_kick_off/getting_started.md) before submission.
+If the matching smoke record is missing, follow the [target-server smoke guide](../../codebase_kick_off/getting_started.md) before submission.
 
 Recover the working job file, submission command, Slurm settings, and shared storage path from that smoke.
-Read the reference config and the experiment overrides. The reference config is either a repository config path or a W&B reference run.
+Read the W&B reference run and the experiment overrides.
 A W&B config is a resolved record; map each field to the repository's YAML format instead of copying object representations.
 Read the learning rate (one value or a list of candidates), formal W&B destination, and run naming pattern from the specification.
+If the specification requires a model config supplied at launch, read its path from the user's launch request. If the request gives none, ask for it.
+
+**Learning-rate option.** A specification gives either one `learning_rate` (run that value) or an `lr_grid`. By default, run every value in the `lr_grid`. If the launch request says not to sweep the learning rate, run one LR per specification instead: `5e-4` for `constant_lr-constant-bs`, and a peak LR of `2e-3` for `warmup5_linear95_lr-constant-bs` and `wsd5_75_20_lr-constant-bs`. This gives one run per sequence-length setting. Keep the run naming pattern, with `{x}` set to that LR. If the request is unclear about this option, ask before generating configs, and state the chosen option and the number of runs in the confirmation message.
 Ask for all missing inputs in one message. Keep pending values open during preparation.
 
 ## 2. Translate the schedule into launch settings
@@ -50,7 +53,7 @@ Create a local schedule template for each schedule in the specification.
 Derive optimizer steps, cumulative nominal tokens, validation targets, and checkpoint targets.
 Check every stage boundary and the exact total against the specification.
 
-Keep the reference model, initialization, data order, loss, and optimizer unless the specification explicitly changes them.
+Keep the reference model, initialization, data order, loss, and optimizer unless the specification explicitly changes them. A supplied model config changes the model, its initializer, and its auxiliary losses (for example the MoE load-balancing loss); keep everything else.
 
 Apply these overrides under `fixed` in each formal YAML. Remove the smoke setting `validator.freq` from that YAML.
 
@@ -65,8 +68,14 @@ Use cumulative nominal training tokens for the targets. Evaluate after the first
 Keep all ten complete checkpoints at 10% increments of the token budget, including the final state.
 When the specification lists the update count of each checkpoint, check the generated plan against that table.
 
+**Validation sequence length: follow the specification and confirm it with the user.** Specifications differ here. The dense specifications validate at the fixed length `validator.eval_seq_len = 16384` with the `validation_packed_16384` artifact. A specification that says the validation length follows the training schedule (for example the `qwen3_a1b-5stages-*` MoE specifications) evaluates each validation at the training length of the last completed update; the validation before training uses the length of update 0.
+Find out from the code and the generated config which length each validation actually uses, and how `validator.token_budget` tokens of the same validation set are cut into sequences at each length. Check fixed-length runs, staged runs, and a validation exactly at a stage boundary.
+Report the result in the confirmation message before any micro-batch test or formal run: the length used at the initial validation, at each stage, and at the final validation, together with the config fields and code path that set it. If the code does not support the rule of the specification, report the gap and obtain permission before changing shared code. Use the same validation rule for every run in the batch.
+
 Use the pinned TorchTitan LR scheduler. For the three LR-schedule specifications below, set `lr_scheduler.decay_type` to `linear`.
 Set `optimizer.learning_rate` to the specified LR for that run. Prefix each field below with `lr_scheduler.` in `fixed`.
+
+Match a specification to a row by its LR-schedule name, ignoring a prefix such as `qwen3_a1b-5stages-`.
 
 | Specification | `warmup_steps` | `decay_ratio` | `min_lr_factor` |
 |---|---:|---:|---:|
@@ -85,10 +94,11 @@ If the specification and scheduler differ, report the first difference before ch
 
 ## 3. Measure microbatches and check each config
 
-If the specification gives micro-batch starting values from its reference run, start from those values and follow its tests and activation-checkpointing setting.
-Otherwise, reuse matching measurements from the target server. Measure missing settings with complete optimizer updates.
+If the specification requires new measurements for a different model (for example the MoE specifications), measure every length it lists, even when it gives dense starting values, and follow its memory-fallback order (for example FSDP or activation checkpointing). Keep one memory setting for the whole run.
+Otherwise, if the specification gives micro-batch values from its reference run, start from those values and follow its tests and activation-checkpointing setting.
+If the specification gives neither, reuse matching measurements from the target server. Measure missing settings with complete optimizer updates.
 Check peak memory and tokens per second at the requested GPU count.
-Check that replicas × microbatch × accumulation equals the specified global batch at every stage.
+Check that data-parallel ranks × microbatch × accumulation equals the specified global batch at every stage.
 
 Generate one runnable YAML for each approved schedule, LR, and seed combination.
 Copy the top-level `num_gpus: 8` from the smoke config for the default allocation.
@@ -96,7 +106,7 @@ Copy the specified project name to `wandb.project`. Set `wandb.entity` to the te
 Set the top-level YAML field `name` from the specification's `wandb_run_name` template.
 Substitute only its placeholders. Preserve the spelling, case, and punctuation in the resulting name.
 
-Formal training requires online W&B. Load the approved credentials as in smoke. [W&B credential setup](../codebase_kick_off/getting_started.md#verify-wb-access)
+Formal training requires online W&B. Load the approved credentials as in smoke. [W&B credential setup](../../codebase_kick_off/getting_started.md#verify-wb-access)
 Set `ENTITY` and `PROJECT` to the formal values from the generated YAML.
 Run this check before submission and once inside each allocation before starting workers.
 
@@ -141,10 +151,11 @@ If the request covers preparation only, report the dry run and the exact submiss
 Record the code revision, config path, job ID, run directory, and W&B link for each submitted run.
 Check the first training loss and the first scheduled validation against the actual training token count.
 For a token-based baseline, check validation at zero tokens before the first update.
+Check that the sequence length of each validation follows the specification's validation-length rule, at the first validation and at the first validation after each stage change.
 
 If a run stops, check its job state and latest complete checkpoint.
 For recovery, reuse the node layout, replica count, and environment from the original run.
 Use the recovery command verified during smoke with the original run directory.
 
 At completion, check the final token count, validation records, checkpoint count, and scheduler exit status.
-Report which runs finished and which still need attention. See the [formal run guide](../formal_training.md) for launch and recovery details.
+Report which runs finished and which still need attention. See the [formal run guide](../../formal_training.md) for launch and recovery details.
