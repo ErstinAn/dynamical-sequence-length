@@ -47,7 +47,7 @@ Ask for all missing inputs in one message. Keep pending values open during prepa
 ## 2. Translate the schedule into launch settings
 
 Create a local schedule template for each schedule in the specification.
-Derive optimizer steps, cumulative nominal tokens, validation targets, and checkpoint targets.
+Derive optimizer steps, cumulative nominal tokens, and validation targets.
 Check every stage boundary and the exact total against the specification.
 
 Keep the reference model, initialization, data order, loss, and optimizer unless the specification explicitly changes them.
@@ -62,8 +62,7 @@ fixed:
 
 Run 51 validations. Evaluate once before training, at 49 intermediate targets, and once after the final update.
 Use cumulative nominal training tokens for the targets. Evaluate after the first complete update that reaches each target.
-Keep all ten complete checkpoints at 10% increments of the token budget, including the final state.
-When the specification lists the update count of each checkpoint, check the generated plan against that table.
+**Do not save checkpoints in this batch. This overrides the specifications' sections "Model initialization and model checkpoints" (checkpoint saving only) and "Stage changes and restart".** These runs repeat the training of finished dense runs and change only the validation, so set `checkpoint.enable = false` in every formal YAML and ignore the specifications' checkpoint table and checkpoint contents. Keep every other field from the reference run. Check in the dry run and in the first minutes of each run that no checkpoint folder is written.
 
 **Validation sequence length: it follows the training schedule. Confirm it with the user.** This is the difference from the earlier dense experiments, which validated at the fixed length `validator.eval_seq_len = 16384` with the `validation_packed_16384` artifact. Every specification for this prompt evaluates each validation at the training length of the last completed update; the validation before training uses the length of update 0.
 Find out from the code and the generated config which length each validation actually uses, and how `validator.token_budget` tokens of the same validation set are cut into sequences at each length. Check fixed-length runs, staged runs, and a validation exactly at a stage boundary.
@@ -129,7 +128,7 @@ Estimate run time and storage from the measured settings and the number of runs.
 Run the checked command inside the smoke job allocation layout. Remove `--dry-run` to start training.
 Start one driver on the host with access to all eight GPUs.
 The dry run above checks the plan. Use the matching smoke job file for distributed execution.
-Check the site's current submission limits. Use shared storage for logs and checkpoints.
+Check the site's current submission limits. Use shared storage for logs.
 
 Read the optional `max_concurrent_runs` from the specification or the user's launch request.
 Omit it or set it to `null` for no user limit. A positive integer limits runs with active GPU allocations.
@@ -142,16 +141,14 @@ Site limits on running and submitted jobs apply in both cases. [Slurm job arrays
 Submit the requested combinations within the agreed resource budget.
 If the request covers preparation only, report the dry run and the exact submission command.
 
-## 5. Verify launch and recovery
+## 5. Verify launch and completion
 
 Record the code revision, config path, job ID, run directory, and W&B link for each submitted run.
 Check the first training loss and the first scheduled validation against the actual training token count.
 For a token-based baseline, check validation at zero tokens before the first update.
 Check that the sequence length of each validation follows the specification's validation-length rule, at the first validation and at the first validation after each stage change.
 
-If a run stops, check its job state and latest complete checkpoint.
-For recovery, reuse the node layout, replica count, and environment from the original run.
-Use the recovery command verified during smoke with the original run directory.
+If a run stops, check its job state and log, and report it to the user. There is no checkpoint, so a run cannot resume. Restart a stopped run from update 0 only when the user asks, with the same config, node layout, replica count, and environment, and record the lost tokens.
 
-At completion, check the final token count, validation records, checkpoint count, and scheduler exit status.
-Report which runs finished and which still need attention. See the [formal run guide](../../formal_training.md) for launch and recovery details.
+At completion, check the final token count, the 51 validation records, and scheduler exit status.
+Report which runs finished and which still need attention. See the [formal run guide](../../formal_training.md) for launch details.
